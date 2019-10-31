@@ -23,6 +23,7 @@ log = logging.getLogger(__name__)
 initial_cogs = (
     "cogs.about",
     "cogs.members",
+    "cogs.timers",
 )
 
 class AuthBot(commands.Bot):

@@ -14,7 +14,7 @@ from allianceauth.eveonline.models import EveCharacter
 
 class Members(commands.Cog):
     """
-    All about me!
+    All about users!
     """
 
     def __init__(self, bot):
@@ -22,6 +22,11 @@ class Members(commands.Cog):
 
     @commands.command(pass_context=True)
     async def info(self, ctx):
+        """
+        Gets Auth data about a character
+        :param ctx:
+        :return:
+        """
         input_name = ctx.message.content[6:]
         char = EveCharacter.objects.get(character_name=input_name)
         main = char.character_ownership.user.profile.main_character
