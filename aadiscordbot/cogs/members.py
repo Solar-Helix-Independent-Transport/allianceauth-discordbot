@@ -12,6 +12,8 @@ from discord.colour import Color
 
 from allianceauth.eveonline.models import EveCharacter
 
+from aadiscordbot.cogs.utils.decorators import sender_has_perm
+
 class Members(commands.Cog):
     """
     All about users!
@@ -19,8 +21,9 @@ class Members(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-
+    
     @commands.command(pass_context=True)
+    @sender_has_perm('corputils.view_alliance_corpstats')
     async def info(self, ctx):
         """
         Gets Auth data about a character

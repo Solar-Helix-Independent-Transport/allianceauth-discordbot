@@ -12,7 +12,7 @@ import django
 import discord
 from .cogs.utils import context
 from django.conf import settings
-
+import django.db
 
 description = """
 AuthBot is watching...
@@ -48,15 +48,6 @@ class AuthBot(commands.Bot):
                 print(f"Failed to load cog {cog}", file=sys.stderr)
                 traceback.print_exc()
 
-    async def on_comand_error(self, ctx, error):
-        if isinstance(error, commands.NoPrivateMessage):
-            await ctx.author.send("This command cannot be used in Private Messages")
-        elif isinstance(error, commands.DisabledCommand):
-            await ctx.author.send("Sorry, this command is disabled.")
-        elif isinstance(error, commands.CommandInvokeError):
-            print("In {0}".format(ctx.command.qualified_name), file=sys.stderr)
-            traceback.print_tb(error.original.__traceback__)
-
     async def on_ready(self):
         if not hasattr(self, "currentuptime"):
             self.currentuptime = pendulum.now(tz="UTC")
@@ -68,7 +59,9 @@ class AuthBot(commands.Bot):
 
         if ctx.command is None:
             return
+        django.db.close_old_connections()
         await self.invoke(ctx)
+        django.db.close_old_connections()
 
     async def on_message(self, message):
         if message.author.bot:
