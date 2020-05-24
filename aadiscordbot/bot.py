@@ -51,7 +51,14 @@ class AuthBot(commands.Bot):
     async def on_ready(self):
         if not hasattr(self, "currentuptime"):
             self.currentuptime = pendulum.now(tz="UTC")
-        await self.change_presence(activity=discord.Game(name="Alliance Manager"))
+        activity = discord.Activity(name="Everything!",
+                                    application_id=0,
+                                    type=discord.ActivityType.watching,
+                                    state="Monitoring",
+                                    details="Waiting for Shenanigans!",
+                                    emoji={"name":":smiling_imp:"}
+                                    )
+        await self.change_presence(activity=activity)
         print("Ready")
 
     async def process_commands(self, message):

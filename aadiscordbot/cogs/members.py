@@ -27,8 +27,7 @@ class Members(commands.Cog):
     async def lookup(self, ctx):
         """
         Gets Auth data about a character
-        :param ctx:
-        :return:
+        Input: a Eve Character Name
         """
         input_name = ctx.message.content[8:]
         char = EveCharacter.objects.get(character_name=input_name)
@@ -49,14 +48,14 @@ class Members(commands.Cog):
 
         embed = Embed(title="Character Lookup")
         embed.colour = Color.blue()
-        embed.description =  "**{0}** is linked to **{1} [{2}]** ({3})".format(
+        embed.description =  "**{0}** is linked to **{1} [{2}]** (State: {3})".format(
                                                                         char, 
                                                                         main,
                                                                         main.corporation_ticker,
                                                                         state
                                                                     )
 
-        alt_list = [ "[{}](https://evewho.com/character/{}) *[[{}](https://evewho.com/corporation/{})]*".format(a[0], a[2], a[1], a[3]) for a in alts]
+        alt_list = [ "[{}](https://evewho.com/character/{}) *[ [{}](https://evewho.com/corporation/{}) ]*".format(a[0], a[2], a[1], a[3]) for a in alts]
         for idx,names in enumerate([alt_list[i:i + 6] for i in range(0, len(alt_list), 6)]):
             if idx < 21:
                 embed.add_field(
@@ -84,12 +83,6 @@ class Members(commands.Cog):
         )
 
         return await ctx.send(embed=embed)
-
-
-        await ctx.send(
-           
-        )
-
 
 
 def setup(bot):
