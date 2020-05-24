@@ -66,6 +66,8 @@ class AuthBot(commands.Bot):
     async def on_message(self, message):
         if message.author.bot:
             return
+        if message.channel.id not in settings.DISCORD_BOT_CHANNELS:
+            return
         await self.process_commands(message)
 
     async def on_resumed(self):
@@ -73,12 +75,16 @@ class AuthBot(commands.Bot):
 
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.BadArgument):
+            print(error)
             await ctx.send(error)
         elif isinstance(error, commands.MissingRequiredArgument):
+            print(error)
             await ctx.send(error)
         elif isinstance(error, commands.NoPrivateMessage):
+            print(error)
             await ctx.send(error)
         elif isinstance(error, commands.CommandInvokeError):
+            print(error)
             return await ctx.send(error)
         elif isinstance(error, commands.BotMissingPermissions):
             await ctx.send(
@@ -87,6 +93,7 @@ class AuthBot(commands.Bot):
         elif isinstance(error, commands.MissingPermissions):
             await ctx.send("Sorry, you do not have permission to do that here.")
         elif isinstance(error, commands.NotOwner):
+            print(error)
             await ctx.send(error)
         elif isinstance(error, commands.CommandOnCooldown):
             await ctx.message.add_reaction(chr(0x274C))

@@ -1,5 +1,5 @@
 import os
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "isfauth.settings.local")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "myauth.settings.local")
 
 from aadiscordbot import launcher
 import click

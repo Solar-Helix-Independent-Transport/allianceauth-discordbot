@@ -1,12 +1,14 @@
 import logging
 import pendulum
 import traceback
+import re
 
 import discord
 
 from discord.ext import commands
 from discord.embeds import Embed
 from discord.colour import Color
+from django.conf import settings
 
 #log = logging.getLogger(__name__)
 
@@ -32,13 +34,26 @@ class About(commands.Cog):
         embed.colour = Color.blue()
 
         embed.description = "This is a multi-de-functional discord bot tailored specifically for Alliance Auth Shenanigans."
+        regex = r"^(.+)\/d.+"
 
+        matches = re.finditer(regex, settings.DISCORD_CALLBACK_URL, re.MULTILINE)
+
+        for m in matches:
+            url = m.groups()
         embed.set_footer(text="Lovingly developed for Init.™ by AaronKable")
 
         embed.add_field(
             name="Number of Servers:", value=len(self.bot.guilds), inline=True
         )
-        embed.add_field(name="Happy Customers:", value=len(self.bot.users), inline=True)
+        embed.add_field(name="Unwilling Monitorees:", value=len(self.bot.users), inline=True)
+        embed.add_field(
+            name="Auth Link", value="[{}]({})".format(url[0], url[0]), inline=False
+        )
+
+        embed.add_field(
+            name="Creator", value="<@318309023478972417>", inline=False
+        )
+
         return await ctx.send(embed=embed)
 
     @commands.command(hidden=True)
