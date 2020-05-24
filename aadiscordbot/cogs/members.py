@@ -57,9 +57,18 @@ class Members(commands.Cog):
                                                                     )
 
         alt_list = [ "[{}](https://evewho.com/character/{}) *[[{}](https://evewho.com/corporation/{})]*".format(a[0], a[2], a[1], a[3]) for a in alts]
-        embed.add_field(
-            name="All Linked Characters", value=", ".join(alt_list), inline=False
-        )
+        for idx,names in enumerate([alt_list[i:i + 6] for i in range(0, len(alt_list), 6)]):
+            if idx < 21:
+                embed.add_field(
+                    name="Linked Characters {}".format(idx+1), value=", ".join(names), inline=False
+                )
+            else:
+                embed.add_field(
+                    name="Linked Characters {} **( Discord Limited There are More )**".format(idx), value=", ".join(names), inline=False
+                )
+                break
+
+
         embed.add_field(
             name="Groups", value=", ".join(groups), inline=False
         )
