@@ -9,6 +9,7 @@ from discord.embeds import Embed
 from discord.colour import Color
 
 #log = logging.getLogger(__name__)
+from django.conf import settings
 
 from allianceauth.eveonline.models import EveCharacter
 
@@ -29,6 +30,9 @@ class Members(commands.Cog):
         Gets Auth data about a character
         Input: a Eve Character Name
         """
+        if ctx.message.channel.id not in settings.ADMIN_DISCORD_BOT_CHANNELS:
+            return
+
         input_name = ctx.message.content[8:]
         char = EveCharacter.objects.get(character_name=input_name)
         main = char.character_ownership.user.profile.main_character

@@ -24,6 +24,7 @@ initial_cogs = (
     "cogs.about",
     "cogs.members",
     "cogs.timers",
+    "cogs.sov",
 )
 
 class AuthBot(commands.Bot):
@@ -59,6 +60,7 @@ class AuthBot(commands.Bot):
                                     emoji={"name":":smiling_imp:"}
                                     )
         await self.change_presence(activity=activity)
+        self.remove_command('help')
         print("Ready")
 
     async def process_commands(self, message):
@@ -72,8 +74,6 @@ class AuthBot(commands.Bot):
 
     async def on_message(self, message):
         if message.author.bot:
-            return
-        if message.channel.id not in settings.DISCORD_BOT_CHANNELS:
             return
         await self.process_commands(message)
 
