@@ -75,7 +75,7 @@ class AuthBot(commands.Bot):
     async def on_message(self, message):
         if message.author.bot:
             return
-        if message.channel.id not in settings.ADMIN_DISCORD_BOT_CHANNELS or message.channel.id not in settings.SOV_DISCORD_BOT_CHANNELS:
+        if (message.channel.id not in settings.ADMIN_DISCORD_BOT_CHANNELS) or (message.channel.id not in settings.SOV_DISCORD_BOT_CHANNELS):
             return
         await self.process_commands(message)
 
