@@ -198,6 +198,7 @@ class Sov(commands.Cog):
 
         output = {}
         base_str = "**{}** ADM:{}"
+        urls = {}
         for k, h in sorted(out_array.items(), key=lambda e: e[1]['adm']):
             show = False
             if h['region_id'] in include_regions:
@@ -215,10 +216,15 @@ class Sov(commands.Cog):
                                         h['adm']
                                     )
                                 )
-                    
-        
+                if h['region_name'].replace(" ", "_") not in urls:
+                    urls[h['region_name'].replace(" ", "_")] = []
+                urls[h['region_name'].replace(" ", "_")].append(
+                                        h['system_name'].replace(" ", "_")
+                                )
+        url = "https://evemaps.dotlan.net/map/{}/{}#adm"
         for k, v in output.items():
-            await ctx.send("__{}__\n{}".format(k, "\n".join(v)))
+            await ctx.send("__{}__\n{}\n{}".format(k, "\n".join(v), url.format(k.replace(" ", "_"),",".join(urls[k.replace(" ", "_")]))))
+            
         return True
 
 
