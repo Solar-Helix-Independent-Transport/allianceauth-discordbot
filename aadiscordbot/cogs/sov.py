@@ -70,6 +70,7 @@ class Sov(commands.Cog):
 
         hits = []
         names = []
+        alliances = []
         dt_comp = datetime.datetime.utcnow().replace(tzinfo=timezone.utc) + datetime.timedelta(hours=1)
 
 
@@ -78,7 +79,7 @@ class Sov(commands.Cog):
             if start:
                 if start < dt_comp:
                     if  s.get('solar_system_id') in hit_ids["s"] or s.get('alliance_id') in hit_ids["a"]:
-                        names.append(s.get('alliance_id'))
+                        alliances.append(s.get('alliance_id'))
                         names.append(s.get('solar_system_id'))
                         names.append(s.get('structure_type_id'))
                         hits.append(s)
@@ -86,6 +87,11 @@ class Sov(commands.Cog):
         if len(names) == 0:
             await ctx.send(":sad: Nothing found for '{}'".format(name_search))
             return True
+
+        names_alli = {}
+        for a in set(alliances):
+            res = providers.esi.client.Alliance.get_alliances_alliance_id(alliance_id=a).result()
+            names_alli[a] = res.get("ticker")
 
         names = providers.esi.client.Universe.post_universe_names(ids=list(set(names))).result()
         
@@ -95,12 +101,18 @@ class Sov(commands.Cog):
 
         for hit in hits:
             hit['system_name'] = nms[hit.get('solar_system_id')]
-            hit['structure'] = nms[hit.get('structure_type_id')]
-            hit['alliance_name'] = nms[hit.get('alliance_id')]
+            if hit.get("structure_type_id") == 32226:
+                hit['structure'] = "TCU"
+            elif hit.get("structure_type_id") == 32458:
+                hit['structure'] = "IHUB"
+            else:
+                hit['structure'] = "¯\_(ツ)_/¯"
+
+            hit['alliance_name'] = names_alli[hit.get('alliance_id')]
 
 
         output = []
-        base_str = "**{}** {} [**{}**] Vulnerable{}"
+        base_str = "**{}** {} (ADM {})[**{}**] Vulnerable{}"
         dt_now = pendulum.now(tz="UTC")
         for h in sorted(hits, key=lambda k: k['vulnerable_start_time']):
             time = ""
@@ -116,6 +128,7 @@ class Sov(commands.Cog):
                 base_str.format(
                     h['system_name'],
                     h['structure'],
+                    h['vulnerability_occupancy_level'],
                     h['alliance_name'],
                     time
                 )
