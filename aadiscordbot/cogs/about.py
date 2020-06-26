@@ -50,9 +50,9 @@ class About(commands.Cog):
             name="Auth Link", value="[{}]({})".format(url[0], url[0]), inline=False
         )
 
-        embed.add_field(
-            name="Creator", value="<@318309023478972417>", inline=False
-        )
+        #embed.add_field(
+        #    name="Creator", value="<@318309023478972417>", inline=False
+        #)
 
         return await ctx.send(embed=embed)
 
