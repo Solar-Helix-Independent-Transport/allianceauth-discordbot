@@ -180,26 +180,41 @@ class Sov(commands.Cog):
             return True
 
         systems = [k for k, v in names.items()]
-        systems = providers.esi.client.Universe.post_universe_names(ids=systems).result()
-        
+        constelations = {}
+        region_id = {}
         for n in systems:
-            names[n.get("id")]["name"] = n.get("name")
-
-        output = []
-        base_str = "**{}** ADM:{}"
-        for k, h in sorted(names.items(), key=lambda e: e[1]['adm']):
-            output.append(
-                base_str.format(
-                    h['name'],
-                    h['adm']
-                )
-            )
+            system = providers.esi.client.Universe.get_universe_systems_system_id(system_id=n).result()
+            names[n]["name"] = system.get("name")
+            names[n]["constellation_id"] = system.get("constellation_id")
+            if system.get("constellation_id") not in constelations:
+                constelations[system.get("constellation_id")] = {}
         
-        n = 40
-        chunks = [list(output[i * n:(i + 1) * n]) for i in range((len(output) + n - 1) // n )]
+        for c,v in constelations.items():
+            const = providers.esi.client.Universe.get_universe_constellations_constellation_id(constellation_id=c).result()
+            region = providers.esi.client.Universe.get_universe_regions_region_id(region_id=const.get("region_id")).result()
+            v["region_id"] = const.get("region_id")
+            v["region_name"] = region.get("name")
+            v["constellation_name"] = const.get("name")
+        
+        out_array = {}
+        for k, v in names.items():
+            out_array[k] = {**v, **constelations[v["constellation_id"]]}
 
-        for c in chunks:
-            await ctx.send("\n".join(c))
+        output = {}
+        base_str = "**{}** ADM:{}"
+        for k, h in sorted(out_array.items(), key=lambda e: e[1]['adm']):
+            if h['region_name'] not in output:
+                output[h['region_name']] = []
+            output[h['region_name']].append(
+                                base_str.format(
+                                    h['name'],
+                                    h['adm']
+                                )
+                            )
+                
+        
+        for k, v in output.items():
+            await ctx.send("__{}__\n{}".format(k, "\n".join(v)))
         return True
 
 
