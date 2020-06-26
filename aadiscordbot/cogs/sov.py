@@ -142,5 +142,66 @@ class Sov(commands.Cog):
         return True
 
 
+class Sov(commands.Cog):
+    """
+    All about sov!
+    """
+
+    def __init__(self, bot):
+        self.bot = bot
+    
+    @commands.command(pass_context=True)
+    async def lowadm(self, ctx):
+        """
+        Timers for region/constelation/system/alliance
+        """
+        if ctx.message.channel.id not in settings.ADM_DISCORD_BOT_CHANNELS:
+            return False
+
+        await ctx.trigger_typing()
+
+        own_ids = [1900696668]
+
+        sov_structures = providers.esi.client.Sovereignty.get_sovereignty_structures().result()
+
+        names = {}
+        alliances = []
+        for s in sov_structures:
+            if  s.get('alliance_id') in own_ids:
+                if s.get('vulnerability_occupancy_level'):
+                    if s.get('vulnerability_occupancy_level') < 5:
+                        names[s.get('solar_system_id')] = {
+                            "name": s.get('solar_system_id'),
+                            "adm": s.get('vulnerability_occupancy_level') 
+                        }
+
+        if len(names) == 0:
+            await ctx.send("All above 5! :ok_hand:")
+            return True
+
+        systems = [k for k, v in names.items()]
+        systems = providers.esi.client.Universe.post_universe_names(ids=systems).result()
+        
+        for n in systems:
+            names[n.get("id")]["name"] = n.get("name")
+
+        output = []
+        base_str = "**{}** ADM:{}"
+        for k, h in sorted(names.items(), key=lambda e: e[1]['adm']):
+            output.append(
+                base_str.format(
+                    h['name'],
+                    h['adm']
+                )
+            )
+        
+        n = 40
+        chunks = [list(output[i * n:(i + 1) * n]) for i in range((len(output) + n - 1) // n )]
+
+        for c in chunks:
+            await ctx.send("\n".join(c))
+        return True
+
+
 def setup(bot):
     bot.add_cog(Sov(bot))
