@@ -160,7 +160,11 @@ class Sov(commands.Cog):
 
         await ctx.trigger_typing()
 
-        own_ids = [1900696668]
+        own_ids = [1900696668] # init
+
+        include_regions = [10000058] # fountain
+        include_systems = [30004040] # b-d
+        include_constel = [20000585] # MPJW-6
 
         sov_structures = providers.esi.client.Sovereignty.get_sovereignty_structures().result()
 
@@ -171,7 +175,7 @@ class Sov(commands.Cog):
                 if s.get('vulnerability_occupancy_level'):
                     if s.get('vulnerability_occupancy_level') < 5:
                         names[s.get('solar_system_id')] = {
-                            "name": s.get('solar_system_id'),
+                            "system_name": s.get('solar_system_id'),
                             "adm": s.get('vulnerability_occupancy_level') 
                         }
 
@@ -184,7 +188,8 @@ class Sov(commands.Cog):
         region_id = {}
         for n in systems:
             system = providers.esi.client.Universe.get_universe_systems_system_id(system_id=n).result()
-            names[n]["name"] = system.get("name")
+            names[n]["system_name"] = system.get("name")
+            names[n]["system_id"] = system.get("system_id")
             names[n]["constellation_id"] = system.get("constellation_id")
             if system.get("constellation_id") not in constelations:
                 constelations[system.get("constellation_id")] = {}
@@ -203,15 +208,23 @@ class Sov(commands.Cog):
         output = {}
         base_str = "**{}** ADM:{}"
         for k, h in sorted(out_array.items(), key=lambda e: e[1]['adm']):
-            if h['region_name'] not in output:
-                output[h['region_name']] = []
-            output[h['region_name']].append(
-                                base_str.format(
-                                    h['name'],
-                                    h['adm']
+            show = False
+            if h['region_id'] in include_regions:
+                show = True
+            elif h['constellation_id'] in include_constel:
+                show = True
+            elif h['system_id'] in include_systems:
+                show = True
+            if show:
+                if h['region_name'] not in output:
+                    output[h['region_name']] = []
+                output[h['region_name']].append(
+                                    base_str.format(
+                                        h['system_name'],
+                                        h['adm']
+                                    )
                                 )
-                            )
-                
+                    
         
         for k, v in output.items():
             await ctx.send("__{}__\n{}".format(k, "\n".join(v)))
