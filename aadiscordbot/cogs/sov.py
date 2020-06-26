@@ -140,15 +140,6 @@ class Sov(commands.Cog):
         for c in chunks:
             await ctx.send("\n".join(c))
         return True
-
-
-class Sov(commands.Cog):
-    """
-    All about sov!
-    """
-
-    def __init__(self, bot):
-        self.bot = bot
     
     @commands.command(pass_context=True)
     async def lowadm(self, ctx):
