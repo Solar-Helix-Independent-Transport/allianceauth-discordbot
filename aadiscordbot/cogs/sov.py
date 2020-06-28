@@ -224,7 +224,14 @@ class Sov(commands.Cog):
         url = "https://evemaps.dotlan.net/map/{}/{}#adm"
         for k, v in output.items():
             await ctx.send("__{}__\n{}\n{}".format(k, "\n".join(v), url.format(k.replace(" ", "_"),",".join(urls[k.replace(" ", "_")]))))
-            
+        embed = Embed(title="Disclamer")
+        embed.set_thumbnail(
+            url="https://avatars3.githubusercontent.com/u/39349660?s=200&v=4"
+        )
+        embed.colour = Color.red()
+        embed.description = "Due to an ESI bug this data appears to only update once a day at around 2200-2300 Eve Time\n[For more info please see this issue](https://github.com/esi/esi-issues/issues/1092)"
+        await ctx.send(embed=embed)
+
         return True
 
 

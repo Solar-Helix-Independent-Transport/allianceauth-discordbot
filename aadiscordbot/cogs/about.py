@@ -4,6 +4,7 @@ import traceback
 import re
 
 import discord
+import aadiscordbot
 
 from discord.ext import commands
 from discord.embeds import Embed
@@ -48,6 +49,9 @@ class About(commands.Cog):
         embed.add_field(name="Unwilling Monitorees:", value=len(self.bot.users), inline=True)
         embed.add_field(
             name="Auth Link", value="[{}]({})".format(url[0], url[0]), inline=False
+        )
+        embed.add_field(
+            name="Version", value="{}@{}".format(aadiscordbot.__version__, aadiscordbot.__branch__), inline=False
         )
 
         #embed.add_field(

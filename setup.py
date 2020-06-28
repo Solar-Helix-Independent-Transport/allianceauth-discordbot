@@ -1,6 +1,6 @@
 import os
 from setuptools import find_packages, setup
-
+import aadiscordbot
 with open(os.path.join(os.path.dirname(__file__), 'README.md')) as readme:
     README = readme.read()
 
@@ -8,7 +8,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='allianceauth-discordbot',
-    version='0.0.0.1a1',
+    version=aadiscordbot.__version__,
     packages=find_packages(),
     include_package_data=True,
     license='GNU General Public License v3 (GPLv3)',
