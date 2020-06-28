@@ -224,7 +224,7 @@ class Sov(commands.Cog):
         url = "https://evemaps.dotlan.net/map/{}/{}#adm"
         for k, v in output.items():
             await ctx.send("__{}__\n{}\n{}".format(k, "\n".join(v), url.format(k.replace(" ", "_"),",".join(urls[k.replace(" ", "_")]))))
-        embed = Embed(title="Disclamer")
+        embed = Embed(title="Disclaimer")
         embed.set_thumbnail(
             url="https://avatars3.githubusercontent.com/u/39349660?s=200&v=4"
         )
