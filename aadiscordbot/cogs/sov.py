@@ -164,7 +164,7 @@ class Sov(commands.Cog):
         for s in sov_structures:
             if  s.get('alliance_id') in own_ids:
                 if s.get('vulnerability_occupancy_level'):
-                    if s.get('vulnerability_occupancy_level') < 5:
+                    if s.get('vulnerability_occupancy_level') < 4.5:
                         names[s.get('solar_system_id')] = {
                             "system_name": s.get('solar_system_id'),
                             "adm": s.get('vulnerability_occupancy_level') 
@@ -229,7 +229,7 @@ class Sov(commands.Cog):
             url="https://avatars3.githubusercontent.com/u/39349660?s=200&v=4"
         )
         embed.colour = Color.red()
-        embed.description = "Due to an ESI bug this data appears to only update once a day at around 2200-2300 Eve Time\n[For more info please see this issue](https://github.com/esi/esi-issues/issues/1092)"
+        embed.description = "Due to an ESI bug this data might only update once a day at around 2200-2300 Eve Time. **YMMY**\n[For more info please see this issue](https://github.com/esi/esi-issues/issues/1092)"
         await ctx.send(embed=embed)
 
         return True
