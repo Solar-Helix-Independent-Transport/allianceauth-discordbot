@@ -12,7 +12,7 @@ from discord.colour import Color
 from django.conf import settings
 
 from allianceauth.eveonline.models import EveCharacter
-
+from allianceauth.eveonline.evelinks import evewho
 from aadiscordbot.cogs.utils.decorators import sender_has_perm
 
 class Members(commands.Cog):
@@ -88,6 +88,53 @@ class Members(commands.Cog):
 
         return await ctx.send(embed=embed)
 
+    @commands.command(pass_context=True)    
+    @sender_has_perm('corputils.view_alliance_corpstats')
+    async def altcorp(self, ctx):
+        """
+        Gets Auth data about an altcorp
+        Input: a Eve Character Name
+        """
+        if ctx.message.channel.id not in settings.ADMIN_DISCORD_BOT_CHANNELS:
+            return
+
+        input_name = ctx.message.content[9:]
+        chars = EveCharacter.objects.filter(corporation_name=input_name)
+        own_ids = [1900696668, 499005583] # init,Im
+        alts_in_corp = []
+        for c in chars:
+            if c.alliance_id not in own_ids:
+                alts_in_corp.append(c)
+
+        mains = {}
+        for a in alts_in_corp:
+            try:
+                main = a.character_ownership.user.profile.main_character
+                if main.character_id not in mains:
+                    mains[main.character_id] = [main,0]
+                mains[main.character_id][1]+=1
+                alt_corp_id = a.corporation_id
+            except:
+                pass
+        output = []
+        base_string = "[{}]({}) [ [{}]({}) ] has {} alt{}"
+        for k,m in mains.items():
+            output.append(
+                base_string.format(
+                    m[0],
+                    evewho.character_url(m[0].character_id),
+                    m[0].corporation_ticker,
+                    evewho.corporation_url(m[0].corporation_id),
+                    m[1],
+                    "s" if m[1]>1 else ""
+                )
+            )
+
+        for strings in [output[i:i + 10] for i in range(0, len(output), 10)]:  
+            embed = Embed(title=input_name)
+            embed.colour = Color.blue()
+            embed.description = "\n".join(strings)
+            await ctx.send(embed=embed)
 
 def setup(bot):
     bot.add_cog(Members(bot))
