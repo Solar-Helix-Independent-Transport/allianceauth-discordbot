@@ -25,6 +25,7 @@ initial_cogs = (
     "cogs.members",
     "cogs.timers",
     "cogs.sov",
+    "cogs.zkill",
 )
 
 class AuthBot(commands.Bot):
