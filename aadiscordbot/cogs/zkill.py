@@ -102,6 +102,9 @@ class Zkill(commands.Cog):
 
     @commands.command(pass_context=True)
     async def shitnacks(self, ctx):
+        if ctx.message.channel.id not in settings.ADMIN_DISCORD_BOT_CHANNELS:
+            return
+             
         results = await self.get_zkill_pages(ctx)
         url = "https://zkillboard.com/kill/{}/"
         kills = []
