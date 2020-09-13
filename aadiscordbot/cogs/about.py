@@ -10,6 +10,7 @@ from discord.ext import commands
 from discord.embeds import Embed
 from discord.colour import Color
 from django.conf import settings
+from discord.utils import get
 
 #log = logging.getLogger(__name__)
 
@@ -96,6 +97,43 @@ class About(commands.Cog):
                     hook.name,
                     hook.url
                 ))
+
+        return await ctx.message.delete()
+
+    @commands.command(hidden=True)
+    async def new_channel(self, ctx):
+        """
+        create a new channel and assign some roles to it.
+        """
+        if ctx.message.author.id != 318309023478972417: #https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+            return await ctx.message.delete()
+
+        await ctx.message.channel.trigger_typing()
+        
+        input_string = ctx.message.content[13:].split(' ')
+        if len(input_string) != 2:
+            return await ctx.message.delete()
+
+        everyone_role = ctx.guild.default_role
+        target_role = get(ctx.guild.roles, name=input_string[1])
+        target_cat = get(ctx.guild.channels, id=int(input_string[0]))
+        channel_name = target_role.name
+
+        found_channel=False
+
+        for channel in ctx.guild.channels:   # TODO replace with channel lookup not loop
+                    if channel.name.lower() == channel_name.lower():
+                        found_channel=True
+
+        if not found_channel:
+            channel = await ctx.guild.create_text_channel(channel_name.lower(),
+                                                          category=target_cat) # make channel
+
+            await channel.set_permissions(everyone_role, read_messages=False,
+                                                         send_messages=False)
+
+            await channel.set_permissions(target_role, read_messages=True,
+                                                       send_messages=True)
 
         return await ctx.message.delete()
 
