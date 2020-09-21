@@ -1,7 +1,7 @@
 import os
 from setuptools import find_packages, setup
 
-from aa-discordbot import __version__
+from aadiscordbot import __version__
 
 
 
