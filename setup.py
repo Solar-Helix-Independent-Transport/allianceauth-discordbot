@@ -1,7 +1,7 @@
 import os
 from setuptools import find_packages, setup
 
-from aa-discordbot import __version__
+from aadiscordbot import __version__
 
 
 
@@ -14,7 +14,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='allianceauth-discordbot',
-    version='__version__',
+    version=__version__,
     packages=find_packages(),
     include_package_data=True,
     license='GNU General Public License v3 (GPLv3)',
