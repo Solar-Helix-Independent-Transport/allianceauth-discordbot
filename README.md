@@ -2,29 +2,44 @@
 
 aa-discordbot for [Alliance Auth](https://gitlab.com/allianceauth/allianceauth).
 
+## Features
+
+* Bot Framework, easily extensible with more Cogs
+* Integration with Alliance Auth, able to fetch data directly from its django project.
+* Current Hooks
+  * !about - Bot Information and Statistics
+  * !auth - A direct link to the Auth Install to catch users familiar with other bots.
+  * !timers - The next upcoming timer
+  * !lookup - Fetch a users Main, Affiliation, State, Groups and linked characters from any character.
+
 ## Installation
 
-**Python 3.5.3 or higher is required**
+* Install the app with your venv active
 
-With your venv active,
-
+```bash
 pip install `pip install -U git+https://github.com/pvyParts/allianceauth-discordbot.git`
-
-pip install requirements
 ```
-discord.py
-pendulum
-aioredis
-aiohttp
+
+* Add `'aa-discordbot',` to your INSTALLED_APPS list in local.py.
+
+* Add the below lines to your `local.py` settings file, Changing the channel IDs to yours.
+
+ ```python
+## Settings for Allianceauth-Discordbot
+DISCORD_BOT_CHANNELS = 111,222,333
 ```
-Add `'aa-discordbot',` to your local.py, run migrations a restart auth.
 
-create a new file in your auth project file `bot_conf.py` in the same directory as the manage.py file
-copy the contents of the bot_conf.py file from in the root of the repo
+* Run migrations `python manage.py migrate` (There should be none from this app)
+* Gather your staticfiles `python manage.py collectstatic` (There should be none from this app)
 
-amend your supervisor.conf, update paths as req'd and add `authbot` to the launch group at the end of the conf
+* Fetch `bot_conf.py` from the Git Repo into the root of your AA install, beside `manage.py`
 
-to include
+```bash
+wget https://raw.githubusercontent.com/pvyParts/allianceauth-discordbot/master/bot_conf.py
+```
+
+* Amend your supervisor.conf, correcting paths as required and add `authbot` to the launch group at the end of the conf
+
 ```
 [program:authbot]
 command=/home/allianceserver/venv/auth/bin/python /home/allianceserver/myauth/bot_conf.py
@@ -36,6 +51,13 @@ autorestart=true
 stopwaitsecs=600
 stdout_logfile=/home/allianceserver/myauth/log/authbot.log
 stderr_logfile=/home/allianceserver/myauth/log/authbot.log
+```
+
+```
+#This block should already exist, add authbot to it
+[group:myauth]
+programs=beat,worker,gunicorn,authbot
+priority=999
 ```
 
 
