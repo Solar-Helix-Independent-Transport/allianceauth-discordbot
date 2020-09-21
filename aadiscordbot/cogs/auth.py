@@ -35,13 +35,13 @@ class Auth(commands.Cog):
         embed.colour = Color.blue()
 
         embed.description = "All Authentication functions for this Discord server are handled through our Alliance Auth install"
+        
         regex = r"^(.+)\/d.+"
 
         matches = re.finditer(regex, settings.DISCORD_CALLBACK_URL, re.MULTILINE)
 
         for m in matches:
             url = m.groups()
-        embed.set_footer(text="Lovingly developed for Init.™ by AaronKable")
 
         embed.add_field(
             name="Auth Link", value="[{}]({})".format(url[0], url[0]), inline=False
