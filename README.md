@@ -26,7 +26,18 @@ pip install `pip install -U git+https://github.com/pvyParts/allianceauth-discord
 
  ```python
 ## Settings for Allianceauth-Discordbot
-DISCORD_BOT_CHANNELS = 111,222,333
+# Admin Commands
+ADMIN_DISCORD_BOT_CHANNELS = 111,222,333 
+# Sov Commands
+SOV_DISCORD_BOT_CHANNELS = 111,222,333
+# Adm Commands
+ADM_DISCORD_BOT_CHANNELS = 111,222,333
+
+DISCORD_BOT_SOV_STRUCTURE_OWNER_IDS = [1000169] # Centre for Advanced Studies example
+
+DISCORD_BOT_ADM_REGIONS = [10000002] # The Forge Example
+DISCORD_BOT_ADM_SYSTEMS = [30000142] # Jita Example
+DISCORD_BOT_ADM_CONSTELLATIONS = [20000020] # Kimitoro Example
 ```
 
 * Run migrations `python manage.py migrate` (There should be none from this app)

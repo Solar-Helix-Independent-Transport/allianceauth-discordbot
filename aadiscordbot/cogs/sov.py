@@ -266,11 +266,11 @@ class Sov(commands.Cog):
 
         await ctx.trigger_typing()
 
-        own_ids = [1900696668] # init
+        own_ids = settings.DISCORD_BOT_SOV_STRUCTURE_OWNER_IDS
 
-        include_regions = [10000058] # fountain
-        include_systems = [30004040] # b-d
-        include_constel = [20000585] # MPJW-6
+        include_regions = settings.DISCORD_BOT_ADM_REGIONS
+        include_systems = settings.DISCORD_BOT_ADM_SYSTEMS
+        include_constel = settings.DISCORD_BOT_ADM_CONSTELLATIONS
 
         sov_structures = providers.esi.client.Sovereignty.get_sovereignty_structures().result()
 
