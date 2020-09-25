@@ -77,7 +77,7 @@ class About(commands.Cog):
         """
         Returns the webhooks for the channel
         """
-        if ctx.message.author.id != 318309023478972417: #https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+        if ctx.message.author.id != DISCORD_BOT_ADMIN_USER: #https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
             return await ctx.message.delete()
 
         hooks = await ctx.message.channel.webhooks()
