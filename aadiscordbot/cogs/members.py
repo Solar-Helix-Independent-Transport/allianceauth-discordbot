@@ -8,6 +8,9 @@ from discord.ext import commands
 from discord.embeds import Embed
 from discord.colour import Color
 
+from .app_settings import authanalitics_active
+
+
 #log = logging.getLogger(__name__)
 
 from allianceauth.eveonline.models import EveCharacter
@@ -38,13 +41,19 @@ class Members(commands.Cog):
             discord = "<@{}>".format(char.character_ownership.user.discord.uid)
         except:
             discord = "unknown"
-        alts = char.character_ownership.user.character_ownerships.all().select_related('character', 'zkill').values_list('character__character_name', 'character__corporation_ticker', 'character__character_id', 'character__corporation_id', 'character__zkill__zk_12m', 'character__zkill__zk_3m')
-        zk12 = 0
-        zk3 = 0
-        for alt in alts:
-            if alt[4]:
-                zk12 += alt[4]
-                zk3 += alt[5]
+        
+        if authanalitics_active():
+            alts = char.character_ownership.user.character_ownerships.all().select_related('character', 'zkill').values_list('character__character_name', 'character__corporation_ticker', 'character__character_id', 'character__corporation_id', 'character__zkill__zk_12m', 'character__zkill__zk_3m')
+            zk12 = 0
+            zk3 = 0
+            for alt in alts:
+                if alt[4]:
+                    zk12 += alt[4]
+                    zk3 += alt[5]
+        elif:
+            alts = char.character_ownership.user.character_ownerships.all().select_related('character').values_list('character__character_name', 'character__corporation_ticker', 'character__character_id', 'character__corporation_id')
+            zk12 = "Not Installed"
+            zk3 = "Not Installed"
 
         embed = Embed(title="Character Lookup")
         embed.colour = Color.blue()
