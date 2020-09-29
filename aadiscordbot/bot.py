@@ -2,23 +2,27 @@ import logging
 import sys
 import traceback
 import os
+
 import aiohttp
 import aioredis
 import pendulum
-
-from discord.ext import commands
-import django
+import json
+from celery import shared_task
+from .cogs.utils import context
 
 import discord
-from .cogs.utils import context
+from discord.ext import commands, tasks
+
+import django
 from django.conf import settings
 import django.db
+
 
 description = """
 AuthBot is watching...
 """
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 initial_cogs = (
     "cogs.about",
@@ -26,7 +30,7 @@ initial_cogs = (
     "cogs.timers",
     "cogs.auth",
     "cogs.sov",
-    "cogs.zkill",
+    "cogs.zkill"
 )
 
 class AuthBot(commands.Bot):
@@ -62,7 +66,7 @@ class AuthBot(commands.Bot):
                                     emoji={"name":":smiling_imp:"}
                                     )
         await self.change_presence(activity=activity)
-        self.remove_command('help')
+        await self.queue_consumer.start()
         print("Ready")
 
     async def process_commands(self, message):
@@ -80,6 +84,29 @@ class AuthBot(commands.Bot):
         if (message.channel.id not in settings.ADMIN_DISCORD_BOT_CHANNELS) and (message.channel.id not in settings.ADM_DISCORD_BOT_CHANNELS) and (message.channel.id not in settings.SOV_DISCORD_BOT_CHANNELS):
             return
         await self.process_commands(message)
+
+    @tasks.loop(seconds=30.0)
+    async def queue_consumer(self):
+        logger.error("Queue Consumer has Looped")
+        task = await get_task()
+        logger.error(task)
+        logger.error(task["body"])
+        logger.error(task["headers"])
+        task_headers = task["headers"]
+        logger.error(task_headers["task"])
+        logger.error(task_headers["argsrepr"])
+        task_header_args = task_headers["argsrepr"].strip('][').split(', ') 
+        logger.error(task_header_args[0])
+        logger.error("i have debugd")
+
+        if task_headers["task"]  == 'aadiscordbot.bot.send_channel_message':
+            logger.debug("I am running a Send Channel Message Task")
+            await self.get_channel(task_header_args[0]).send(task_header_args[1])
+        elif task_headers["task"] == 'aadiscordbot.bot.send_direct_message':
+            logger.debug("i am running a Direct Message Task")
+            await self.get_user(task_header_args[0]).send(task_header_args[1])
+        else:
+            pass
 
     async def on_resumed(self):
         print("Resumed...")
@@ -111,3 +138,13 @@ class AuthBot(commands.Bot):
 
     def run(self):
         super().run(settings.DISCORD_BOT_TOKEN, reconnect=True)
+
+## Fetching Tasks from celery queue for the message sending loop
+async def get_task(queuename="celery"):
+    logger.error("im getting a task")
+    r = await aioredis.create_redis(settings.BROKER_URL)
+    task = await r.rpoplpush(queuename, queuename)
+    logger.error('ive got a task')
+    logger.error(task)
+    task_decoded = task.decode()
+    return json.loads(task_decoded)
