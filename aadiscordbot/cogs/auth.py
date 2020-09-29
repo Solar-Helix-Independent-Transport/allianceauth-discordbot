@@ -10,6 +10,8 @@ from discord.embeds import Embed
 from discord.colour import Color
 from django.conf import settings
 
+from aadiscordbot.app_settings import get_site_url
+
 #log = logging.getLogger(__name__)
 
 class Auth(commands.Cog):
@@ -36,15 +38,10 @@ class Auth(commands.Cog):
 
         embed.description = "All Authentication functions for this Discord server are handled through our Alliance Auth install"
         
-        regex = r"^(.+)\/d.+"
-
-        matches = re.finditer(regex, settings.DISCORD_CALLBACK_URL, re.MULTILINE)
-
-        for m in matches:
-            url = m.groups()
+        url = get_site_url()
 
         embed.add_field(
-            name="Auth Link", value="[{}]({})".format(url[0], url[0]), inline=False
+            name="Auth Link", value="[{}]({})".format(url, url), inline=False
         )
 
         return await ctx.send(embed=embed)
