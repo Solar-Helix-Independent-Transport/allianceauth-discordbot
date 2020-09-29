@@ -110,12 +110,9 @@ class AuthBot(commands.Bot):
             elif task_headers["task"] == 'aadiscordbot.tasks.send_direct_message':
                 logger.error("i am running a Direct Message Task")
                 user_id = int(task_header_args[0])
-
-                if await self.get_user(user_id).dm_channel != None:
-                    await self.get_user(user_id).dm_channel.send(task_header_args[1])
-                else:
-                    await self.get_user(user_id).create_dm()
-                    await self.get_user(user_id).dm_channel.send(task_header_args[1])
+                
+                await self.get_user(user_id).create_dm()
+                await self.get_user(user_id).dm_channel.send(task_header_args[1])
 
             else:
                 logged.error("i did nothing")
