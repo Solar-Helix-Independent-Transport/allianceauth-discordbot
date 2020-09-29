@@ -41,6 +41,13 @@ DISCORD_BOT_ADM_SYSTEMS = [30000142] # Jita Example
 DISCORD_BOT_ADM_CONSTELLATIONS = [20000020] # Kimitoro Example
 ```
 
+* Add the below lines to `myauth/celery.py` somewhere above the `app.autodiscover_tasks...` line
+
+```python
+## Route AA Discord bot tasks away from AllianceAuth
+app.conf.task_routes = {'aadiscordbot.tasks.*': {'queue': 'aadiscordbot'}}
+```
+
 * Run migrations `python manage.py migrate` (There should be none from this app)
 * Gather your staticfiles `python manage.py collectstatic` (There should be none from this app)
 
