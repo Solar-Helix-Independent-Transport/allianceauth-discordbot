@@ -13,3 +13,6 @@ def get_site_url():  # regex sso url
 
 def authanalitics_active():
     return 'authanalitics' in settings.INSTALLED_APPS
+
+def timezones_active():
+    return 'timezones' in settings.INSTALLED_APPS
