@@ -95,18 +95,23 @@ class AuthBot(commands.Bot):
         task_headers = task["headers"]
         logger.error(task_headers["task"])
         logger.error(task_headers["argsrepr"])
-        task_header_args = task_headers["argsrepr"].strip('][').split(', ') 
+        task_header_args = task_headers["argsrepr"].strip(']()[').split(', ') 
         logger.error(task_header_args[0])
+        logger.error(task_header_args[1])
         logger.error("i have debugd")
 
-        if task_headers["task"]  == 'aadiscordbot.bot.send_channel_message':
-            logger.debug("I am running a Send Channel Message Task")
-            await self.get_channel(task_header_args[0]).send(task_header_args[1])
-        elif task_headers["task"] == 'aadiscordbot.bot.send_direct_message':
-            logger.debug("i am running a Direct Message Task")
+        if task_headers["task"] == 'aadiscordbot.tasks.send_channel_message':
+            logger.error("I am running a Send Channel Message Task")
+            channel_id = int(task_header_args[0])
+            await self.get_channel(channel_id).send(task_header_args[1])
+
+        elif task_headers["task"] == 'aadiscordbot.tasks.send_direct_message':
+            logger.error("i am running a Direct Message Task")
             await self.get_user(task_header_args[0]).send(task_header_args[1])
+
         else:
-            pass
+            logged.error("i did nothing")
+        
 
     async def on_resumed(self):
         print("Resumed...")
@@ -140,11 +145,15 @@ class AuthBot(commands.Bot):
         super().run(settings.DISCORD_BOT_TOKEN, reconnect=True)
 
 ## Fetching Tasks from celery queue for the message sending loop
-async def get_task(queuename="celery"):
+async def get_task(queuename="aadiscordbot"):
     logger.error("im getting a task")
-    r = await aioredis.create_redis(settings.BROKER_URL)
-    task = await r.rpoplpush(queuename, queuename)
-    logger.error('ive got a task')
-    logger.error(task)
-    task_decoded = task.decode()
-    return json.loads(task_decoded)
+    try:
+        r = await aioredis.create_redis(settings.BROKER_URL)
+        task = await r.rpoplpush(queuename, queuename)
+        logger.error('ive got a task')
+        logger.error(task)
+        task_decoded = task.decode()
+        return json.loads(task_decoded)
+    except Exception as e:
+        logger.error(e)
+        pass
