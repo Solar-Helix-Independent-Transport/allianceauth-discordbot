@@ -32,7 +32,7 @@ class Timers(commands.Cog):
         """
         next_timer = Timer.objects.filter(corp_timer=False,
                                           eve_time__gte=datetime.datetime.utcnow().replace(tzinfo=timezone.utc)).first()
-        time_untill = pendulum.now(tz="UTC").diff_for_humans(
+        time_until = pendulum.now(tz="UTC").diff_for_humans(
                             next_timer.eve_time , absolute=True
                         )
         embed = Embed(title="Next Timer")
@@ -65,4 +65,7 @@ class Timers(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(Timers(bot))
+    if timerboard_active():
+        bot.add_cog(Timers(bot))
+    else
+        logger.debug("Timerboard not installed")

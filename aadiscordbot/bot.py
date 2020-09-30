@@ -30,8 +30,7 @@ initial_cogs = (
     "cogs.timers",
     "cogs.auth",
     "cogs.sov",
-    "cogs.zkill",
-    "cogs.time"
+    "cogs.time",
 )
 
 class AuthBot(commands.Bot):

@@ -253,7 +253,6 @@ class Sov(commands.Cog):
 
         for c in chunks:
             await ctx.send("\n".join(c))
-        await ctx.send("Sorry for the Spam, Bonga wanted it! :see_no_evil:")
         return True
 
     @commands.command(pass_context=True)

@@ -146,7 +146,7 @@ class Members(commands.Cog):
 
         input_name = ctx.message.content[9:]
         chars = EveCharacter.objects.filter(corporation_name=input_name)
-        own_ids = [1900696668, 499005583] # init,Im
+        own_ids = [settings.DISCORD_BOT_MEMBER_ALLIANCES]
         alts_in_corp = []
         for c in chars:
             if c.alliance_id not in own_ids:
