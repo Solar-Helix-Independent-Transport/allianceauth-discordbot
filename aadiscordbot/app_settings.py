@@ -16,3 +16,6 @@ def authanalitics_active():
 
 def timezones_active():
     return 'timezones' in settings.INSTALLED_APPS
+
+def timerboard_active():
+    return 'allianceauth.timerboard' in settings.INSTALLED_APPS
