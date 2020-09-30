@@ -39,6 +39,7 @@ setup(
         "pendulum",
         "aioredis",
         "aiohttp",
+        "click"
     ],
 
 )
