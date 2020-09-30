@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 async def send_channel_message(bot, args):
     logger.debug("I am running a Send Channel Message Task")
     channel_id = int(args[0])
-    await bot.get_channel(channel_id).send(args[1])
+    await bot.get_channel(channel_id).send(args[1].strip("'"))
 
 async def send_direct_message(bot, args):
     logger.debug("i am running a Direct Message Task")
