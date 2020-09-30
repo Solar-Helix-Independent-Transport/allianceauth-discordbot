@@ -87,36 +87,29 @@ class AuthBot(commands.Bot):
 
     @tasks.loop(seconds=30.0)
     async def queue_consumer(self):
-        logger.error("Queue Consumer has Looped")
+        logger.debug("Queue Consumer has Looped")
         try:
             task = await get_task()
-            logger.error(task)
-            logger.error(task["body"])
-            logger.error(task["headers"])
             task_headers = task["headers"]
-            logger.error(task_headers["task"])
-            logger.error(task_headers["argsrepr"])
             task_header_args = task_headers["argsrepr"].strip(']()[').split(', ') 
-            logger.error(task_header_args[0])
-            logger.error(task_header_args[1])
-            logger.error("i have debugd")
 
             if task_headers["task"] == 'aadiscordbot.tasks.send_channel_message':
-                logger.error("I am running a Send Channel Message Task")
+                logger.debug("I am running a Send Channel Message Task")
                 channel_id = int(task_header_args[0])
                 await self.get_channel(channel_id).send(task_header_args[1])
 
             elif task_headers["task"] == 'aadiscordbot.tasks.send_direct_message':
-                logger.error("i am running a Direct Message Task")
+                logger.debug("i am running a Direct Message Task")
                 user_id = int(task_header_args[0])
                 
                 await self.get_user(user_id).create_dm()
                 await self.get_user(user_id).dm_channel.send(task_header_args[1])
 
             else:
-                logged.error("i did nothing")
+                logged.debug("i did nothing this loop")
 
         except Exception as e:
+            logger.error("Queue Consumer Failed")
             logger.error(e)
         
 
@@ -153,14 +146,20 @@ class AuthBot(commands.Bot):
 
 ## Fetching Tasks from celery queue for the message sending loop
 async def get_task(queuename="aadiscordbot"):
-    logger.error("im getting a task")
+    logger.debug("im getting a task")
     try:
         r = await aioredis.create_redis(settings.BROKER_URL)
         task = await r.lpop(queuename)
-        logger.error('ive got a task')
-        logger.error(task)
-        task_decoded = task.decode()
-        return json.loads(task_decoded)
+        logger.debug('ive got a task')
+        if task != None:
+            logger.debug(task)
+            task_decoded = task.decode()
+            return json.loads(task_decoded)
+        else:
+            logger.debug("No tasks in queue")
+            return False
+
     except Exception as e:
+        logger.error("Get Task Failed")
         logger.error(e)
         pass
