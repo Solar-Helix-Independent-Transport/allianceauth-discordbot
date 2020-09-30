@@ -12,7 +12,7 @@ from django.conf import settings
 
 from aadiscordbot.app_settings import get_site_url
 
-#log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 class Auth(commands.Cog):
     """

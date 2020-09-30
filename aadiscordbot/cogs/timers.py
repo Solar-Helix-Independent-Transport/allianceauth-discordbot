@@ -11,9 +11,11 @@ from discord.colour import Color
 import datetime
 from django.utils import timezone
 
-#log = logging.getLogger(__name__)
-
 from allianceauth.timerboard.models import Timer
+from aadiscordbot.app_settings import timerboard_active
+
+logger = logging.getLogger(__name__)
+
 
 class Timers(commands.Cog):
     """
@@ -67,5 +69,5 @@ class Timers(commands.Cog):
 def setup(bot):
     if timerboard_active():
         bot.add_cog(Timers(bot))
-    else
+    else:
         logger.debug("Timerboard not installed")
