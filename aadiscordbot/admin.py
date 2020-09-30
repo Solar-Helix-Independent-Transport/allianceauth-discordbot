@@ -15,14 +15,14 @@ class ServersAdmin(admin.ModelAdmin):
 
 @admin.register(Channels)
 class ChannelsAdmin(admin.ModelAdmin):
-    list_display = ('server_name', 'channel_id', 'channel_name')
+    list_display = ('server_id', 'channel_id', 'channel_name')
     ordering = ('channel_name',)
 
     search_fields = ('channel_name',)
 
     @staticmethod
-    def server_name(obj):
+    def server_name():
         try:
-            return obj.server_name
+            return channel_id.server_id
         except Exception as e:
             logger.error(e)
