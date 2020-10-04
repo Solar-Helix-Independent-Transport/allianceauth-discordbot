@@ -14,8 +14,8 @@ class DiscordBot(models.Model):
 class Servers(models.Model):
     """Servers and their ID"""
 
-    server_id = models.PositiveBigIntegerField(primary_key=True)
-    server_name = models.CharField(max_length=100)
+    server = models.PositiveBigIntegerField(primary_key=True)
+    name = models.CharField(max_length=100)
 
     class Meta:
         verbose_name = 'Server'
@@ -27,13 +27,12 @@ class Servers(models.Model):
 class Channels(models.Model):
     """Channel IDs, Names and the Server they belong to"""
 
-    server_id = models.ForeignKey(Servers, on_delete=models.CASCADE)
-
-    channel_id = models.PositiveBigIntegerField(primary_key=True)
-    channel_name = models.CharField(max_length=100)
+    server = models.ForeignKey(Servers, on_delete=models.CASCADE)
+    channel = models.PositiveBigIntegerField(primary_key=True)
+    name = models.CharField(max_length=100)
 
     def __str__(self):
-        return '"{}" On "{}"'.format(self.channel_name, self.server_id.server_name)
+        return '"{}" On "{}"'.format(self.name, self.server.name)
 
     class Meta:
         verbose_name = 'Channel'

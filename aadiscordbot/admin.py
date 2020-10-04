@@ -8,21 +8,21 @@ logger = get_extension_logger(__name__)
 
 @admin.register(Servers)
 class ServersAdmin(admin.ModelAdmin):
-    list_display = ('server_id', 'server_name')
-    ordering = ('server_id',)
+    list_display = ('server', 'name')
+    ordering = ('name',)
 
-    search_fields = ('server_name',)
+    search_fields = ('name',)
 
 @admin.register(Channels)
 class ChannelsAdmin(admin.ModelAdmin):
-    list_display = ('server_id', 'channel_id', 'channel_name')
-    ordering = ('channel_name',)
+    list_display = ('server', 'channel', 'name', 'server_name')
+    ordering = ('name',)
 
-    search_fields = ('channel_name',)
+    search_fields = ('name','server_name',)
 
     @staticmethod
-    def server_name():
+    def server_name(obj):
         try:
-            return channel_id.server_id
+            return obj.server.name
         except Exception as e:
             logger.error(e)
