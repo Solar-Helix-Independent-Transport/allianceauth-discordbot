@@ -59,11 +59,12 @@ class Members(commands.Cog):
                 alts = char.character_ownership.user.character_ownerships.all().select_related('character').values_list('character__character_name', 'character__corporation_ticker', 'character__character_id', 'character__corporation_id')
                 zk12 = "Not Installed"
                 zk3 = "Not Installed" 
-                 
-            for alt in alts:
-                if alt[4]:
-                    zk12 += alt[4]
-                    zk3 += alt[5]
+            
+            if authanalitics_active():
+                for alt in alts:
+                    if alt[4]:
+                        zk12 += alt[4]
+                        zk3 += alt[5]
 
             embed = Embed(title="Character Lookup")
             embed.colour = Color.blue()
@@ -90,12 +91,13 @@ class Members(commands.Cog):
             embed.add_field(
                 name="Groups", value=", ".join(groups), inline=False
             )
-            embed.add_field(
-                name="12m Kills", value=zk12, inline=True
-            )
-            embed.add_field(
-                name="3m Kills", value=zk3, inline=True
-            )
+            if authanalitics_active():
+                embed.add_field(
+                    name="12m Kills", value=zk12, inline=True
+                )
+                embed.add_field(
+                    name="3m Kills", value=zk3, inline=True
+                )
 
             embed.add_field(
                 name="Discord Link", value=discord, inline=False
