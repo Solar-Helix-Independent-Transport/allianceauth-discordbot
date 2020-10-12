@@ -6,9 +6,11 @@ aa-discordbot for [Alliance Auth](https://gitlab.com/allianceauth/allianceauth).
 
 * Bot Framework, easily extensible with more Cogs
 * Integration with Alliance Auth, able to fetch data directly from its django project.
-* Current Hooks
+* Current Cogs
   * !about - Bot Information and Statistics
-  * !auth - A direct link to the Auth Install to catch users familiar with other bots.
+  * Auth
+    * !auth - A direct link to the Auth Install to catch users familiar with other bots.
+    * !orphans - Returns a list of users on this server, who are not known to AA
   * !timers - The next upcoming timer
   * !lookup - Fetch a users Main, Affiliation, State, Groups and linked characters from any character.
 
