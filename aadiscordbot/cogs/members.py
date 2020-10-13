@@ -36,7 +36,7 @@ class Members(commands.Cog):
         Input: a Eve Character Name
         """
         if ctx.message.channel.id not in settings.ADMIN_DISCORD_BOT_CHANNELS:
-            return
+            return await ctx.message.add_reaction(chr(0x1F44E))
 
         input_name = ctx.message.content[8:]
         char = EveCharacter.objects.get(character_name=input_name)
@@ -92,7 +92,7 @@ class Members(commands.Cog):
                 embed.add_field(
                     name="Groups", value=", ".join(groups), inline=False
                 )
-                
+
             if authanalitics_active():
                 embed.add_field(
                     name="12m Kills", value=zk12, inline=True
@@ -146,7 +146,7 @@ class Members(commands.Cog):
         Input: a Eve Character Name
         """
         if ctx.message.channel.id not in settings.ADMIN_DISCORD_BOT_CHANNELS:
-            return
+            return await ctx.message.add_reaction(chr(0x1F44E))
 
         input_name = ctx.message.content[9:]
         chars = EveCharacter.objects.filter(corporation_name=input_name)

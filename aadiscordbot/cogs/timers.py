@@ -32,6 +32,9 @@ class Timers(commands.Cog):
         :param ctx:
         :return:
         """
+        if ctx.message.channel.id not in settings.ADMIN_DISCORD_BOT_CHANNELS:
+            return await ctx.message.add_reaction(chr(0x1F44E))
+
         next_timer = Timer.objects.filter(corp_timer=False,
                                           eve_time__gte=datetime.datetime.utcnow().replace(tzinfo=timezone.utc)).first()
         time_until = pendulum.now(tz="UTC").diff_for_humans(

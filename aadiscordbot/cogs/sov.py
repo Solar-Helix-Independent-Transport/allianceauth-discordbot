@@ -32,7 +32,7 @@ class Sov(commands.Cog):
         Timers for region/constelation/system/alliance
         """
         if ctx.message.channel.id not in settings.SOV_DISCORD_BOT_CHANNELS:
-            return False
+            return await ctx.message.add_reaction(chr(0x1F44E))
 
         await ctx.trigger_typing()
 
@@ -147,7 +147,7 @@ class Sov(commands.Cog):
         Timers for region/constelation/system/alliance
         """
         if ctx.message.channel.id not in settings.SOV_DISCORD_BOT_CHANNELS:
-            return False
+            return await ctx.message.add_reaction(chr(0x1F44E))
 
         await ctx.trigger_typing()
 
@@ -261,7 +261,7 @@ class Sov(commands.Cog):
         Timers for region/constelation/system/alliance
         """
         if ctx.message.channel.id not in settings.ADM_DISCORD_BOT_CHANNELS:
-            return False
+            return await ctx.message.add_reaction(chr(0x1F44E))
 
         await ctx.trigger_typing()
 

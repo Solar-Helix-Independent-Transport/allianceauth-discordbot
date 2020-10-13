@@ -66,6 +66,9 @@ class About(commands.Cog):
         """
         Returns the uptime
         """
+        if ctx.message.author.id != settings.DISCORD_BOT_ADMIN_USER: #https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+            return await ctx.message.add_reaction(chr(0x1F44E))
+
         await ctx.send(
             pendulum.now(tz="UTC").diff_for_humans(
                 self.bot.currentuptime, absolute=True
@@ -78,7 +81,7 @@ class About(commands.Cog):
         Returns the webhooks for the channel
         """
         if ctx.message.author.id != settings.DISCORD_BOT_ADMIN_USER: #https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
-            return await ctx.message.delete()
+            return await ctx.message.add_reaction(chr(0x1F44E))
 
         hooks = await ctx.message.channel.webhooks()
         if len(hooks) ==0:
@@ -106,13 +109,13 @@ class About(commands.Cog):
         create a new channel and assign some roles to it.
         """
         if ctx.message.author.id != settings.DISCORD_BOT_ADMIN_USER: #https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
-            return await ctx.message.delete()
+            return await ctx.message.add_reaction(chr(0x1F44E))
 
         await ctx.message.channel.trigger_typing()
         
         input_string = ctx.message.content[13:].split(' ')
         if len(input_string) != 2:
-            return await ctx.message.delete()
+            return await ctx.message.add_reaction(chr(0x274C))
 
         everyone_role = ctx.guild.default_role
         target_role = get(ctx.guild.roles, name=input_string[1])
