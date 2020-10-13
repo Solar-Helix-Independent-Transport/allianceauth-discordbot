@@ -88,9 +88,11 @@ class Members(commands.Cog):
                     break
 
 
-            embed.add_field(
-                name="Groups", value=", ".join(groups), inline=False
-            )
+            if len(groups)>0:
+                embed.add_field(
+                    name="Groups", value=", ".join(groups), inline=False
+                )
+                
             if authanalitics_active():
                 embed.add_field(
                     name="12m Kills", value=zk12, inline=True
