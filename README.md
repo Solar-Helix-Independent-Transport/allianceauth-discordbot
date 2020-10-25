@@ -19,10 +19,10 @@ aa-discordbot for [Alliance Auth](https://gitlab.com/allianceauth/allianceauth).
 * Install the app with your venv active
 
 ```bash
-pip install `pip install -U git+https://github.com/pvyParts/allianceauth-discordbot.git`
+pip install -U git+https://github.com/pvyParts/allianceauth-discordbot.git
 ```
 
-* Add `'aa-discordbot',` to your INSTALLED_APPS list in local.py.
+* Add `'aadiscordbot',` to your INSTALLED_APPS list in local.py.
 
 * Add the below lines to your `local.py` settings file, Changing the channel IDs to yours.
 
