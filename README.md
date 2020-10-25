@@ -28,7 +28,7 @@ pip install -U git+https://github.com/pvyParts/allianceauth-discordbot.git
 
  ```python
 ## Settings for Allianceauth-Discordbot
-DISCORD_BOT_ADMIN_USER = 140706470856622080 #UserID of the Discord Admin, used for superadmin stuff
+DISCORD_BOT_ADMIN_USER = 140706470856622080 #This UserID is allowed to run any command
 # Admin Commands
 ADMIN_DISCORD_BOT_CHANNELS = 111,222,333
 # Sov Commands
