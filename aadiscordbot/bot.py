@@ -172,7 +172,7 @@ async def get_task(bot):
     try:
         task = await bot.redis.execute("brpop", queuename, *queue_keys, 1)
         if task != None:
-            logger.debug('ive got a task')
+            logger.info('ive got a task')
             logger.debug(task)
             return json.loads(task[1])
         else:
