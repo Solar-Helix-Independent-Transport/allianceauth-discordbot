@@ -2,40 +2,63 @@ import logging
 import sys
 import traceback
 import os
+
 import aiohttp
 import aioredis
 import pendulum
-
-from discord.ext import commands
-import django
+import json
+from celery import shared_task
+from .cogs.utils import context
+from . import bot_tasks
 
 import discord
-from .cogs.utils import context
+from discord.ext import commands, tasks
+
+import django
 from django.conf import settings
 import django.db
+
+import celery
 
 description = """
 AuthBot is watching...
 """
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 initial_cogs = (
     "cogs.about",
     "cogs.members",
     "cogs.timers",
     "cogs.auth",
+    "cogs.sov",
+    "cogs.time",
 )
+queuename="aadiscordbot"
+queue_keys = [f"{queuename}", 
+              f"{queuename}\x06\x161", 
+              f"{queuename}\x06\x162", 
+              f"{queuename}\x06\x163", 
+              f"{queuename}\x06\x164", 
+              f"{queuename}\x06\x165", 
+              f"{queuename}\x06\x166", 
+              f"{queuename}\x06\x167", 
+              f"{queuename}\x06\x168", 
+              f"{queuename}\x06\x169"]
 
 class AuthBot(commands.Bot):
     def __init__(self):
         client_id = settings.DISCORD_APP_ID
 
+        intents = discord.Intents.default()
+        intents.members = True
 
         super().__init__(
             command_prefix="!",
             description=description,
-        )
+            intents=intents,
+        )  
+
         self.redis = None
         self.redis = self.loop.run_until_complete(aioredis.create_pool(("localhost", 6379), minsize=5, maxsize=10))
         print('redis pool started', self.redis)
@@ -60,7 +83,8 @@ class AuthBot(commands.Bot):
                                     emoji={"name":":smiling_imp:"}
                                     )
         await self.change_presence(activity=activity)
-        print("Ready")
+        self.queue_runner.start()
+        logger.info("Ready")
 
     async def process_commands(self, message):
         ctx = await self.get_context(message, cls=context.Context)
@@ -74,9 +98,42 @@ class AuthBot(commands.Bot):
     async def on_message(self, message):
         if message.author.bot:
             return
-        if message.channel.id not in settings.DISCORD_BOT_CHANNELS:
-            return
         await self.process_commands(message)
+
+    @tasks.loop(seconds=30.0)
+    async def queue_runner(self):
+        logger.debug("Queue Runner started")
+        tasks = []
+        task = True
+        while task != False:
+            task = await get_task(self)
+            if task:
+                await self.queue_consumer(task)
+
+        logger.debug(f"Queue Runner ran {len(tasks)} tasks")
+
+        # do we want to process results?
+
+    async def queue_consumer(self, task):
+        logger.debug("Queue Consumer has started")
+        try:
+            task_headers = task["headers"]
+            task_header_args = task_headers["argsrepr"].strip(']()[').split(', ') 
+
+            if 'aadiscordbot.tasks.' in task_headers["task"]:
+                task = task_headers["task"].replace("aadiscordbot.tasks.", '')
+                task_function = getattr(bot_tasks, task, False)
+                if task_function:
+                    await task_function(self, task_header_args)
+                else:
+                    logger.debug("No bot_task for that auth_task?")
+            else:
+                logger.debug("i got an invalid auth_task")
+
+        except Exception as e:
+            logger.error("Queue Consumer Failed")
+            logger.error(e)
+        
 
     async def on_resumed(self):
         print("Resumed...")
@@ -108,3 +165,21 @@ class AuthBot(commands.Bot):
 
     def run(self):
         super().run(settings.DISCORD_BOT_TOKEN, reconnect=True)
+
+## Fetching Tasks from celery queue for the message sending loop
+async def get_task(bot):
+    logger.debug("im getting a task")
+    try:
+        task = await bot.redis.execute("brpop", queuename, *queue_keys, 1)
+        if task != None:
+            logger.info('ive got a task')
+            logger.debug(task)
+            return json.loads(task[1])
+        else:
+            logger.debug("No tasks in queue")
+            return False
+
+    except Exception as e:
+        logger.error("Get Task Failed")
+        logger.error(e)
+        pass

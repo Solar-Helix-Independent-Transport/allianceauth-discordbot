@@ -2,6 +2,10 @@ from allianceauth.services.modules.discord.models import DiscordUser
 from discord.ext import commands
 import functools
 
+#i dont want to do this, but the below object get wont work without it, investigate.
+import os
+os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
+
 def sender_has_perm(perm):
     def predicate(ctx):
         id = ctx.message.author.id

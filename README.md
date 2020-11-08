@@ -6,9 +6,11 @@ aa-discordbot for [Alliance Auth](https://gitlab.com/allianceauth/allianceauth).
 
 * Bot Framework, easily extensible with more Cogs
 * Integration with Alliance Auth, able to fetch data directly from its django project.
-* Current Hooks
+* Current Cogs
   * !about - Bot Information and Statistics
-  * !auth - A direct link to the Auth Install to catch users familiar with other bots.
+  * Auth
+    * !auth - A direct link to the Auth Install to catch users familiar with other bots.
+    * !orphans - Returns a list of users on this server, who are not known to AA
   * !timers - The next upcoming timer
   * !lookup - Fetch a users Main, Affiliation, State, Groups and linked characters from any character.
 
@@ -17,16 +19,36 @@ aa-discordbot for [Alliance Auth](https://gitlab.com/allianceauth/allianceauth).
 * Install the app with your venv active
 
 ```bash
-pip install `pip install -U git+https://github.com/pvyParts/allianceauth-discordbot.git`
+pip install -U git+https://github.com/pvyParts/allianceauth-discordbot.git
 ```
 
-* Add `'aa-discordbot',` to your INSTALLED_APPS list in local.py.
+* Add `'aadiscordbot',` to your INSTALLED_APPS list in local.py.
 
 * Add the below lines to your `local.py` settings file, Changing the channel IDs to yours.
 
  ```python
 ## Settings for Allianceauth-Discordbot
-DISCORD_BOT_CHANNELS = 111,222,333
+DISCORD_BOT_ADMIN_USER = 140706470856622080 #This UserID is allowed to run any command
+# Admin Commands
+ADMIN_DISCORD_BOT_CHANNELS = 111,222,333
+# Sov Commands
+SOV_DISCORD_BOT_CHANNELS = 111,222,333
+# Adm Commands
+ADM_DISCORD_BOT_CHANNELS = 111,222,333
+
+DISCORD_BOT_SOV_STRUCTURE_OWNER_IDS = [1000169] # Centre for Advanced Studies example
+DISCORD_BOT_MEMBER_ALLIANCES = 111,222,333 # A list of alliances to be considered "Mains"
+
+DISCORD_BOT_ADM_REGIONS = [10000002] # The Forge Example
+DISCORD_BOT_ADM_SYSTEMS = [30000142] # Jita Example
+DISCORD_BOT_ADM_CONSTELLATIONS = [20000020] # Kimitoro Example
+```
+
+* Add the below lines to `myauth/celery.py` somewhere above the `app.autodiscover_tasks...` line
+
+```python
+## Route AA Discord bot tasks away from AllianceAuth
+app.conf.task_routes = {'aadiscordbot.tasks.*': {'queue': 'aadiscordbot'}}
 ```
 
 * Run migrations `python manage.py migrate` (There should be none from this app)

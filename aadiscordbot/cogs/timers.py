@@ -11,9 +11,11 @@ from discord.colour import Color
 import datetime
 from django.utils import timezone
 
-#log = logging.getLogger(__name__)
-
 from allianceauth.timerboard.models import Timer
+from aadiscordbot.app_settings import timerboard_active
+
+logger = logging.getLogger(__name__)
+
 
 class Timers(commands.Cog):
     """
@@ -30,9 +32,12 @@ class Timers(commands.Cog):
         :param ctx:
         :return:
         """
+        if ctx.message.channel.id not in settings.ADMIN_DISCORD_BOT_CHANNELS:
+            return await ctx.message.add_reaction(chr(0x1F44E))
+
         next_timer = Timer.objects.filter(corp_timer=False,
                                           eve_time__gte=datetime.datetime.utcnow().replace(tzinfo=timezone.utc)).first()
-        time_untill = pendulum.now(tz="UTC").diff_for_humans(
+        time_until = pendulum.now(tz="UTC").diff_for_humans(
                             next_timer.eve_time , absolute=True
                         )
         embed = Embed(title="Next Timer")
@@ -65,4 +70,7 @@ class Timers(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(Timers(bot))
+    if timerboard_active():
+        bot.add_cog(Timers(bot))
+    else:
+        logger.debug("Timerboard not installed")
