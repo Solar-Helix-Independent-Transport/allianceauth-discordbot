@@ -14,7 +14,7 @@ class DiscordBot(models.Model):
 class Servers(models.Model):
     """Servers and their ID"""
 
-    server = models.PositiveBigIntegerField(primary_key=True)
+    server = models.BigIntegerField(primary_key=True)
     name = models.CharField(max_length=100)
 
     class Meta:
@@ -28,7 +28,7 @@ class Channels(models.Model):
     """Channel IDs, Names and the Server they belong to"""
 
     server = models.ForeignKey(Servers, on_delete=models.CASCADE)
-    channel = models.PositiveBigIntegerField(primary_key=True)
+    channel = models.BigIntegerField(primary_key=True)
     name = models.CharField(max_length=100)
 
     def __str__(self):
