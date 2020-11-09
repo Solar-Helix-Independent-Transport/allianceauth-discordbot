@@ -118,7 +118,7 @@ class AuthBot(commands.Bot):
         logger.debug("Queue Consumer has started")
         try:
             task_headers = task["headers"]
-            task_header_args = task_headers["argsrepr"].strip(']()[').split(', ') 
+            task_header_args = eval(task_headers["argsrepr"])
 
             if 'aadiscordbot.tasks.' in task_headers["task"]:
                 task = task_headers["task"].replace("aadiscordbot.tasks.", '')
