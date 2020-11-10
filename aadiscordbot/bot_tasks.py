@@ -1,7 +1,16 @@
 import logging
 from discord.utils import get
+from discord.ext import tasks
 
 logger = logging.getLogger(__name__)
+
+@tasks.loop()
+async def run_tasks(bot):
+    if len(bot.tasks) > 0:
+        task, args = bot.tasks.pop(0)
+        await task(bot, args)
+    else:
+        run_tasks.stop()
 
 async def send_channel_message(bot, args):
     logger.debug("I am running a Send Channel Message Task")

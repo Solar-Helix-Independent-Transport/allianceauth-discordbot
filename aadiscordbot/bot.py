@@ -3,11 +3,12 @@ import sys
 import traceback
 import os
 
+import asyncio
 import aiohttp
 import aioredis
 import pendulum
 import json
-from celery import shared_task
+
 from .cogs.utils import context
 from . import bot_tasks
 
@@ -18,7 +19,9 @@ import django
 from django.conf import settings
 import django.db
 
-import celery
+from kombu import Connection, Queue, Consumer
+from socket import timeout
+import concurrent.futures
 
 description = """
 AuthBot is watching...
@@ -64,6 +67,14 @@ class AuthBot(commands.Bot):
         print('redis pool started', self.redis)
         self.client_id = client_id
         self.session = aiohttp.ClientSession(loop=self.loop)
+        self.tasks = []
+
+        self.message_connection = Connection('redis://localhost:6379/0')
+        queues = []
+        for que in queue_keys:
+            queues.append(Queue(que))
+        self.message_consumer = Consumer(self.message_connection, queues, callbacks=[self.on_queue_message], accept=['json'])
+
         django.setup()        
         for cog in initial_cogs:
             try:
@@ -71,6 +82,29 @@ class AuthBot(commands.Bot):
             except Exception as e:
                 print(f"Failed to load cog {cog}", file=sys.stderr)
                 traceback.print_exc()
+
+    def on_queue_message(self, body, message):
+        print('RECEIVED MESSAGE: {0!r}'.format(body))
+        try:    
+            task_headers = message.headers
+
+            if 'aadiscordbot.tasks.' in task_headers["task"]:
+                task = task_headers["task"].replace("aadiscordbot.tasks.", '')
+                task_function = getattr(bot_tasks, task, False)
+                if task_function:
+                    self.tasks.append((task_function, body[0]))
+                    if not bot_tasks.run_tasks.is_running():
+                        bot_tasks.run_tasks.start(self)
+                else:
+                    logger.debug("No bot_task for that auth_task?")
+            else:
+                logger.debug("i got an invalid auth_task")
+
+        except Exception as e:
+            logger.error("Queue Consumer Failed")
+            logger.error(e, exc_info=1)
+                
+        message.ack()
 
     async def on_ready(self):
         if not hasattr(self, "currentuptime"):
@@ -83,7 +117,9 @@ class AuthBot(commands.Bot):
                                     emoji={"name":":smiling_imp:"}
                                     )
         await self.change_presence(activity=activity)
-        self.queue_runner.start()
+
+        self.poll_queue.start()
+
         logger.info("Ready")
 
     async def process_commands(self, message):
@@ -100,19 +136,16 @@ class AuthBot(commands.Bot):
             return
         await self.process_commands(message)
 
-    @tasks.loop(seconds=30.0)
-    async def queue_runner(self):
-        logger.debug("Queue Runner started")
-        tasks = []
-        task = True
-        while task != False:
-            task = await get_task(self)
-            if task:
-                await self.queue_consumer(task)
-
-        logger.debug(f"Queue Runner ran {len(tasks)} tasks")
-
-        # do we want to process results?
+    @tasks.loop(seconds=1.0)
+    async def poll_queue(self):
+        message_avail = True
+        while message_avail:
+            try:
+                with self.message_consumer:
+                    self.message_connection.drain_events(timeout=0.01)
+            except timeout as e:
+                #logging.exception(e)
+                message_avail = False
 
     async def queue_consumer(self, task):
         logger.debug("Queue Consumer has started")
@@ -132,7 +165,7 @@ class AuthBot(commands.Bot):
 
         except Exception as e:
             logger.error("Queue Consumer Failed")
-            logger.error(e)
+            logger.error(e, exc_info=1)
         
 
     async def on_resumed(self):
