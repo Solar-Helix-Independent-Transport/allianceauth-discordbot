@@ -36,6 +36,7 @@ initial_cogs = (
     "cogs.auth",
     "cogs.sov",
     "cogs.time",
+    "cogs.eastereggs",
 )
 queuename="aadiscordbot"
 queue_keys = [f"{queuename}", 
