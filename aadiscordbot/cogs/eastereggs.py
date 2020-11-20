@@ -41,7 +41,7 @@ class EasterEggs(commands.Cog):
         if birthday_user == "":
             birthday_user = ctx.message.author.mention
         else:
-            return
+            pass
 
         payload = f"Happy Birthday {birthday_user}"
         return await ctx.send(payload)
