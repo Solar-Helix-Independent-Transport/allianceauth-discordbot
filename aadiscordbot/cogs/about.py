@@ -12,6 +12,7 @@ from discord.colour import Color
 from django.conf import settings
 from discord.utils import get
 
+from .. import app_settings 
 #log = logging.getLogger(__name__)
 
 class About(commands.Cog):
@@ -66,7 +67,7 @@ class About(commands.Cog):
         """
         Returns the uptime
         """
-        if ctx.message.author.id != settings.DISCORD_BOT_ADMIN_USER: #https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+        if ctx.message.author.id not in app_settings.get_admins(): #https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
             return await ctx.message.add_reaction(chr(0x1F44E))
 
         await ctx.send(
@@ -80,7 +81,7 @@ class About(commands.Cog):
         """
         Returns the webhooks for the channel
         """
-        if ctx.message.author.id != settings.DISCORD_BOT_ADMIN_USER: #https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+        if ctx.message.author.id not in app_settings.get_admins(): #https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
             return await ctx.message.add_reaction(chr(0x1F44E))
 
         hooks = await ctx.message.channel.webhooks()
@@ -108,7 +109,7 @@ class About(commands.Cog):
         """
         create a new channel in a category.
         """
-        if ctx.message.author.id != settings.DISCORD_BOT_ADMIN_USER: #https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+        if ctx.message.author.id not in app_settings.get_admins(): #https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
             return await ctx.message.add_reaction(chr(0x1F44E))
 
         await ctx.message.channel.trigger_typing()
@@ -142,7 +143,7 @@ class About(commands.Cog):
         """
         add a role from a channel.
         """
-        if ctx.message.author.id != settings.DISCORD_BOT_ADMIN_USER: #https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+        if ctx.message.author.id not in app_settings.get_admins(): #https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
             return await ctx.message.add_reaction(chr(0x1F44E))
 
         await ctx.message.channel.trigger_typing()
@@ -165,7 +166,7 @@ class About(commands.Cog):
         """
         remove a role from a channel.
         """
-        if ctx.message.author.id != settings.DISCORD_BOT_ADMIN_USER: #https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+        if ctx.message.author.id not in app_settings.get_admins(): #https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
             return await ctx.message.add_reaction(chr(0x1F44E))
 
         await ctx.message.channel.trigger_typing()

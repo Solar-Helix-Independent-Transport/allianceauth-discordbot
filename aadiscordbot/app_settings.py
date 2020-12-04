@@ -19,3 +19,10 @@ def timezones_active():
 
 def timerboard_active():
     return 'allianceauth.timerboard' in settings.INSTALLED_APPS
+
+def get_admins():
+    admin = getattr(settings, 'DISCORD_BOT_ADMIN_USER', [])
+    if isinstance(admin, int):
+        return [admin]
+    else:
+        return admin
