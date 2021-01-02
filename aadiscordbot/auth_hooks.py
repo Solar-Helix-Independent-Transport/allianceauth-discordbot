@@ -2,7 +2,7 @@ from . import urls
 from allianceauth import hooks
 from allianceauth.services.hooks import MenuItemHook, UrlHook
 from allianceauth.authentication.models import UserProfile, State
-
+from . import app_settings
 """
 class CeleryMenu(MenuItemHook):
     def __init__(self):
@@ -25,3 +25,7 @@ def register_menu():
 def register_url():
     return UrlHook(urls, 'celeryanalytics', r'^celeryanalytics/')
 """
+
+@hooks.register('discord_cogs_hook')
+def register_cogs():
+    return app_settings.DISCORD_BOT_COGS

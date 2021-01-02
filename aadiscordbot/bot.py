@@ -19,6 +19,7 @@ import django
 from django.conf import settings
 import django.db
 
+from allianceauth import hooks
 from kombu import Connection, Queue, Consumer
 from socket import timeout
 import concurrent.futures
@@ -30,15 +31,15 @@ AuthBot is watching...
 logger = logging.getLogger(__name__)
 
 queuename="aadiscordbot"
-queue_keys = [f"{queuename}", 
-              f"{queuename}\x06\x161", 
-              f"{queuename}\x06\x162", 
-              f"{queuename}\x06\x163", 
-              f"{queuename}\x06\x164", 
-              f"{queuename}\x06\x165", 
-              f"{queuename}\x06\x166", 
-              f"{queuename}\x06\x167", 
-              f"{queuename}\x06\x168", 
+queue_keys = [f"{queuename}",
+              f"{queuename}\x06\x161",
+              f"{queuename}\x06\x162",
+              f"{queuename}\x06\x163",
+              f"{queuename}\x06\x164",
+              f"{queuename}\x06\x165",
+              f"{queuename}\x06\x166",
+              f"{queuename}\x06\x167",
+              f"{queuename}\x06\x168",
               f"{queuename}\x06\x169"]
 
 class AuthBot(commands.Bot):
@@ -52,7 +53,7 @@ class AuthBot(commands.Bot):
             command_prefix="!",
             description=description,
             intents=intents,
-        )  
+        )
 
         self.redis = None
         self.redis = self.loop.run_until_complete(aioredis.create_pool((getattr(settings, "REDIS_URL", "localhost"), 6379), minsize=5, maxsize=10))
@@ -67,17 +68,18 @@ class AuthBot(commands.Bot):
             queues.append(Queue(que))
         self.message_consumer = Consumer(self.message_connection, queues, callbacks=[self.on_queue_message], accept=['json'])
 
-        django.setup()        
-        for cog in app_settings.DISCORD_BOT_COGS:
-            try:
-                self.load_extension("aadiscordbot.{0}".format(cog))
-            except Exception as e:
-                print(f"Failed to load cog {cog}", file=sys.stderr)
-                traceback.print_exc()
+        django.setup()
+        for hook in hooks.get_hooks("discord_cogs_hook"):
+            for cog in hook():
+                try:
+                    self.load_extension(cog)
+                except Exception as e:
+                    print(f"Failed to load cog {cog}", file=sys.stderr)
+                    traceback.print_exc()
 
     def on_queue_message(self, body, message):
         print('RECEIVED MESSAGE: {0!r}'.format(body))
-        try:    
+        try:
             task_headers = message.headers
 
             if 'aadiscordbot.tasks.' in task_headers["task"]:
@@ -95,7 +97,7 @@ class AuthBot(commands.Bot):
         except Exception as e:
             logger.error("Queue Consumer Failed")
             logger.error(e, exc_info=1)
-                
+
         message.ack()
 
     async def on_ready(self):
@@ -158,7 +160,7 @@ class AuthBot(commands.Bot):
         except Exception as e:
             logger.error("Queue Consumer Failed")
             logger.error(e, exc_info=1)
-        
+
 
     async def on_resumed(self):
         print("Resumed...")

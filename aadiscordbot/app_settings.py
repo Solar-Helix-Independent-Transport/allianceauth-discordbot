@@ -32,11 +32,11 @@ def get_admins():
     else:
         return admin
 
-DISCORD_BOT_COGS = getattr(settings, 'DISCORD_BOT_COGS',[ "cogs.about",
-                                                          "cogs.members",
-                                                          "cogs.timers",
-                                                          "cogs.auth",
-                                                          "cogs.sov",
-                                                          "cogs.time",
-                                                          "cogs.eastereggs",
-                                                          "cogs.remind",])
+DISCORD_BOT_COGS = getattr(settings, 'DISCORD_BOT_COGS',[ "aadiscordbot.cogs.about",
+                                                          "aadiscordbot.cogs.members",
+                                                          "aadiscordbot.cogs.timers",
+                                                          "aadiscordbot.cogs.auth",
+                                                          "aadiscordbot.cogs.sov",
+                                                          "aadiscordbot.cogs.time",
+                                                          "aadiscordbot.cogs.eastereggs",
+                                                          "aadiscordbot.cogs.remind",])
