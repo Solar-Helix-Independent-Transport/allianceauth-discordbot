@@ -31,3 +31,12 @@ def get_admins():
         return [admin]
     else:
         return admin
+
+DISCORD_BOT_COGS = getattr(settings, 'DISCORD_BOT_COGS',[ "cogs.about",
+                                                          "cogs.members",
+                                                          "cogs.timers",
+                                                          "cogs.auth",
+                                                          "cogs.sov",
+                                                          "cogs.time",
+                                                          "cogs.eastereggs",
+                                                          "cogs.remind",])
