@@ -10,7 +10,7 @@ import pendulum
 import json
 
 from .cogs.utils import context
-from . import bot_tasks
+from . import bot_tasks, app_settings
 
 import discord
 from discord.ext import commands, tasks
@@ -29,16 +29,6 @@ AuthBot is watching...
 
 logger = logging.getLogger(__name__)
 
-initial_cogs = (
-    "cogs.about",
-    "cogs.members",
-    "cogs.timers",
-    "cogs.auth",
-    "cogs.sov",
-    "cogs.time",
-    "cogs.eastereggs",
-    "cogs.remind",
-)
 queuename="aadiscordbot"
 queue_keys = [f"{queuename}", 
               f"{queuename}\x06\x161", 
@@ -78,7 +68,7 @@ class AuthBot(commands.Bot):
         self.message_consumer = Consumer(self.message_connection, queues, callbacks=[self.on_queue_message], accept=['json'])
 
         django.setup()        
-        for cog in initial_cogs:
+        for cog in app_settings.DISCORD_BOT_COGS:
             try:
                 self.load_extension("aadiscordbot.{0}".format(cog))
             except Exception as e:

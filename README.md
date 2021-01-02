@@ -68,10 +68,23 @@ DISCORD_BOT_ADM_REGIONS = [10000002] # The Forge Example
 DISCORD_BOT_ADM_SYSTEMS = [30000142] # Jita Example
 DISCORD_BOT_ADM_CONSTELLATIONS = [20000020] # Kimitoro Example
 ```
+* Optional Settings
+ ```python
+# configure the bots cogs.
+DISCORD_BOT_COGS =[ "cogs.about",
+                    "cogs.members",
+                    "cogs.timers",
+                    "cogs.auth",
+                    "cogs.sov",
+                    "cogs.time",
+                    "cogs.eastereggs",
+                    "cogs.remind",]
+```
 
 * Add the below lines to `myauth/celery.py` somewhere above the `app.autodiscover_tasks...` line
 
 ```python
+
 ## Route AA Discord bot tasks away from AllianceAuth
 app.conf.task_routes = {'aadiscordbot.tasks.*': {'queue': 'aadiscordbot'}}
 ```
