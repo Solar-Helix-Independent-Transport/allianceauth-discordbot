@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 import os
 import sys
-import click
 import asyncio
 import contextlib
 import logging
 
 from .bot import AuthBot
+
 
 def run_bot():
     loop = asyncio.get_event_loop()
@@ -14,5 +14,3 @@ def run_bot():
 
     bot = AuthBot()
     bot.run()
-
-
