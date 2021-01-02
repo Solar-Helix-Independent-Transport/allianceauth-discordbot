@@ -37,6 +37,10 @@ AA-Discordbot for [Alliance Auth](https://gitlab.com/allianceauth/allianceauth).
 
 ## Installation
 
+* Update your [Discord Developer Application](https://discord.com/developers/applications) to include the Privileged Intents that we call. Please add Server Members and Presence (for future development).
+
+![screenshot](https://imgur.com/3Sr4yFZ)
+
 * Install the app with your venv active
 
 ```bash
