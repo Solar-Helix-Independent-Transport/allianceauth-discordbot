@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 
+
 class DiscordBot(models.Model):
     """Meta model for app permissions"""
 
@@ -10,6 +11,7 @@ class DiscordBot(models.Model):
         permissions = ( 
             ('basic_access', 'Can access this app'), 
         )
+
 
 class Servers(models.Model):
     """Servers and their ID"""
@@ -22,7 +24,8 @@ class Servers(models.Model):
         verbose_name_plural = 'Servers'
 
     def __str__(self):
-        return '{}'.format(self.server_name)
+        return '{}'.format(self.name)
+
 
 class Channels(models.Model):
     """Channel IDs, Names and the Server they belong to"""
