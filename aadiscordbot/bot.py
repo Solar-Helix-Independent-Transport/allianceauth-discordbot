@@ -65,7 +65,7 @@ class AuthBot(commands.Bot):
         )  
 
         self.redis = None
-        self.redis = self.loop.run_until_complete(aioredis.create_pool(("localhost", 6379), minsize=5, maxsize=10))
+        self.redis = self.loop.run_until_complete(aioredis.create_pool((getattr(settings, "REDIS_URL", "localhost"), 6379), minsize=5, maxsize=10))
         print('redis pool started', self.redis)
         self.client_id = client_id
         self.session = aiohttp.ClientSession(loop=self.loop)
