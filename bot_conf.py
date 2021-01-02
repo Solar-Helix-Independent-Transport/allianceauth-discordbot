@@ -4,7 +4,7 @@ import asyncio
 from aadiscordbot import launcher
 
 
-def main(ctx):
+def main():
     loop = asyncio.get_event_loop()
     launcher.run_bot()
 
