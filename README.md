@@ -108,7 +108,7 @@ priority=999
 ```
 
 ## Using AA-Discordbot from my project
-https://github.com/pvyParts/allianceauth-discordbot/blob/master/aadiscordbot/tasks.py
+[aadiscordbot/tasks.py](https://github.com/pvyParts/allianceauth-discordbot/blob/master/aadiscordbot/tasks.py)
 
 ```python
 ## Use a small helper to check if AA-Discordbot is installs
@@ -122,9 +122,10 @@ if app_discord_bot_active():
 ## These two tasks can be called to Queue up a Message
 ## AA Should not act on these, only AA-DiscordBot will consume them
 if discord_bot_active():
-    aadiscordbot.tasks.send_direct_message.delay(channel_id, message_content, embed=False)
-    aadiscordbot.tasks.send_channel.delay(user_id, message_content)
+    aadiscordbot.tasks.send_direct_message.delay(user_id, message_content)
+    aadiscordbot.tasks.send_channel.delay(channel_id, message_content, embed=False)
 ```
+
 ## Issues
 
 Please remember to report any aa-discordbot related issues using the issues on **this** repository.
