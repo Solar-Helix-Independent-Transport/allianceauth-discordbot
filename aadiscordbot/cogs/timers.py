@@ -10,6 +10,8 @@ from discord.colour import Color
 
 import datetime
 from django.utils import timezone
+from django.conf import settings
+
 
 from allianceauth.timerboard.models import Timer
 from aadiscordbot.app_settings import timerboard_active

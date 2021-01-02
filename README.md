@@ -7,12 +7,32 @@ aa-discordbot for [Alliance Auth](https://gitlab.com/allianceauth/allianceauth).
 * Bot Framework, easily extensible with more Cogs
 * Integration with Alliance Auth, able to fetch data directly from its django project.
 * Current Cogs
-  * !about - Bot Information and Statistics
+  * About
+    * !about - Bot Information and Statistics
+    * !uptime - Shows the uptime of the bot
+    * !get_webhooks - Get or create a webhook for the current channel and DM it to the requestor
+    * !new_channel [category id] [channel name] - Create a new channel and close it to public access
+    * !add_role [channel name] [role name] - Add a role to a channel
+    * !rem_role [channel name] [role name] - Remove a role from a channel
   * Auth
     * !auth - A direct link to the Auth Install to catch users familiar with other bots.
-    * !orphans - Returns a list of users on this server, who are not known to AA
+    * !orphans - Returns a list of users on this server without a matched AA account.
   * !timers - The next upcoming timer
-  * !lookup - Fetch a users Main, Affiliation, State, Groups and linked characters from any character.
+  * Members
+    * !lookup - Fetch a users Main, Affiliation, State, Groups and linked characters from any character.
+    * !altcorp [search string] - search for users with characters in an altcorp
+  * Remind
+    * !remindme [5s/m/h/d text] - Sets a simple non-persistent reminder timer when the bot will respond with the text
+  * Sov
+    * !vuln [context] - Returns a list of Vulnerable sov structures for a Region/Constellation/Solar_System or alliance
+    * !sov [context] - Returns a list of _all_ sov structures for a Region/Constellation/Solar_System or alliance
+    * !lowadm - Lists sov in need of ADM-ing, context provided in settings.
+  * Time
+    * !time - Returns the current EVE Time.
+  * Timers
+    * !timer - Returns the next Structure timer from allianceauth.timerboard.
+  * Easter Eggs,
+    * !happybirthday [text] - Wishes the text a happy birthday, works with user mentions
 
 ## Installation
 
@@ -62,7 +82,7 @@ wget https://raw.githubusercontent.com/pvyParts/allianceauth-discordbot/master/b
 
 * Amend your supervisor.conf, correcting paths as required and add `authbot` to the launch group at the end of the conf
 
-```
+```ini
 [program:authbot]
 command=/home/allianceserver/venv/auth/bin/python /home/allianceserver/myauth/bot_conf.py
 directory=/home/allianceserver/myauth
@@ -75,13 +95,12 @@ stdout_logfile=/home/allianceserver/myauth/log/authbot.log
 stderr_logfile=/home/allianceserver/myauth/log/authbot.log
 ```
 
-```
+```ini
 #This block should already exist, add authbot to it
 [group:myauth]
 programs=beat,worker,gunicorn,authbot
 priority=999
 ```
-
 
 ## Issues
 
