@@ -1,24 +1,22 @@
-import logging
-import pendulum
-import traceback
-
-import discord
-
+# Cog Stuff
 from discord.ext import commands
 from discord.embeds import Embed
 from discord.colour import Color
-
-from aadiscordbot.app_settings import authanalitics_active
-
-
-#log = logging.getLogger(__name__)
+# AA Contexts
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from allianceauth.eveonline.models import EveCharacter
 from allianceauth.eveonline.evelinks import evewho
+# AA-Discordbot
 from aadiscordbot.cogs.utils.decorators import sender_has_perm
+from aadiscordbot.app_settings import authanalitics_active
 
-from django.core.exceptions import ObjectDoesNotExist
+import logging
+import pendulum
+import traceback
+logger = logging.getLogger(__name__)
+
 
 class Members(commands.Cog):
     """
@@ -27,7 +25,7 @@ class Members(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-    
+
     @commands.command(pass_context=True)
     @sender_has_perm('corputils.view_alliance_corpstats')
     async def lookup(self, ctx):
@@ -45,11 +43,12 @@ class Members(commands.Cog):
             main = char.character_ownership.user.profile.main_character
             state = char.character_ownership.user.profile.state.name
             groups = char.character_ownership.user.groups.all().values_list('name', flat=True)
-            
+
             try:
-                discord = "<@{}>".format(char.character_ownership.user.discord.uid)
-            except:
-                discord = "unknown"
+                discord_string = "<@{}>".format(char.character_ownership.user.discord.uid)
+            except Exception as e:
+                logger.error(e)
+                discord_string = "unknown"
 
             if authanalitics_active():
                 alts = char.character_ownership.user.character_ownerships.all().select_related('character', 'zkil').values_list('character__character_name', 'character__corporation_ticker', 'character__character_id', 'character__corporation_id', 'character__zkill__zk_12m', 'character__zkill__zk_3m')
@@ -58,8 +57,8 @@ class Members(commands.Cog):
             else:
                 alts = char.character_ownership.user.character_ownerships.all().select_related('character').values_list('character__character_name', 'character__corporation_ticker', 'character__character_id', 'character__corporation_id')
                 zk12 = "Not Installed"
-                zk3 = "Not Installed" 
-            
+                zk3 = "Not Installed"
+
             if authanalitics_active():
                 for alt in alts:
                     if alt[4]:
@@ -68,15 +67,15 @@ class Members(commands.Cog):
 
             embed = Embed(title="Character Lookup")
             embed.colour = Color.blue()
-            embed.description =  "**{0}** is linked to **{1} [{2}]** (State: {3})".format(
-                                                                            char, 
+            embed.description = "**{0}** is linked to **{1} [{2}]** (State: {3})".format(
+                                                                            char,
                                                                             main,
                                                                             main.corporation_ticker,
                                                                             state
                                                                         )
 
-            alt_list = [ "[{}](https://evewho.com/character/{}) *[ [{}](https://evewho.com/corporation/{}) ]*".format(a[0], a[2], a[1], a[3]) for a in alts]
-            for idx,names in enumerate([alt_list[i:i + 6] for i in range(0, len(alt_list), 6)]):
+            alt_list = ["[{}](https://evewho.com/character/{}) *[ [{}](https://evewho.com/corporation/{}) ]*".format(a[0], a[2], a[1], a[3]) for a in alts]
+            for idx, names in enumerate([alt_list[i:i + 6] for i in range(0, len(alt_list), 6)]):
                 if idx < 6:
                     embed.add_field(
                         name="Linked Characters {}".format(idx+1), value=", ".join(names), inline=False
@@ -87,8 +86,7 @@ class Members(commands.Cog):
                     )
                     break
 
-
-            if len(groups)>0:
+            if len(groups) > 0:
                 embed.add_field(
                     name="Groups", value=", ".join(groups), inline=False
                 )
@@ -102,7 +100,7 @@ class Members(commands.Cog):
                 )
 
             embed.add_field(
-                name="Discord Link", value=discord, inline=False
+                name="Discord Link", value=discord_string, inline=False
             )
 
             return await ctx.send(embed=embed)
@@ -113,19 +111,19 @@ class Members(commands.Cog):
             embed = Embed(title="Character Lookup")
             embed.colour = Color.blue()
 
-            embed.description =  "**{0}** is Unlinked searching for any characters linked to known users".format(
-                                                                char, 
+            embed.description = "**{0}** is Unlinked searching for any characters linked to known users".format(
+                                                                char,
                                                             )
-            user_names = [ "{}".format(user.username) for user in users ]
+            user_names = ["{}".format(user.username) for user in users]
             embed.add_field(
                 name="Old Users", value=", ".join(user_names), inline=False
             )
-            alt_list = [ "[{}](https://evewho.com/character/{}) *[ [{}](https://evewho.com/corporation/{}) ]*".format(a.character_name,
-                                                                                                                     a.character_id, 
-                                                                                                                     a.corporation_ticker, 
+            alt_list = ["[{}](https://evewho.com/character/{}) *[ [{}](https://evewho.com/corporation/{}) ]*".format(a.character_name,
+                                                                                                                     a.character_id,
+                                                                                                                     a.corporation_ticker,
                                                                                                                      a.corporation_id
                                                                                                                      ) for a in characters]
-            for idx,names in enumerate([alt_list[i:i + 6] for i in range(0, len(alt_list), 6)]):
+            for idx, names in enumerate([alt_list[i:i + 6] for i in range(0, len(alt_list), 6)]):
                 if idx < 6:
                     embed.add_field(
                         name="Found Characters {}".format(idx+1), value=", ".join(names), inline=False
@@ -138,7 +136,7 @@ class Members(commands.Cog):
 
             return await ctx.send(embed=embed)
 
-    @commands.command(pass_context=True)    
+    @commands.command(pass_context=True)
     @sender_has_perm('corputils.view_alliance_corpstats')
     async def altcorp(self, ctx):
         """
@@ -161,14 +159,15 @@ class Members(commands.Cog):
             try:
                 main = a.character_ownership.user.profile.main_character
                 if main.character_id not in mains:
-                    mains[main.character_id] = [main,0]
-                mains[main.character_id][1]+=1
+                    mains[main.character_id] = [main, 0]
+                mains[main.character_id][1] += 1
                 alt_corp_id = a.corporation_id
-            except:
+            except Exception as e:
+                logger.error(e)
                 pass
         output = []
         base_string = "[{}]({}) [ [{}]({}) ] has {} alt{}"
-        for k,m in mains.items():
+        for k, m in mains.items():
             output.append(
                 base_string.format(
                     m[0],
@@ -176,15 +175,16 @@ class Members(commands.Cog):
                     m[0].corporation_ticker,
                     evewho.corporation_url(m[0].corporation_id),
                     m[1],
-                    "s" if m[1]>1 else ""
+                    "s" if m[1] > 1 else ""
                 )
             )
 
-        for strings in [output[i:i + 10] for i in range(0, len(output), 10)]:  
+        for strings in [output[i:i + 10] for i in range(0, len(output), 10)]:
             embed = Embed(title=input_name)
             embed.colour = Color.blue()
             embed.description = "\n".join(strings)
             await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Members(bot))

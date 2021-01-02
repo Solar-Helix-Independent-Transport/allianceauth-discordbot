@@ -1,20 +1,17 @@
-import logging
-import pendulum
-import traceback
-import re
-
-import discord
-
+# Cog Stuff
 from discord.ext import commands
 from discord.embeds import Embed
 from discord.colour import Color
-from django.conf import settings
-
-from aadiscordbot.app_settings import get_site_url
-
+# AA Contexts
+from aadiscordbot.app_settings import get_site_url, get_admins
 from allianceauth.services.modules.discord.models import DiscordUser
 
+import re
+import logging
+import pendulum
+import traceback
 logger = logging.getLogger(__name__)
+
 
 class Auth(commands.Cog):
     """
@@ -39,7 +36,7 @@ class Auth(commands.Cog):
         embed.colour = Color.blue()
 
         embed.description = "All Authentication functions for this Discord server are handled through our Alliance Auth install"
-        
+
         url = get_site_url()
 
         embed.add_field(
@@ -53,8 +50,8 @@ class Auth(commands.Cog):
         """
         Returns a list of users on this server, who are not known to AA
         """
-        if ctx.message.author.id not in app_settings.get_admins(): #https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
-            return await ctx.message.delete()
+        if ctx.message.author.id not in get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+            return await ctx.message.add_reaction(chr(0x1F44E))
 
         await ctx.trigger_typing()
         await ctx.send('Searching for Orphaned Discord Users')
@@ -71,20 +68,22 @@ class Auth(commands.Cog):
                 discord_exists = DiscordUser.objects.get(uid=id)
                 discord_is_bot = member.bot
             except Exception as e:
+                logger.error(e)
                 discord_exists = False
                 discord_is_bot = False
-            
+
             try:
                 discord_is_bot = member.bot
             except Exception as e:
+                logger.error(e)
                 discord_is_bot = False
 
-            if discord_exists != False:
-                #nothing to do, the user exists. Move on with ur life dude.
+            if discord_exists is not False:
+                # nothing to do, the user exists. Move on with ur life dude.
                 pass
 
-            elif discord_is_bot == True:
-                #lets also ignore bots here
+            elif discord_is_bot is True:
+                # lets also ignore bots here
                 pass
             else:
                 payload = payload + member.mention + "\n"
@@ -92,6 +91,7 @@ class Auth(commands.Cog):
         try:
             await ctx.send(payload)
         except Exception as e:
+            logger.error(e)
             await ctx.send(payload[0:1999])
             await ctx.send("Maximum Discord message length reached")
 

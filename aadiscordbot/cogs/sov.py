@@ -1,22 +1,21 @@
-import logging
-import pendulum
-import traceback
-
-import discord
-
+# Cog Stuff
 from discord.ext import commands
 from discord.embeds import Embed
 from discord.colour import Color
-
-#log = logging.getLogger(__name__)
-
+# AA Contexts
 from django.conf import settings
 from allianceauth.eveonline.models import EveCharacter
 from aadiscordbot.cogs.utils.decorators import sender_has_perm
-from .. import providers
+from aadiscordbot import providers
 
 import datetime
 from django.utils import timezone
+
+import logging
+import pendulum
+import traceback
+# log = logging.getLogger(__name__)
+
 
 class Sov(commands.Cog):
     """
@@ -25,7 +24,7 @@ class Sov(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-    
+
     @commands.command(pass_context=True)
     async def vuln(self, ctx):
         """
@@ -58,13 +57,13 @@ class Sov(commands.Cog):
             constellations = providers.esi.client.Universe.get_universe_regions_region_id(region_id=r).result()["constellations"]
             for c in constellations:
                 if c not in hit_ids["c"]:
-                     hit_ids["c"].append(c)
+                    hit_ids["c"].append(c)
 
         for c in hit_ids['c']:
             systems = providers.esi.client.Universe.get_universe_constellations_constellation_id(constellation_id=c).result()["systems"]
             for s in systems:
                 if s not in hit_ids["s"]:
-                     hit_ids["s"].append(s)
+                    hit_ids["s"].append(s)
 
         sov_structures = providers.esi.client.Sovereignty.get_sovereignty_structures().result()
 
@@ -73,12 +72,11 @@ class Sov(commands.Cog):
         alliances = []
         dt_comp = datetime.datetime.utcnow().replace(tzinfo=timezone.utc) + datetime.timedelta(hours=1)
 
-
         for s in sov_structures:
             start = s.get('vulnerable_start_time', False)
             if start:
                 if start < dt_comp:
-                    if  s.get('solar_system_id') in hit_ids["s"] or s.get('alliance_id') in hit_ids["a"]:
+                    if s.get('solar_system_id') in hit_ids["s"] or s.get('alliance_id') in hit_ids["a"]:
                         alliances.append(s.get('alliance_id'))
                         names.append(s.get('solar_system_id'))
                         names.append(s.get('structure_type_id'))
@@ -94,7 +92,7 @@ class Sov(commands.Cog):
             names_alli[a] = res.get("ticker")
 
         names = providers.esi.client.Universe.post_universe_names(ids=list(set(names))).result()
-        
+
         nms = {}
         for n in names:
             nms[n.get("id")] = n.get("name")
@@ -106,10 +104,9 @@ class Sov(commands.Cog):
             elif hit.get("structure_type_id") == 32458:
                 hit['structure'] = "IHUB"
             else:
-                hit['structure'] = "¯\_(ツ)_/¯"
+                hit['structure'] = "¯\\_(ツ)_/¯"
 
             hit['alliance_name'] = names_alli[hit.get('alliance_id')]
-
 
         output = []
         base_str = "**{}** {} (ADM {})[**{}**] Vulnerable{}"
@@ -133,9 +130,9 @@ class Sov(commands.Cog):
                     time
                 )
             )
-        
+
         n = 10
-        chunks = [list(output[i * n:(i + 1) * n]) for i in range((len(output) + n - 1) // n )]
+        chunks = [list(output[i * n:(i + 1) * n]) for i in range((len(output) + n - 1) // n)]
 
         for c in chunks:
             await ctx.send("\n".join(c))
@@ -173,13 +170,13 @@ class Sov(commands.Cog):
             constellations = providers.esi.client.Universe.get_universe_regions_region_id(region_id=r).result()["constellations"]
             for c in constellations:
                 if c not in hit_ids["c"]:
-                     hit_ids["c"].append(c)
+                    hit_ids["c"].append(c)
 
         for c in hit_ids['c']:
             systems = providers.esi.client.Universe.get_universe_constellations_constellation_id(constellation_id=c).result()["systems"]
             for s in systems:
                 if s not in hit_ids["s"]:
-                     hit_ids["s"].append(s)
+                    hit_ids["s"].append(s)
 
         sov_structures = providers.esi.client.Sovereignty.get_sovereignty_structures().result()
 
@@ -187,11 +184,10 @@ class Sov(commands.Cog):
         names = []
         alliances = []
 
-
         for s in sov_structures:
             start = s.get('vulnerable_start_time', False)
             if start:
-                if  s.get('solar_system_id') in hit_ids["s"] or s.get('alliance_id') in hit_ids["a"]:
+                if s.get('solar_system_id') in hit_ids["s"] or s.get('alliance_id') in hit_ids["a"]:
                     alliances.append(s.get('alliance_id'))
                     names.append(s.get('solar_system_id'))
                     names.append(s.get('structure_type_id'))
@@ -207,7 +203,7 @@ class Sov(commands.Cog):
             names_alli[a] = res.get("ticker")
 
         names = providers.esi.client.Universe.post_universe_names(ids=list(set(names))).result()
-        
+
         nms = {}
         for n in names:
             nms[n.get("id")] = n.get("name")
@@ -219,10 +215,9 @@ class Sov(commands.Cog):
             elif hit.get("structure_type_id") == 32458:
                 hit['structure'] = "IHUB"
             else:
-                hit['structure'] = "¯\_(ツ)_/¯"
+                hit['structure'] = "¯\\_(ツ)_/¯"
 
             hit['alliance_name'] = names_alli[hit.get('alliance_id')]
-
 
         output = []
         base_str = "**{}** {} (ADM {})[**{}**] Vulnerable{}"
@@ -247,9 +242,9 @@ class Sov(commands.Cog):
                     time
                 )
             )
-        
+
         n = 15
-        chunks = [list(output[i * n:(i + 1) * n]) for i in range((len(output) + n - 1) // n )]
+        chunks = [list(output[i * n:(i + 1) * n]) for i in range((len(output) + n - 1) // n)]
 
         for c in chunks:
             await ctx.send("\n".join(c))
@@ -276,12 +271,12 @@ class Sov(commands.Cog):
         names = {}
         alliances = []
         for s in sov_structures:
-            if  s.get('alliance_id') in own_ids:
+            if s.get('alliance_id') in own_ids:
                 if s.get('vulnerability_occupancy_level'):
                     if s.get('vulnerability_occupancy_level') < 4.5:
                         names[s.get('solar_system_id')] = {
                             "system_name": s.get('solar_system_id'),
-                            "adm": s.get('vulnerability_occupancy_level') 
+                            "adm": s.get('vulnerability_occupancy_level')
                         }
 
         if len(names) == 0:
@@ -298,14 +293,14 @@ class Sov(commands.Cog):
             names[n]["constellation_id"] = system.get("constellation_id")
             if system.get("constellation_id") not in constelations:
                 constelations[system.get("constellation_id")] = {}
-        
-        for c,v in constelations.items():
+
+        for c, v in constelations.items():
             const = providers.esi.client.Universe.get_universe_constellations_constellation_id(constellation_id=c).result()
             region = providers.esi.client.Universe.get_universe_regions_region_id(region_id=const.get("region_id")).result()
             v["region_id"] = const.get("region_id")
             v["region_name"] = region.get("name")
             v["constellation_name"] = const.get("name")
-        
+
         out_array = {}
         for k, v in names.items():
             out_array[k] = {**v, **constelations[v["constellation_id"]]}
@@ -337,7 +332,7 @@ class Sov(commands.Cog):
                                 )
         url = "https://evemaps.dotlan.net/map/{}/{}#adm"
         for k, v in output.items():
-            await ctx.send("__{}__\n{}\n{}".format(k, "\n".join(v), url.format(k.replace(" ", "_"),",".join(urls[k.replace(" ", "_")]))))
+            await ctx.send("__{}__\n{}\n{}".format(k, "\n".join(v), url.format(k.replace(" ", "_"), ",".join(urls[k.replace(" ", "_")]))))
         embed = Embed(title="Disclaimer")
         embed.set_thumbnail(
             url="https://avatars3.githubusercontent.com/u/39349660?s=200&v=4"

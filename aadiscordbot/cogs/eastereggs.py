@@ -1,20 +1,20 @@
-import logging
-import pendulum
-import traceback
-import re
 
-import discord
-
+# Cog Stuff
 from discord.ext import commands
 from discord.embeds import Embed
 from discord.colour import Color
 from django.conf import settings
-
+# AA Contexts
 from aadiscordbot.app_settings import get_site_url
-
 from allianceauth.services.modules.discord.models import DiscordUser
 
+import re
+
+import logging
+import pendulum
+import traceback
 logger = logging.getLogger(__name__)
+
 
 class EasterEggs(commands.Cog):
     """
@@ -45,6 +45,7 @@ class EasterEggs(commands.Cog):
 
         payload = f"Happy Birthday {birthday_user}"
         return await ctx.send(payload)
+
 
 def setup(bot):
     bot.add_cog(EasterEggs(bot))

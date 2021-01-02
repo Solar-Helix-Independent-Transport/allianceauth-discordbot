@@ -1,20 +1,16 @@
-import logging
-import pendulum
-import traceback
-import re
-import asyncio
-from datetime import datetime
-
-import discord
-import aadiscordbot
-
+# Cog Stuff
 from discord.ext import commands
 from discord.embeds import Embed
 from discord.colour import Color
-from django.conf import settings
-from discord.utils import get
 
-log = logging.getLogger(__name__)
+import asyncio
+from datetime import datetime
+
+import logging
+import pendulum
+import traceback
+logger = logging.getLogger(__name__)
+
 
 class Remind(commands.Cog):
     """
@@ -24,17 +20,15 @@ class Remind(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-
-    @commands.command(pass_context=True, case_insensitive = True, aliases = ["remind", "remindme", "remind_me"])
-    @commands.bot_has_permissions(attach_files = True, embed_links = True)
+    @commands.command(pass_context=True, case_insensitive=True, aliases=["remind", "remindme", "remind_me"])
+    @commands.bot_has_permissions(attach_files=True, embed_links=True)
     async def reminder(self, ctx, time, *, reminder):
         print(time)
         print(reminder)
-        user = ctx.message.author
-        embed = discord.Embed(color=0x55a7f7, timestamp=datetime.utcnow())
+        embed = Embed(color=0x55a7f7, timestamp=datetime.utcnow())
         seconds = 0
         if reminder is None:
-            embed.add_field(name='Warning', value='Please specify what do you want me to remind you about.') # Error message
+            embed.add_field(name='Warning', value='Please specify what do you want me to remind you about.')  # Error message
         if time.lower().endswith("d"):
             seconds += int(time[:-1]) * 60 * 60 * 24
             counter = f"{seconds // 60 // 60 // 24} days"
@@ -61,6 +55,7 @@ class Remind(commands.Cog):
             await ctx.send(f"Hi, you asked me to remind you about {reminder} {counter} ago.")
             return
         await ctx.send(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(Remind(bot))
