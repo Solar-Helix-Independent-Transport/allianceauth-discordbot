@@ -1,21 +1,18 @@
-import logging
-import pendulum
-import traceback
-
-import discord
-
+# Cog Stuff
 from discord.ext import commands
 from discord.embeds import Embed
 from discord.colour import Color
-
-import datetime
+# AA Contexts
 from django.utils import timezone
 from django.conf import settings
-
-
 from allianceauth.timerboard.models import Timer
 from aadiscordbot.app_settings import timerboard_active
 
+import datetime
+
+import logging
+import pendulum
+import traceback
 logger = logging.getLogger(__name__)
 
 
@@ -40,7 +37,7 @@ class Timers(commands.Cog):
         next_timer = Timer.objects.filter(corp_timer=False,
                                           eve_time__gte=datetime.datetime.utcnow().replace(tzinfo=timezone.utc)).first()
         time_until = pendulum.now(tz="UTC").diff_for_humans(
-                            next_timer.eve_time , absolute=True
+                            next_timer.eve_time, absolute=True
                         )
         embed = Embed(title="Next Timer")
         embed.description = next_timer.details
@@ -52,7 +49,8 @@ class Timers(commands.Cog):
             embed.colour = Color.white()
         try:
             embed.set_footer(text="Added By {0}".format(next_timer.eve_character.character_name))
-        except:
+        except Exception as e:
+            logger.error(e)
             pass
 
         embed.add_field(

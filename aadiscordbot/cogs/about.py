@@ -1,19 +1,19 @@
-import logging
-import pendulum
-import traceback
-import re
-
-import discord
-import aadiscordbot
-
+# Cog Stuff
 from discord.ext import commands
 from discord.embeds import Embed
 from discord.colour import Color
-from django.conf import settings
 from discord.utils import get
+# AA Contexts
+from django.conf import settings
+from aadiscordbot import app_settings, __version__, __branch__
 
-from .. import app_settings 
-#log = logging.getLogger(__name__)
+import pendulum
+import re
+
+import logging
+import traceback
+logger = logging.getLogger(__name__)
+
 
 class About(commands.Cog):
     """
@@ -53,12 +53,12 @@ class About(commands.Cog):
             name="Auth Link", value="[{}]({})".format(url[0], url[0]), inline=False
         )
         embed.add_field(
-            name="Version", value="{}@{}".format(aadiscordbot.__version__, aadiscordbot.__branch__), inline=False
+            name="Version", value="{}@{}".format(__version__, __branch__), inline=False
         )
 
-        #embed.add_field(
-        #    name="Creator", value="<@318309023478972417>", inline=False
-        #)
+        # embed.add_field(
+        #     name="Creator", value="<@318309023478972417>", inline=False
+        # )
 
         return await ctx.send(embed=embed)
 
@@ -67,7 +67,7 @@ class About(commands.Cog):
         """
         Returns the uptime
         """
-        if ctx.message.author.id not in app_settings.get_admins(): #https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+        if ctx.message.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
             return await ctx.message.add_reaction(chr(0x1F44E))
 
         await ctx.send(
@@ -81,11 +81,11 @@ class About(commands.Cog):
         """
         Returns the webhooks for the channel
         """
-        if ctx.message.author.id not in app_settings.get_admins(): #https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+        if ctx.message.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
             return await ctx.message.add_reaction(chr(0x1F44E))
 
         hooks = await ctx.message.channel.webhooks()
-        if len(hooks) ==0:
+        if len(hooks) == 0:
             name = "{}_webhook".format(ctx.message.channel.name.replace(" ", "_"))
             hook = await ctx.message.channel.create_webhook(
                         name=name
@@ -109,11 +109,11 @@ class About(commands.Cog):
         """
         create a new channel in a category.
         """
-        if ctx.message.author.id not in app_settings.get_admins(): #https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+        if ctx.message.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
             return await ctx.message.add_reaction(chr(0x1F44E))
 
         await ctx.message.channel.trigger_typing()
-        
+
         input_string = ctx.message.content[13:].split(' ')
         if len(input_string) != 2:
             return await ctx.message.add_reaction(chr(0x274C))
@@ -122,32 +122,31 @@ class About(commands.Cog):
         channel_name = input_string[1]
         target_cat = get(ctx.guild.channels, id=int(input_string[0]))
 
-        found_channel=False
+        found_channel = False
 
         for channel in ctx.guild.channels:   # TODO replace with channel lookup not loop
-                    if channel.name.lower() == channel_name.lower():
-                        found_channel=True
+            if channel.name.lower() == channel_name.lower():
+                found_channel = True
 
         if not found_channel:
             channel = await ctx.guild.create_text_channel(channel_name.lower(),
-                                                          category=target_cat) # make channel
+                                                          category=target_cat)  # make channel
 
             await channel.set_permissions(everyone_role, read_messages=False,
-                                                         send_messages=False)
+                                          send_messages=False)
 
         return await ctx.message.add_reaction(chr(0x1F44D))
-
 
     @commands.command(hidden=True)
     async def add_role(self, ctx):
         """
         add a role from a channel.
         """
-        if ctx.message.author.id not in app_settings.get_admins(): #https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+        if ctx.message.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
             return await ctx.message.add_reaction(chr(0x1F44E))
 
         await ctx.message.channel.trigger_typing()
-        
+
         input_string = ctx.message.content[10:].split(' ')
         if len(input_string) != 2:
             return await ctx.message.add_reaction(chr(0x274C))
@@ -157,7 +156,7 @@ class About(commands.Cog):
 
         if channel_name:
             await channel_name.set_permissions(target_role, read_messages=True,
-                                                             send_messages=True)
+                                               send_messages=True)
 
         return await ctx.message.add_reaction(chr(0x1F44D))
 
@@ -166,11 +165,11 @@ class About(commands.Cog):
         """
         remove a role from a channel.
         """
-        if ctx.message.author.id not in app_settings.get_admins(): #https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+        if ctx.message.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
             return await ctx.message.add_reaction(chr(0x1F44E))
 
         await ctx.message.channel.trigger_typing()
-        
+
         input_string = ctx.message.content[10:].split(' ')
         if len(input_string) != 2:
             return await ctx.message.add_reaction(chr(0x274C))
@@ -180,10 +179,10 @@ class About(commands.Cog):
 
         if channel_name:
             await channel_name.set_permissions(target_role, read_messages=False,
-                                                             send_messages=False)
+                                               send_messages=False)
 
         return await ctx.message.add_reaction(chr(0x1F44D))
 
+
 def setup(bot):
     bot.add_cog(About(bot))
-""

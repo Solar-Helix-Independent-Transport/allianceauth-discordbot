@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import *
+from .models import Servers, Channels
 
 from allianceauth.services.hooks import get_extension_logger
 
