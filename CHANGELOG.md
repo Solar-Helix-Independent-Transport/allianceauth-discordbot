@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.2.3a Alpha] 2021-01-02
+###Fixes
+* Removes Click dependency for better Python 3.6 support
+* Server model was returning invalid server_name as its string
+
 ## [0.2.1a Alpha] 2021-01-02
 ###Fixes
 * Adds some logging
