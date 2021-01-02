@@ -53,16 +53,16 @@ pip install -U git+https://github.com/pvyParts/allianceauth-discordbot.git
 
  ```python
 ## Settings for Allianceauth-Discordbot
-DISCORD_BOT_ADMIN_USER = 140706470856622080 #This UserID is allowed to run any command
+DISCORD_BOT_ADMIN_USER = [140706470856622080] #This UserID is allowed to run any command
 # Admin Commands
-ADMIN_DISCORD_BOT_CHANNELS = 111,222,333
+ADMIN_DISCORD_BOT_CHANNELS = [111, 222, 333]
 # Sov Commands
-SOV_DISCORD_BOT_CHANNELS = 111,222,333
+SOV_DISCORD_BOT_CHANNELS = [111, 222, 333]
 # Adm Commands
-ADM_DISCORD_BOT_CHANNELS = 111,222,333
+ADM_DISCORD_BOT_CHANNELS = [111, 222, 333]
 
 DISCORD_BOT_SOV_STRUCTURE_OWNER_IDS = [1000169] # Centre for Advanced Studies example
-DISCORD_BOT_MEMBER_ALLIANCES = 111,222,333 # A list of alliances to be considered "Mains"
+DISCORD_BOT_MEMBER_ALLIANCES = [111, 222, 333] # A list of alliances to be considered "Mains"
 
 DISCORD_BOT_ADM_REGIONS = [10000002] # The Forge Example
 DISCORD_BOT_ADM_SYSTEMS = [30000142] # Jita Example
