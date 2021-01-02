@@ -53,7 +53,7 @@ class Auth(commands.Cog):
         """
         Returns a list of users on this server, who are not known to AA
         """
-        if ctx.message.author.id != settings.DISCORD_BOT_ADMIN_USER: #https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+        if ctx.message.author.id not in app_settings.get_admins(): #https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
             return await ctx.message.delete()
 
         await ctx.trigger_typing()

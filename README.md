@@ -1,11 +1,12 @@
-# aa-discordbot
+# AA-Discordbot
 
-aa-discordbot for [Alliance Auth](https://gitlab.com/allianceauth/allianceauth).
+AA-Discordbot for [Alliance Auth](https://gitlab.com/allianceauth/allianceauth).
 
 ## Features
 
 * Bot Framework, easily extensible with more Cogs
 * Integration with Alliance Auth, able to fetch data directly from its django project.
+* Channel/Direct messaging feature, with Tasks and a Queue/Consumer
 * Current Cogs
   * About
     * !about - Bot Information and Statistics
@@ -102,6 +103,24 @@ programs=beat,worker,gunicorn,authbot
 priority=999
 ```
 
+## Using AA-Discordbot from my project
+https://github.com/pvyParts/allianceauth-discordbot/blob/master/aadiscordbot/tasks.py
+
+```python
+## Use a small helper to check if AA-Discordbot is installs
+def discord_bot_active():
+    return 'aadiscordbot' in settings.INSTALLED_APPS
+
+## Only import it, if it is installed
+if app_discord_bot_active():
+    import aadiscordbot.tasks
+
+## These two tasks can be called to Queue up a Message
+## AA Should not act on these, only AA-DiscordBot will consume them
+if discord_bot_active():
+    aadiscordbot.tasks.send_direct_message.delay(channel_id, message_content, embed=False)
+    aadiscordbot.tasks.send_channel.delay(user_id, message_content)
+```
 ## Issues
 
 Please remember to report any aa-discordbot related issues using the issues on **this** repository.
