@@ -121,6 +121,8 @@ priority=999
 ```
 
 ## Using AA-Discordbot from my project
+
+### Send Messages
 [aadiscordbot/tasks.py](https://github.com/pvyParts/allianceauth-discordbot/blob/master/aadiscordbot/tasks.py)
 
 ```python
@@ -138,6 +140,16 @@ if discord_bot_active():
     aadiscordbot.tasks.send_direct_message.delay(user_id, message_content)
     aadiscordbot.tasks.send_channel.delay(channel_id, message_content, embed=False)
 ```
+
+### Register Cogs (Handling Commands)
+
+In `auth_hooks.py`, define a function that returns an array of cog modules, and register it as a `discord_cogs_hook`:
+```python
+@hooks.register('discord_cogs_hook')
+def register_cogs():
+    return ["yourapp.cogs.cog_a", "yourapp.cogs.cog_b"]
+```
+
 
 ## Issues
 
