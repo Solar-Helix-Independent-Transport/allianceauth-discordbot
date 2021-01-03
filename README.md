@@ -129,14 +129,14 @@ def discord_bot_active():
     return 'aadiscordbot' in settings.INSTALLED_APPS
 
 ## Only import it, if it is installed
-if app_discord_bot_active():
+if discord_bot_active():
     import aadiscordbot.tasks
 
 ## These two tasks can be called to Queue up a Message
 ## AA Should not act on these, only AA-DiscordBot will consume them
 if discord_bot_active():
-    aadiscordbot.tasks.send_direct_message.delay(user_id, message_content)
-    aadiscordbot.tasks.send_channel.delay(channel_id, message_content, embed=False)
+    aadiscordbot.tasks.send_direct_message_by_user_id.delay(user_pk, message_content)
+    aadiscordbot.tasks.send_channel_message_by_discord_id.delay(channel_id, message_content, embed=False)
 ```
 
 ## Issues
