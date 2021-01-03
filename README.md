@@ -129,7 +129,7 @@ def discord_bot_active():
     return 'aadiscordbot' in settings.INSTALLED_APPS
 
 ## Only import it, if it is installed
-if app_discord_bot_active():
+if discord_bot_active():
     import aadiscordbot.tasks
 
 ## These two tasks can be called to Queue up a Message
