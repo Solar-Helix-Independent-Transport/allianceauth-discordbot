@@ -136,7 +136,7 @@ if app_discord_bot_active():
 ## AA Should not act on these, only AA-DiscordBot will consume them
 if discord_bot_active():
     aadiscordbot.tasks.send_direct_message_by_user_id.delay(user_pk, message_content)
-    aadiscordbot.tasks.send_channel_by_discord_id.delay(channel_id, message_content, embed=False)
+    aadiscordbot.tasks.send_channel_message_by_discord_id.delay(channel_id, message_content, embed=False)
 ```
 
 ## Issues
