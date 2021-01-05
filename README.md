@@ -120,6 +120,10 @@ programs=beat,worker,gunicorn,authbot
 priority=999
 ```
 
+## Integrations
+* [Statistics](https://github.com/pvyParts/aa-statistics)
+  * Adds zkill Monthly/Yearly stats to !lookup
+
 ## Using AA-Discordbot from my project
 [aadiscordbot/tasks.py](https://github.com/pvyParts/allianceauth-discordbot/blob/master/aadiscordbot/tasks.py)
 
