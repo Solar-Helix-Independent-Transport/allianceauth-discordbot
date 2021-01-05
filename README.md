@@ -49,7 +49,7 @@ pip install -U git+https://github.com/pvyParts/allianceauth-discordbot.git
 
 * Add `'aadiscordbot',` to your INSTALLED_APPS list in local.py.
 
-* Add the below lines to your `local.py` settings file, Changing the channel IDs to yours.
+* Add the below lines to your `local.py` settings file, Changing the contexts to yours.
 
  ```python
 ## Settings for Allianceauth-Discordbot
@@ -136,6 +136,7 @@ if discord_bot_active():
 ## AA Should not act on these, only AA-DiscordBot will consume them
 if discord_bot_active():
     aadiscordbot.tasks.send_direct_message_by_user_id.delay(user_pk, message_content)
+    aadiscordbot.tasks.send_direct_message_by_discord_id.delay(discord_user_id, message_content)
     aadiscordbot.tasks.send_channel_message_by_discord_id.delay(channel_id, message_content, embed=False)
 ```
 
