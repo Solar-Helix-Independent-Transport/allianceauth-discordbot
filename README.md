@@ -49,7 +49,7 @@ pip install -U git+https://github.com/pvyParts/allianceauth-discordbot.git
 
 * Add `'aadiscordbot',` to your INSTALLED_APPS list in local.py.
 
-* Add the below lines to your `local.py` settings file, Changing the channel IDs to yours.
+* Add the below lines to your `local.py` settings file, Changing the contexts to yours.
 
  ```python
 ## Settings for Allianceauth-Discordbot
@@ -120,6 +120,10 @@ programs=beat,worker,gunicorn,authbot
 priority=999
 ```
 
+## Integrations
+* [Statistics](https://github.com/pvyParts/aa-statistics)
+  * Adds zkill Monthly/Yearly stats to !lookup
+
 ## Using AA-Discordbot from my project
 
 ### Send Messages
@@ -131,14 +135,15 @@ def discord_bot_active():
     return 'aadiscordbot' in settings.INSTALLED_APPS
 
 ## Only import it, if it is installed
-if app_discord_bot_active():
+if discord_bot_active():
     import aadiscordbot.tasks
 
 ## These two tasks can be called to Queue up a Message
 ## AA Should not act on these, only AA-DiscordBot will consume them
 if discord_bot_active():
-    aadiscordbot.tasks.send_direct_message.delay(user_id, message_content)
-    aadiscordbot.tasks.send_channel.delay(channel_id, message_content, embed=False)
+    aadiscordbot.tasks.send_direct_message_by_user_id.delay(user_pk, message_content)
+    aadiscordbot.tasks.send_direct_message_by_discord_id.delay(discord_user_id, message_content)
+    aadiscordbot.tasks.send_channel_message_by_discord_id.delay(channel_id, message_content, embed=False)
 ```
 
 ### Register Cogs (Handling Commands)

@@ -56,19 +56,20 @@ class AuthBot(commands.Bot):
         )
 
         self.redis = None
-        self.redis = self.loop.run_until_complete(aioredis.create_pool((getattr(settings, "REDIS_URL", "localhost"), 6379), minsize=5, maxsize=10))
+        self.redis = self.loop.run_until_complete(aioredis.create_pool(getattr(settings, "BROKER_URL", "redis://localhost:6379/0"), minsize=5, maxsize=10))
         print('redis pool started', self.redis)
         self.client_id = client_id
         self.session = aiohttp.ClientSession(loop=self.loop)
         self.tasks = []
 
-        self.message_connection = Connection('redis://localhost:6379/0')
+        self.message_connection = Connection(getattr(settings, "BROKER_URL", 'redis://localhost:6379/0'))
         queues = []
         for que in queue_keys:
             queues.append(Queue(que))
         self.message_consumer = Consumer(self.message_connection, queues, callbacks=[self.on_queue_message], accept=['json'])
 
         django.setup()
+
         for hook in hooks.get_hooks("discord_cogs_hook"):
             for cog in hook():
                 try:
@@ -76,6 +77,7 @@ class AuthBot(commands.Bot):
                 except Exception as e:
                     print(f"Failed to load cog {cog}", file=sys.stderr)
                     traceback.print_exc()
+
 
     def on_queue_message(self, body, message):
         print('RECEIVED MESSAGE: {0!r}'.format(body))
