@@ -19,6 +19,7 @@ import django
 from django.conf import settings
 import django.db
 
+from allianceauth import hooks
 from kombu import Connection, Queue, Consumer
 from socket import timeout
 import concurrent.futures
@@ -68,12 +69,15 @@ class AuthBot(commands.Bot):
         self.message_consumer = Consumer(self.message_connection, queues, callbacks=[self.on_queue_message], accept=['json'])
 
         django.setup()
-        for cog in app_settings.DISCORD_BOT_COGS:
-            try:
-                self.load_extension("aadiscordbot.{0}".format(cog))
-            except Exception as e:
-                print(f"Failed to load cog {cog}", file=sys.stderr)
-                traceback.print_exc()
+
+        for hook in hooks.get_hooks("discord_cogs_hook"):
+            for cog in hook():
+                try:
+                    self.load_extension(cog)
+                except Exception as e:
+                    print(f"Failed to load cog {cog}", file=sys.stderr)
+                    traceback.print_exc()
+
 
     def on_queue_message(self, body, message):
         print('RECEIVED MESSAGE: {0!r}'.format(body))
