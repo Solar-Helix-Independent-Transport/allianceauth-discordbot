@@ -51,7 +51,7 @@ class Members(commands.Cog):
                 discord_string = "unknown"
 
             if aastatistics_active():
-                alts = char.character_ownership.user.character_ownerships.all().select_related('character', 'zkil').values_list('character__character_name', 'character__corporation_ticker', 'character__character_id', 'character__corporation_id', 'character__zkill__zk_12m', 'character__zkill__zk_3m')
+                alts = char.character_ownership.user.character_ownerships.all().select_related('character', 'zkill').values_list('character__character_name', 'character__corporation_ticker', 'character__character_id', 'character__corporation_id', 'character__zkill__zk_12m', 'character__zkill__zk_3m')
                 zk12 = 0
                 zk3 = 0
             else:
