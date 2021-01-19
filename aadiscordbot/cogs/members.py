@@ -10,7 +10,7 @@ from allianceauth.eveonline.models import EveCharacter
 from allianceauth.eveonline.evelinks import evewho
 # AA-Discordbot
 from aadiscordbot.cogs.utils.decorators import sender_has_perm
-from aadiscordbot.app_settings import authanalitics_active
+from aadiscordbot.app_settings import aastatistics_active
 
 import logging
 import pendulum
@@ -50,8 +50,8 @@ class Members(commands.Cog):
                 logger.error(e)
                 discord_string = "unknown"
 
-            if authanalitics_active():
-                alts = char.character_ownership.user.character_ownerships.all().select_related('character', 'zkil').values_list('character__character_name', 'character__corporation_ticker', 'character__character_id', 'character__corporation_id', 'character__zkill__zk_12m', 'character__zkill__zk_3m')
+            if aastatistics_active():
+                alts = char.character_ownership.user.character_ownerships.all().select_related('character', 'character_stats').values_list('character__character_name', 'character__corporation_ticker', 'character__character_id', 'character__corporation_id', 'character__character_stats__zk_12m', 'character__character_stats__zk_3m')
                 zk12 = 0
                 zk3 = 0
             else:
@@ -59,7 +59,7 @@ class Members(commands.Cog):
                 zk12 = "Not Installed"
                 zk3 = "Not Installed"
 
-            if authanalitics_active():
+            if aastatistics_active():
                 for alt in alts:
                     if alt[4]:
                         zk12 += alt[4]
@@ -91,7 +91,7 @@ class Members(commands.Cog):
                     name="Groups", value=", ".join(groups), inline=False
                 )
 
-            if authanalitics_active():
+            if aastatistics_active():
                 embed.add_field(
                     name="12m Kills", value=zk12, inline=True
                 )
