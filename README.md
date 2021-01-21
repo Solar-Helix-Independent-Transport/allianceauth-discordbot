@@ -71,14 +71,14 @@ DISCORD_BOT_ADM_CONSTELLATIONS = [20000020] # Kimitoro Example
 * Optional Settings
  ```python
 # configure the bots cogs.
-DISCORD_BOT_COGS =[ "cogs.about",
-                    "cogs.members",
-                    "cogs.timers",
-                    "cogs.auth",
-                    "cogs.sov",
-                    "cogs.time",
-                    "cogs.eastereggs",
-                    "cogs.remind",]
+DISCORD_BOT_COGS =[ "aadiscordbot.cogs.about",
+                    "aadiscordbot.cogs.members",
+                    "aadiscordbot.cogs.timers",
+                    "aadiscordbot.cogs.auth",
+                    "aadiscordbot.cogs.sov",
+                    "aadiscordbot.cogs.time",
+                    "aadiscordbot.cogs.eastereggs",
+                    "aadiscordbot.cogs.remind",]
 ```
 
 * Add the below lines to `myauth/celery.py` somewhere above the `app.autodiscover_tasks...` line
