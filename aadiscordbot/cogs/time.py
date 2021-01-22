@@ -31,12 +31,14 @@ class Time(commands.Cog):
         """
         await ctx.trigger_typing()
 
+        url = None
         if timezones_active():
-            url = get_site_url() + "timezones/"
-        else:
-            url = get_site_url()
+            url = get_site_url() + "/timezones/"
 
-        message = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+        message = '**Current EVE Time:** ' + datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+
+        if url is not None:
+            message += '\n' + url
 
         return await ctx.send(message)
 
