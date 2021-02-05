@@ -5,20 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.3.0] 2021-02-05
+First Non-Alpha Release, AA-Discord bot has been heavily tested by the community now, many thanks to all involved.
+### Added
+* App Cogs can now be customized to load external cogs
+* New shiny Time cog, using AA-Timezones
+### Fixes
+* Use AA-Statistics, the rebranded authanalitics
+
+### Docs
+Notated Integrations
 ## [0.2.5a Alpha] 2021-01-05
-###Fixes
+### Fixes
 * Readme reflects new settings formats
 * Cogs are configurable by Settings
 * Docker Support (again)
 * Refactor Channel/Direct message tasks to be more AA aware, adds shims to old tasks.
 
 ## [0.2.4a Alpha] 2021-01-02
-###Fixes
+### Fixes
 * Removes Click dependency for better Python 3.6 support
 * Server model was returning invalid server_name as its string
 
 ## [0.2.1a Alpha] 2021-01-02
-###Fixes
+### Fixes
 * Adds some logging
 
 ## [0.2.0a Alpha] 2021-01-02
