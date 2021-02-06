@@ -37,102 +37,116 @@ class Members(commands.Cog):
             return await ctx.message.add_reaction(chr(0x1F44E))
 
         input_name = ctx.message.content[8:]
-        char = EveCharacter.objects.get(character_name=input_name)
-
+        
+        embed = Embed(
+            title="Character Lookup {character_name}".format(character_name=input_name)
+        )
+        
         try:
-            main = char.character_ownership.user.profile.main_character
-            state = char.character_ownership.user.profile.state.name
-            groups = char.character_ownership.user.groups.all().values_list('name', flat=True)
+            char = EveCharacter.objects.get(character_name=input_name)
 
             try:
-                discord_string = "<@{}>".format(char.character_ownership.user.discord.uid)
-            except Exception as e:
-                logger.error(e)
-                discord_string = "unknown"
+                main = char.character_ownership.user.profile.main_character
+                state = char.character_ownership.user.profile.state.name
+                groups = char.character_ownership.user.groups.all().values_list('name', flat=True)
 
-            if aastatistics_active():
-                alts = char.character_ownership.user.character_ownerships.all().select_related('character', 'character_stats').values_list('character__character_name', 'character__corporation_ticker', 'character__character_id', 'character__corporation_id', 'character__character_stats__zk_12m', 'character__character_stats__zk_3m')
-                zk12 = 0
-                zk3 = 0
-            else:
-                alts = char.character_ownership.user.character_ownerships.all().select_related('character').values_list('character__character_name', 'character__corporation_ticker', 'character__character_id', 'character__corporation_id')
-                zk12 = "Not Installed"
-                zk3 = "Not Installed"
+                try:
+                    discord_string = "<@{}>".format(char.character_ownership.user.discord.uid)
+                except Exception as e:
+                    logger.error(e)
+                    discord_string = "unknown"
 
-            if aastatistics_active():
-                for alt in alts:
-                    if alt[4]:
-                        zk12 += alt[4]
-                        zk3 += alt[5]
-
-            embed = Embed(title="Character Lookup")
-            embed.colour = Color.blue()
-            embed.description = "**{0}** is linked to **{1} [{2}]** (State: {3})".format(
-                                                                            char,
-                                                                            main,
-                                                                            main.corporation_ticker,
-                                                                            state
-                                                                        )
-
-            alt_list = ["[{}](https://evewho.com/character/{}) *[ [{}](https://evewho.com/corporation/{}) ]*".format(a[0], a[2], a[1], a[3]) for a in alts]
-            for idx, names in enumerate([alt_list[i:i + 6] for i in range(0, len(alt_list), 6)]):
-                if idx < 6:
-                    embed.add_field(
-                        name="Linked Characters {}".format(idx+1), value=", ".join(names), inline=False
-                    )
+                if aastatistics_active():
+                    alts = char.character_ownership.user.character_ownerships.all().select_related('character', 'character_stats').values_list('character__character_name', 'character__corporation_ticker', 'character__character_id', 'character__corporation_id', 'character__character_stats__zk_12m', 'character__character_stats__zk_3m')
+                    zk12 = 0
+                    zk3 = 0
                 else:
-                    embed.add_field(
-                        name="Linked Characters {} **( Discord Limited There are More )**".format(idx), value=", ".join(names), inline=False
-                    )
-                    break
+                    alts = char.character_ownership.user.character_ownerships.all().select_related('character').values_list('character__character_name', 'character__corporation_ticker', 'character__character_id', 'character__corporation_id')
+                    zk12 = "Not Installed"
+                    zk3 = "Not Installed"
 
-            if len(groups) > 0:
+                if aastatistics_active():
+                    for alt in alts:
+                        if alt[4]:
+                            zk12 += alt[4]
+                            zk3 += alt[5]
+
+                embed.colour = Color.blue()
+                embed.description = "**{0}** is linked to **{1} [{2}]** (State: {3})".format(
+                                                                                char,
+                                                                                main,
+                                                                                main.corporation_ticker,
+                                                                                state
+                                                                            )
+
+                alt_list = ["[{}](https://evewho.com/character/{}) *[ [{}](https://evewho.com/corporation/{}) ]*".format(a[0], a[2], a[1], a[3]) for a in alts]
+                for idx, names in enumerate([alt_list[i:i + 6] for i in range(0, len(alt_list), 6)]):
+                    if idx < 6:
+                        embed.add_field(
+                            name="Linked Characters {}".format(idx+1), value=", ".join(names), inline=False
+                        )
+                    else:
+                        embed.add_field(
+                            name="Linked Characters {} **( Discord Limited There are More )**".format(idx), value=", ".join(names), inline=False
+                        )
+                        break
+
+                if len(groups) > 0:
+                    embed.add_field(
+                        name="Groups", value=", ".join(groups), inline=False
+                    )
+
+                if aastatistics_active():
+                    embed.add_field(
+                        name="12m Kills", value=zk12, inline=True
+                    )
+                    embed.add_field(
+                        name="3m Kills", value=zk3, inline=True
+                    )
+
                 embed.add_field(
-                    name="Groups", value=", ".join(groups), inline=False
+                    name="Discord Link", value=discord_string, inline=False
                 )
 
-            if aastatistics_active():
+                return await ctx.send(embed=embed)
+            except ObjectDoesNotExist:
+                users = char.ownership_records.values('user')
+                users = User.objects.filter(id__in=users)
+                characters = EveCharacter.objects.filter(ownership_records__user__in=users).distinct()
+                embed = Embed(title="Character Lookup")
+                embed.colour = Color.blue()
+
+                embed.description = "**{0}** is Unlinked searching for any characters linked to known users".format(
+                                                                    char,
+                                                                )
+                user_names = ["{}".format(user.username) for user in users]
                 embed.add_field(
-                    name="12m Kills", value=zk12, inline=True
+                    name="Old Users", value=", ".join(user_names), inline=False
                 )
-                embed.add_field(
-                    name="3m Kills", value=zk3, inline=True
-                )
+                alt_list = ["[{}](https://evewho.com/character/{}) *[ [{}](https://evewho.com/corporation/{}) ]*".format(a.character_name,
+                                                                                                                         a.character_id,
+                                                                                                                         a.corporation_ticker,
+                                                                                                                         a.corporation_id
+                                                                                                                         ) for a in characters]
+                for idx, names in enumerate([alt_list[i:i + 6] for i in range(0, len(alt_list), 6)]):
+                    if idx < 6:
+                        embed.add_field(
+                            name="Found Characters {}".format(idx+1), value=", ".join(names), inline=False
+                        )
+                    else:
+                        embed.add_field(
+                            name="Found Characters {} **( Discord Limited There are More )**".format(idx), value=", ".join(names), inline=False
+                        )
+                        break
 
-            embed.add_field(
-                name="Discord Link", value=discord_string, inline=False
-            )
+                return await ctx.send(embed=embed)
 
-            return await ctx.send(embed=embed)
-        except ObjectDoesNotExist:
-            users = char.ownership_records.values('user')
-            users = User.objects.filter(id__in=users)
-            characters = EveCharacter.objects.filter(ownership_records__user__in=users).distinct()
-            embed = Embed(title="Character Lookup")
-            embed.colour = Color.blue()
+        except EveCharacter.DoesNotExist:
+            embed.colour = Color.red()
 
-            embed.description = "**{0}** is Unlinked searching for any characters linked to known users".format(
-                                                                char,
-                                                            )
-            user_names = ["{}".format(user.username) for user in users]
-            embed.add_field(
-                name="Old Users", value=", ".join(user_names), inline=False
-            )
-            alt_list = ["[{}](https://evewho.com/character/{}) *[ [{}](https://evewho.com/corporation/{}) ]*".format(a.character_name,
-                                                                                                                     a.character_id,
-                                                                                                                     a.corporation_ticker,
-                                                                                                                     a.corporation_id
-                                                                                                                     ) for a in characters]
-            for idx, names in enumerate([alt_list[i:i + 6] for i in range(0, len(alt_list), 6)]):
-                if idx < 6:
-                    embed.add_field(
-                        name="Found Characters {}".format(idx+1), value=", ".join(names), inline=False
-                    )
-                else:
-                    embed.add_field(
-                        name="Found Characters {} **( Discord Limited There are More )**".format(idx), value=", ".join(names), inline=False
-                    )
-                    break
+            embed.description = (
+                "Character **{character_name}** does not exist in our Auth system"
+            ).format(character_name=input_name)
 
             return await ctx.send(embed=embed)
 
