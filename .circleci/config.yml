@@ -1,0 +1,43 @@
+version: 2.1
+jobs:
+  Deploy:
+    docker:
+      - image: circleci/python:3.7
+    steps:
+      - checkout
+      - restore_cache:
+          key: v1-dependency-cache-{{ checksum "discordbot/__init__.py" }}-{{ checksum "Makefile" }}
+      - run:
+          name: install python dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            make dev
+      - run:
+          name: create packages
+          command: |
+            make package
+      - save_cache:
+          key: v1-dependency-cache-{{ checksum "discordbot/__init__.py" }}-{{ checksum "Makefile" }}
+          paths:
+            - "venv"
+            - ".tox"
+      - run:
+          name: upload to pypi
+          command: |
+            . venv/bin/activate
+            twine upload dist/*
+
+workflows:
+  version: 2
+  DiscordBot:
+    jobs:
+      - BuildAndTest
+      - Deploy:
+          context:
+            - pypi
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
