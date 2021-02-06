@@ -5,13 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.3.1] 2021-02-06
+### Added
+* Added PyPi Deployment stuffs
+### Fixes
+* Lookup cog doesnt throw error on not found. PR #33 (@ppfeufer)
+
 ## [0.3.0] 2021-02-05
 First Non-Alpha Release, AA-Discord bot has been heavily tested by the community now, many thanks to all involved.
 ### Added
 * App Cogs can now be customized to load external cogs
 * New shiny Time cog, using AA-Timezones
 ### Fixes
-* Use AA-Statistics, the rebranded authanalitics
+* Use AA-Statistics, the rebranded authanalitics 
 
 ### Docs
 Notated Integrations
