@@ -2,6 +2,8 @@
 
 AA-Discordbot for [Alliance Auth](https://gitlab.com/allianceauth/allianceauth).
 
+[![PyPi](https://img.shields.io/pypi/v/allianceauth-discordbot?color=green)](https://pypi.org/project/allianceauth-discordbot/)
+
 ## Features
 
 * Bot Framework, easily extensible with more Cogs
