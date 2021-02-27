@@ -25,6 +25,14 @@ def timerboard_active():
     return 'allianceauth.timerboard' in settings.INSTALLED_APPS
 
 
+def mumble_active():
+    return 'mumble' in settings.INSTALLED_APPS
+
+
+def discord_active():
+    return 'discord' in settings.INSTALLED_APPS
+
+
 def get_admins():
     admin = getattr(settings, 'DISCORD_BOT_ADMIN_USER', [])
     if isinstance(admin, int):
