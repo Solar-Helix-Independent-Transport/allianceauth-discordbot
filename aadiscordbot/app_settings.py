@@ -26,11 +26,11 @@ def timerboard_active():
 
 
 def mumble_active():
-    return 'mumble' in settings.INSTALLED_APPS
+    return 'allianceauth.services.modules.mumble' in settings.INSTALLED_APPS
 
 
 def discord_active():
-    return 'discord' in settings.INSTALLED_APPS
+    return 'allianceauth.services.modules.discord' in settings.INSTALLED_APPS
 
 
 def get_admins():
@@ -40,11 +40,13 @@ def get_admins():
     else:
         return admin
 
-DISCORD_BOT_COGS = getattr(settings, 'DISCORD_BOT_COGS',[ "aadiscordbot.cogs.about",
+
+DISCORD_BOT_COGS = getattr(settings, 'DISCORD_BOT_COGS', ["aadiscordbot.cogs.about",
                                                           "aadiscordbot.cogs.members",
                                                           "aadiscordbot.cogs.timers",
                                                           "aadiscordbot.cogs.auth",
                                                           "aadiscordbot.cogs.sov",
                                                           "aadiscordbot.cogs.time",
                                                           "aadiscordbot.cogs.eastereggs",
-                                                          "aadiscordbot.cogs.remind",])
+                                                          "aadiscordbot.cogs.remind",
+                                                          "aadiscordbot.cogs.services", ])

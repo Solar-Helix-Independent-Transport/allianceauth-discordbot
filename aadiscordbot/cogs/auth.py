@@ -2,14 +2,13 @@
 from discord.ext import commands
 from discord.embeds import Embed
 from discord.colour import Color
+from ..app_settings import mumble_active, discord_active
 # AA Contexts
 from aadiscordbot.app_settings import get_site_url, get_admins
 from allianceauth.services.modules.discord.models import DiscordUser
+from django.contrib.auth.models import User
 
-import re
 import logging
-import pendulum
-import traceback
 logger = logging.getLogger(__name__)
 
 
@@ -86,14 +85,20 @@ class Auth(commands.Cog):
                 # lets also ignore bots here
                 pass
             else:
+                # Dump the payload if it gets too big
+                if len(payload) > 1000:
+                    try:
+                        await ctx.send(payload)
+                        payload = "The following Users cannot be located in Alliance Auth \n"
+                    except Exception as e:
+                        logger.error(e)
+                # keep building the payload
                 payload = payload + member.mention + "\n"
 
         try:
             await ctx.send(payload)
         except Exception as e:
             logger.error(e)
-            await ctx.send(payload[0:1999])
-            await ctx.send("Maximum Discord message length reached")
 
 
 def setup(bot):
