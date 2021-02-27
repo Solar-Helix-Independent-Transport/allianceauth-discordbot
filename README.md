@@ -2,6 +2,8 @@
 
 AA-Discordbot for [Alliance Auth](https://gitlab.com/allianceauth/allianceauth).
 
+[![PyPi](https://img.shields.io/pypi/v/allianceauth-discordbot?color=green)](https://pypi.org/project/allianceauth-discordbot/)
+
 ## Features
 
 * Bot Framework, easily extensible with more Cogs
@@ -39,7 +41,7 @@ AA-Discordbot for [Alliance Auth](https://gitlab.com/allianceauth/allianceauth).
 
 * Update your [Discord Developer Application](https://discord.com/developers/applications) to include the Privileged Intents that we call. Please add Server Members and Presence (for future development).
 
-![screenshot](https://imgur.com/3Sr4yFZ)
+![screenshot](https://i.imgur.com/hCcdLnB.png)
 
 * Install the app with your venv active
 
@@ -49,7 +51,7 @@ pip install -U git+https://github.com/pvyParts/allianceauth-discordbot.git
 
 * Add `'aadiscordbot',` to your INSTALLED_APPS list in local.py.
 
-* Add the below lines to your `local.py` settings file, Changing the channel IDs to yours.
+* Add the below lines to your `local.py` settings file, Changing the contexts to yours.
 
  ```python
 ## Settings for Allianceauth-Discordbot
@@ -68,10 +70,23 @@ DISCORD_BOT_ADM_REGIONS = [10000002] # The Forge Example
 DISCORD_BOT_ADM_SYSTEMS = [30000142] # Jita Example
 DISCORD_BOT_ADM_CONSTELLATIONS = [20000020] # Kimitoro Example
 ```
+* Optional Settings
+ ```python
+# configure the bots cogs.
+DISCORD_BOT_COGS =[ "aadiscordbot.cogs.about",
+                    "aadiscordbot.cogs.members",
+                    "aadiscordbot.cogs.timers",
+                    "aadiscordbot.cogs.auth",
+                    "aadiscordbot.cogs.sov",
+                    "aadiscordbot.cogs.time",
+                    "aadiscordbot.cogs.eastereggs",
+                    "aadiscordbot.cogs.remind",]
+```
 
 * Add the below lines to `myauth/celery.py` somewhere above the `app.autodiscover_tasks...` line
 
 ```python
+
 ## Route AA Discord bot tasks away from AllianceAuth
 app.conf.task_routes = {'aadiscordbot.tasks.*': {'queue': 'aadiscordbot'}}
 ```
@@ -107,7 +122,13 @@ programs=beat,worker,gunicorn,authbot
 priority=999
 ```
 
+## Integrations
+* [Statistics](https://github.com/pvyParts/aa-statistics)
+  * Adds zkill Monthly/Yearly stats to !lookup
+
 ## Using AA-Discordbot from my project
+
+### Send Messages
 [aadiscordbot/tasks.py](https://github.com/pvyParts/allianceauth-discordbot/blob/master/aadiscordbot/tasks.py)
 
 ```python
@@ -116,15 +137,26 @@ def discord_bot_active():
     return 'aadiscordbot' in settings.INSTALLED_APPS
 
 ## Only import it, if it is installed
-if app_discord_bot_active():
+if discord_bot_active():
     import aadiscordbot.tasks
 
 ## These two tasks can be called to Queue up a Message
 ## AA Should not act on these, only AA-DiscordBot will consume them
 if discord_bot_active():
-    aadiscordbot.tasks.send_direct_message.delay(user_id, message_content)
-    aadiscordbot.tasks.send_channel.delay(channel_id, message_content, embed=False)
+    aadiscordbot.tasks.send_direct_message_by_user_id.delay(user_pk, message_content)
+    aadiscordbot.tasks.send_direct_message_by_discord_id.delay(discord_user_id, message_content)
+    aadiscordbot.tasks.send_channel_message_by_discord_id.delay(channel_id, message_content, embed=False)
 ```
+
+### Register Cogs (Handling Commands)
+
+In `auth_hooks.py`, define a function that returns an array of cog modules, and register it as a `discord_cogs_hook`:
+```python
+@hooks.register('discord_cogs_hook')
+def register_cogs():
+    return ["yourapp.cogs.cog_a", "yourapp.cogs.cog_b"]
+```
+
 
 ## Issues
 
