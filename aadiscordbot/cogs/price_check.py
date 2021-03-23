@@ -62,7 +62,7 @@ class PriceCheck(commands.Cog):
     @commands.command(pass_context=True)
     async def amarr(self, ctx):
         """
-        Check an item price on Jita and Amarr market
+        Check an item price on Amarr market
         :param ctx:
         :return:
         """
