@@ -47,7 +47,7 @@ class Services(commands.Cog):
             logger.error(e)
 
         if mumble_active():
-            payload = "The Following Users don't have Mumble"
+            payload = "The Following Users don't have Mumble \n"
             for user in user_list:
                 if user.has_perm('mumble.can_access'):
                     try:
@@ -65,9 +65,11 @@ class Services(commands.Cog):
                 await ctx.send(payload)
             except Exception as e:
                 logger.error(e)
+                payload = "No State found for that Search"
+                return await ctx.send(payload)
 
         if discord_active():
-            payload = "The Following Users don't have Discord"
+            payload = "The Following Users don't have Discord \n"
             for user in user_list:
                 if user.has_perm('discord.can_access'):
                     try:
@@ -134,7 +136,7 @@ class Services(commands.Cog):
                 logger.error(e)
 
         else:
-            payload = "No Result found on that Search"
+            payload = "No State, Alliance or Corp found for that search"
             return await ctx.send(payload)
 
         if discord_active():
