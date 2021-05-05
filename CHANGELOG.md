@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.4.0] 2021-05-05
+### Added
+* Price Check Cog, PR #40 (@ppfeufer)
+### Fixes
+* Use the Django Application Registry instead of reading INSTALLED_APPS, @ErikKalkoken
+
 ## [0.3.1] 2021-02-06
 ### Added
 * Added PyPi Deployment stuffs

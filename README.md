@@ -34,6 +34,10 @@ AA-Discordbot for [Alliance Auth](https://gitlab.com/allianceauth/allianceauth).
     * !time - Returns the current EVE Time.
   * Timers
     * !timer - Returns the next Structure timer from allianceauth.timerboard.
+  * PriceCheck:
+    * amarr - Check an item price on Amarr market
+    * jita -  Check an item price on Jita market
+    * price - Check an item price on Jita and Amarr market
   * Easter Eggs,
     * !happybirthday [text] - Wishes the text a happy birthday, works with user mentions
 
@@ -80,7 +84,8 @@ DISCORD_BOT_COGS =[ "aadiscordbot.cogs.about",
                     "aadiscordbot.cogs.sov",
                     "aadiscordbot.cogs.time",
                     "aadiscordbot.cogs.eastereggs",
-                    "aadiscordbot.cogs.remind",]
+                    "aadiscordbot.cogs.remind",
+                    "aadiscordbot.cogs.price_check",]
 ```
 
 * Add the below lines to `myauth/celery.py` somewhere above the `app.autodiscover_tasks...` line
