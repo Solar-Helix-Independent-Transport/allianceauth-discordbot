@@ -40,4 +40,5 @@ DISCORD_BOT_COGS = getattr(settings, 'DISCORD_BOT_COGS',[ "aadiscordbot.cogs.abo
                                                           "aadiscordbot.cogs.sov",
                                                           "aadiscordbot.cogs.time",
                                                           "aadiscordbot.cogs.eastereggs",
-                                                          "aadiscordbot.cogs.remind",])
+                                                          "aadiscordbot.cogs.remind",
+                                                          "aadiscordbot.cogs.price_check",])
