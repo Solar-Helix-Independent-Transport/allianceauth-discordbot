@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.apps import apps
 import re
 
 
@@ -14,15 +15,15 @@ def get_site_url():  # regex sso url
 
 
 def aastatistics_active():
-    return 'aastatistics' in settings.INSTALLED_APPS
+    return apps.is_installed("aastatistics")
 
 
 def timezones_active():
-    return 'timezones' in settings.INSTALLED_APPS
+    return apps.is_installed("timezones")
 
 
 def timerboard_active():
-    return 'allianceauth.timerboard' in settings.INSTALLED_APPS
+    return apps.is_installed("allianceauth.timerboard")
 
 
 def get_admins():
