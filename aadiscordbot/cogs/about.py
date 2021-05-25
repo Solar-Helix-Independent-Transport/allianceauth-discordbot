@@ -268,6 +268,23 @@ class About(commands.Cog):
 
         await ctx.send("\n".join(empties))
 
+    @commands.command(hidden=True)
+    async def list_roles(self, ctx):
+        """
+        dump all roles with no members.
+        """
+        if ctx.message.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+            return await ctx.message.add_reaction(chr(0x1F44E))
+
+        await ctx.message.channel.trigger_typing()
+        
+        await ctx.send(F"Discord may get cranky, this may take some time.\nRole count:{len(ctx.guild.roles)}")
+        roles = []
+        for role_model in ctx.guild.roles:
+            roles.append(f"`{role_model.name}`")
+        roles.sort()
+        await ctx.send("\n".join(roles))
+
 
 
 def setup(bot):
