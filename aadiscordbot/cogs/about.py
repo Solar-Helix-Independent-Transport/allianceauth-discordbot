@@ -153,7 +153,7 @@ class About(commands.Cog):
 
         target_role = get(ctx.guild.roles, name=input_string[1])
         channel_name = get(ctx.guild.channels, name=input_string[0])
-
+        
         if channel_name:
             await channel_name.set_permissions(target_role, read_messages=True,
                                                send_messages=True)
@@ -218,6 +218,38 @@ class About(commands.Cog):
         embed.description = message
         
         return await ctx.send(embed=embed)
+
+    @commands.command(hidden=True)
+    async def dump_roles(self, ctx):
+        """
+        dump all channels and roles.
+        """
+        if ctx.message.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+            return await ctx.message.add_reaction(chr(0x1F44E))
+
+        await ctx.message.channel.trigger_typing()
+        
+        await ctx.send(F"Discord may get cranky, this may take some time.\n\nChannels: {len(ctx.guild.channels)}\n\nRoles:{len(ctx.guild.roles)}")
+        for channel_name in ctx.guild.channels:
+            roles = {}
+            for role in channel_name.overwrites:
+                roles[role.name] = {}
+                overides = channel_name.overwrites_for(role)
+                for _name, _value in overides:
+                    if _value is not None:
+                        roles[role.name][_name] = _value
+                pass
+            embed = Embed(title=f"'{channel_name.name}' Channel Roles")
+            embed.colour = Color.blue()
+            message = ""
+            for key, role in roles.items():
+                _msg = f"\n`{key}` Role:\n"
+                for r, v in role.items():
+                    _msg += f"{r}: {v}\n"
+                message += _msg
+            embed.description = message
+            await ctx.send(embed=embed)
+
 
 
 def setup(bot):
