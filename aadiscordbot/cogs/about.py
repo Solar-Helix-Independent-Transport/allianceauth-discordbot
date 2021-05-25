@@ -220,7 +220,7 @@ class About(commands.Cog):
         return await ctx.send(embed=embed)
 
     @commands.command(hidden=True)
-    async def dump_roles(self, ctx):
+    async def dump_channels(self, ctx):
         """
         dump all channels and roles.
         """
@@ -249,6 +249,24 @@ class About(commands.Cog):
                 message += _msg
             embed.description = message
             await ctx.send(embed=embed)
+
+    @commands.command(hidden=True)
+    async def empty_roles(self, ctx):
+        """
+        dump all roles with no members.
+        """
+        if ctx.message.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+            return await ctx.message.add_reaction(chr(0x1F44E))
+
+        await ctx.message.channel.trigger_typing()
+        
+        await ctx.send(F"Discord may get cranky, this may take some time.\nRole count:{len(ctx.guild.roles)}")
+        empties = []
+        for role_model in ctx.guild.roles:
+            if len(role_model.members) == 0:
+                empties.append(role_model.name)
+
+        await ctx.send("\n".join(empties))
 
 
 
