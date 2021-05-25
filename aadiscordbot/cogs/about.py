@@ -283,7 +283,9 @@ class About(commands.Cog):
         for role_model in ctx.guild.roles:
             roles.append(f"`{role_model.name}`")
         roles.sort()
-        await ctx.send("\n".join(roles))
+        chunks = [roles[x:x+50] for x in range(0, len(roles), 50)]
+        for c in chunks:
+            await ctx.send("\n".join(c))
 
 
 
