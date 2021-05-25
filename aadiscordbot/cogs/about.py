@@ -269,6 +269,33 @@ class About(commands.Cog):
         await ctx.send("\n".join(empties))
 
     @commands.command(hidden=True)
+    async def clear_empty_roles(self, ctx):
+        """
+        dump all roles with no members.
+        """
+        if ctx.message.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+            return await ctx.message.add_reaction(chr(0x1F44E))
+
+        await ctx.message.channel.trigger_typing()
+        
+        await ctx.send(F"Discord may get cranky, this may take some time.\nRole count:{len(ctx.guild.roles)}")
+        empties = 0
+        fails = [] 
+        for role_model in ctx.guild.roles:
+            if len(role_model.members) == 0:
+                try:
+                    await role_model.delete()
+                    empties += 1
+                except Exception as e: 
+                    fails.append(role_model.name)
+                    logger.error(e)
+
+        await ctx.send(f"Deleted {empties} Roles.")
+        chunks = [fails[x:x+50] for x in range(0, len(fails), 50)]
+        for c in chunks:
+            await ctx.send("\n".join(c))
+
+    @commands.command(hidden=True)
     async def list_roles(self, ctx):
         """
         dump all roles with no members.
