@@ -171,7 +171,7 @@ class About(commands.Cog):
 
         await ctx.message.channel.trigger_typing()
 
-        input_string = ctx.message.content[10:].split(' ')
+        input_string = ctx.message.content[15:].split(' ')
         if len(input_string) != 2:
             return await ctx.message.add_reaction(chr(0x274C))
 
