@@ -141,7 +141,7 @@ class About(commands.Cog):
     @commands.command(hidden=True)
     async def add_role(self, ctx):
         """
-        add a role from a channel.
+        add a role with read and send to a channel.
         """
         if ctx.message.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
             return await ctx.message.add_reaction(chr(0x1F44E))
@@ -158,6 +158,29 @@ class About(commands.Cog):
         if channel_name:
             await channel_name.set_permissions(target_role, read_messages=True,
                                                send_messages=True)
+
+        return await ctx.message.add_reaction(chr(0x1F44D))
+
+    @commands.command(hidden=True)
+    async def add_role_read(self, ctx):
+        """
+        add a role with read only perms to a channel.
+        """
+        if ctx.message.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+            return await ctx.message.add_reaction(chr(0x1F44E))
+
+        await ctx.message.channel.trigger_typing()
+
+        input_string = ctx.message.content[10:].split(' ')
+        if len(input_string) != 2:
+            return await ctx.message.add_reaction(chr(0x274C))
+
+        target_role = get(ctx.guild.roles, name=input_string[1])
+        channel_name = get(ctx.guild.channels, name=input_string[0])
+        
+        if channel_name:
+            await channel_name.set_permissions(target_role, read_messages=True,
+                                               send_messages=False)
 
         return await ctx.message.add_reaction(chr(0x1F44D))
 
@@ -331,7 +354,7 @@ class About(commands.Cog):
         channel_name = get(ctx.guild.channels, name=parts[0])
 
         if channel_name:
-            hash = hashlib.sha1("my message".encode("UTF-8")).hexdigest()[:10]
+            hash = hashlib.sha1(channel_name.name.encode("UTF-8")).hexdigest()[:10]
             if len(parts) == 1:
                 await ctx.send(f"This will delete the channel {channel_name.name}\nto confirm reply\n")
                 return await ctx.send(f"`!rem_channel {channel_name.name}|{hash}`")
@@ -339,6 +362,20 @@ class About(commands.Cog):
                 name = channel_name.name
                 await channel_name.delete()
                 return await ctx.send(f"Deleted `{name}`")
+
+    @commands.command(hidden=True)
+    async def list_cats(self, ctx):
+        """
+        Lists all Cats....
+        """
+        if ctx.message.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+            return await ctx.message.add_reaction(chr(0x1F44E))
+
+        await ctx.message.channel.trigger_typing()
+
+        for category in ctx.message.guild.categories:
+            await ctx.send(f"{category.name}")
+            await ctx.send(f"`{category.id}`")
 
 
 
