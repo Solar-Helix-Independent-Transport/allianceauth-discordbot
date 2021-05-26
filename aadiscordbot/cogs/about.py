@@ -378,6 +378,32 @@ class About(commands.Cog):
             await ctx.send(f"`{category.id}`")
 
 
+    @commands.command(hidden=True)
+    async def help_admin(self, ctx):
+        """
+        Hidden help...
+        """
+        if ctx.message.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+            return await ctx.message.add_reaction(chr(0x1F44E))
+
+        await ctx.message.channel.trigger_typing()
+
+        command_list = [
+            "`get_webhooks` gets a webhook for the current channel and sneds via DM",
+            "`add_channel` `cat_id channel_name` Creates a channel",
+            "`rem_channel` `channel_name` removes a channel",
+            "`add_role` `channel_name role_name` adds a read and send role to channel",
+            "`add_role_read` `channel_name role_name` adds a read role to channel",
+            "`rem_role` `channel_name role_name` removes a role from a channel",
+            "`list_cats` lists all cats",
+            "`list_role` `channel_name` Lists roles attached to a channel",
+            "`list_roles` lists all roles",
+            "`dump_channels` dumps all channels and roles ( will be rate limited )",
+            "`empty_roles` lists all roles with no members",
+            "`clear_empty_roles` clears all empty roles from the server",
+            "`uptime` how ong have we been live"
+        ]
+        return await ctx.send("\n".join(command_list))
 
 def setup(bot):
     bot.add_cog(About(bot))
