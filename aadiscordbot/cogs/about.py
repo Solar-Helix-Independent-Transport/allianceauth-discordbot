@@ -10,6 +10,7 @@ from aadiscordbot import app_settings, __version__, __branch__
 import pendulum
 import re
 
+import hashlib
 import logging
 import traceback
 logger = logging.getLogger(__name__)
@@ -313,6 +314,31 @@ class About(commands.Cog):
         chunks = [roles[x:x+50] for x in range(0, len(roles), 50)]
         for c in chunks:
             await ctx.send("\n".join(c))
+
+    @commands.command(hidden=True)
+    async def rem_channel(self, ctx):
+        """
+        deletes a channel... User beware....
+        """
+        if ctx.message.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+            return await ctx.message.add_reaction(chr(0x1F44E))
+
+        await ctx.message.channel.trigger_typing()
+        
+        input_string = ctx.message.content[13:]
+
+        parts = input_string.split("|")
+        channel_name = get(ctx.guild.channels, name=parts[0])
+
+        if channel_name:
+            hash = hashlib.sha1("my message".encode("UTF-8")).hexdigest()[:10]
+            if len(parts) == 1:
+                await ctx.send(f"This will delete the channel {channel_name.name}\nto confirm reply\n")
+                return await ctx.send(f"`!rem_channel {channel_name.name}|{hash}`")
+            if len(parts) == 2:
+                name = channel_name.name
+                await channel_name.delete()
+                return await ctx.send(f"Deleted `{name}`")
 
 
 
