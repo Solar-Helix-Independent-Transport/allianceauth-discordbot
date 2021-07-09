@@ -7,7 +7,6 @@ from discord.utils import get
 from django.conf import settings
 from aadiscordbot.cogs.utils.decorators import sender_is_admin
 from aadiscordbot import app_settings, __version__, __branch__
-from aadiscordbot
 
 import pendulum
 import re
