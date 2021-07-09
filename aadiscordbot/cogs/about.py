@@ -43,7 +43,7 @@ class About(commands.Cog):
 
         for m in matches:
             url = m.groups()
-        embed.set_footer(text="Lovingly developed for Init.™ by AaronKable and ArielRin")
+        embed.set_footer(text="Lovingly developed for Init.™ by AaronRin and ArielKable")
 
         embed.add_field(
             name="Number of Servers:", value=len(self.bot.guilds), inline=True
