@@ -140,6 +140,23 @@ programs=beat,worker,gunicorn,authbot
 priority=999
 ```
 
+## Settings
+
+| Setting | Default | Description |
+| ---- | ---- | ---- |
+|DISCORD_BOT_PREFIX | "!" | Prefix for all Discord commands | 
+|DISCORD_BOT_COGS | refer to app_settings chonky list | Loaded Base Cogs, other apps may load via hooks |
+|DISCORD_BOT_ACCESS_DENIED_REACT | 0x1F44E | Reacts when permissions are denied, exadecimal unicode emoji, default is a thumbs down
+|DISCORD_BOT_ADMIN_USER | [] | List of Discord IDs, these users can run any command as well as admin things
+|ADMIN_DISCORD_BOT_CHANNELS | [] | Admin commands can only be run in these channels
+|SOV_DISCORD_BOT_CHANNELS | [] | Sov commands can only be run in these channels
+|ADM_DISCORD_BOT_CHANNELS | [] | ADM commands can only be run in these channels
+|DISCORD_BOT_SOV_STRUCTURE_OWNER_IDS | [] | These sov structures are "owned" not hostile
+|DISCORD_BOT_MEMBER_ALLIANCES | [] | filters "mains" from alts
+|DISCORD_BOT_ADM_REGIONS | [] | Regions we care about ADM in
+|DISCORD_BOT_ADM_SYSTEMs | [] | Systems we care about ADM in
+|DISCORD_BOT_ADM_CONSTELLATIONS | [] | Constellations we care about ADM in
+
 ## Integrations
 * [Statistics](https://github.com/pvyParts/aa-statistics)
   * Adds zkill Monthly/Yearly stats to !lookup
