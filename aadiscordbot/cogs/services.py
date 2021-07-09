@@ -1,4 +1,5 @@
 # Cog Stuff
+from aadiscordbot.cogs.utils.decorators import sender_is_admin
 from discord.ext import commands
 from discord.embeds import Embed
 from discord.colour import Color
@@ -29,13 +30,11 @@ class Services(commands.Cog):
         self.bot = bot
 
     @commands.command(pass_context=True)
+    @sender_is_admin
     async def services(self, ctx):
         """
         service_registration STATE
         """
-        if ctx.message.author.id not in get_admins():
-            return await ctx.message.add_reaction(chr(0x1F44E))
-
         await ctx.trigger_typing()
         await ctx.send('Checking for Users without Service Activation')
         await ctx.trigger_typing()
@@ -89,14 +88,12 @@ class Services(commands.Cog):
                 logger.error(e)
 
     @commands.command(pass_context=True)
+    @sender_is_admin
     async def services_stats(self, ctx):
         """
         service_registration State>Alliance>Corp
         Returns Service Registration Statistics, similar to Corp Stats Two
         """
-        if ctx.message.author.id not in get_admins():
-            return await ctx.message.add_reaction(chr(0x1F44E))
-
         mode = "None"
         try:
             input = EveCorporationInfo.objects.get(corporation_name=ctx.message.content[16:])

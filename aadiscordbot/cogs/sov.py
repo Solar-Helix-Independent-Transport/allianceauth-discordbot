@@ -5,7 +5,7 @@ from discord.colour import Color
 # AA Contexts
 from django.conf import settings
 from allianceauth.eveonline.models import EveCharacter
-from aadiscordbot.cogs.utils.decorators import sender_has_perm
+from aadiscordbot.cogs.utils.decorators import message_in_channels, sender_has_perm
 from aadiscordbot import providers
 
 import datetime
@@ -26,13 +26,11 @@ class Sov(commands.Cog):
         self.bot = bot
 
     @commands.command(pass_context=True)
+    @message_in_channels(settings.SOV_DISCORD_BOT_CHANNELS)
     async def vuln(self, ctx):
         """
         Timers for region/constelation/system/alliance
         """
-        if ctx.message.channel.id not in settings.SOV_DISCORD_BOT_CHANNELS:
-            return await ctx.message.add_reaction(chr(0x1F44E))
-
         await ctx.trigger_typing()
 
         name_search = ctx.message.content[6:]
@@ -139,13 +137,11 @@ class Sov(commands.Cog):
         return True
 
     @commands.command(pass_context=True)
+    @message_in_channels(settings.SOV_DISCORD_BOT_CHANNELS)
     async def sov(self, ctx):
         """
         Timers for region/constelation/system/alliance
         """
-        if ctx.message.channel.id not in settings.SOV_DISCORD_BOT_CHANNELS:
-            return await ctx.message.add_reaction(chr(0x1F44E))
-
         await ctx.trigger_typing()
 
         name_search = ctx.message.content[5:]
@@ -251,13 +247,11 @@ class Sov(commands.Cog):
         return True
 
     @commands.command(pass_context=True)
+    @message_in_channels(settings.SOV_DISCORD_BOT_CHANNELS)
     async def lowadm(self, ctx):
         """
         Timers for region/constelation/system/alliance
         """
-        if ctx.message.channel.id not in settings.ADM_DISCORD_BOT_CHANNELS:
-            return await ctx.message.add_reaction(chr(0x1F44E))
-
         await ctx.trigger_typing()
 
         own_ids = settings.DISCORD_BOT_SOV_STRUCTURE_OWNER_IDS

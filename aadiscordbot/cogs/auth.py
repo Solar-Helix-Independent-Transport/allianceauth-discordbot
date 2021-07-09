@@ -5,6 +5,7 @@ from discord.colour import Color
 from ..app_settings import mumble_active, discord_active
 # AA Contexts
 from aadiscordbot.app_settings import get_site_url, get_admins
+from aadiscordbot.cogs.utils.decorators import sender_is_admin
 from allianceauth.services.modules.discord.models import DiscordUser
 from django.contrib.auth.models import User
 
@@ -45,13 +46,11 @@ class Auth(commands.Cog):
         return await ctx.send(embed=embed)
 
     @commands.command(pass_context=True)
+    @sender_is_admin()
     async def orphans(self, ctx):
         """
         Returns a list of users on this server, who are not known to AA
         """
-        if ctx.message.author.id not in get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
-            return await ctx.message.add_reaction(chr(0x1F44E))
-
         await ctx.trigger_typing()
         await ctx.send('Searching for Orphaned Discord Users')
         await ctx.trigger_typing()
