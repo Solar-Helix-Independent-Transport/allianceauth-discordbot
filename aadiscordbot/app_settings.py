@@ -34,6 +34,7 @@ def mumble_active():
 def discord_active():
     return 'allianceauth.services.modules.discord' in settings.INSTALLED_APPS
 
+DISCORD_BOT_PREFIX = getattr(settings, 'DISCORD_BOT_PREFIX', '!')
 
 DISCORD_BOT_COGS = getattr(settings, 'DISCORD_BOT_COGS', ["aadiscordbot.cogs.about",
                                                           "aadiscordbot.cogs.members",

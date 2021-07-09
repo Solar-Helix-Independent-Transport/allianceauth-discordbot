@@ -11,7 +11,7 @@ import json
 
 from .cogs.utils import context
 from . import bot_tasks
-from aadiscordbot.app_settings import DISCORD_BOT_ACCESS_DENIED_REACT
+from aadiscordbot.app_settings import DISCORD_BOT_ACCESS_DENIED_REACT, DISCORD_BOT_PREFIX
 
 import discord
 from discord.ext import commands, tasks
@@ -51,7 +51,7 @@ class AuthBot(commands.Bot):
         intents.members = True
 
         super().__init__(
-            command_prefix="!",
+            command_prefix=DISCORD_BOT_PREFIX,
             description=description,
             intents=intents,
         )
