@@ -12,7 +12,6 @@ import pendulum
 import re
 
 import logging
-import traceback
 logger = logging.getLogger(__name__)
 
 
@@ -44,7 +43,7 @@ class About(commands.Cog):
 
         for m in matches:
             url = m.groups()
-        embed.set_footer(text="Lovingly developed for Init.™ by AaronKable")
+        embed.set_footer(text="Lovingly developed for Init.™ by AaronKable and ArielRin")
 
         embed.add_field(
             name="Number of Servers:", value=len(self.bot.guilds), inline=True

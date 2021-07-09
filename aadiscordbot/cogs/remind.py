@@ -7,8 +7,6 @@ import asyncio
 from datetime import datetime
 
 import logging
-import pendulum
-import traceback
 logger = logging.getLogger(__name__)
 
 

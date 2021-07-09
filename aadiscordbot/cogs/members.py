@@ -13,8 +13,6 @@ from aadiscordbot.cogs.utils.decorators import message_in_channels, sender_has_p
 from aadiscordbot.app_settings import aastatistics_active
 
 import logging
-import pendulum
-import traceback
 logger = logging.getLogger(__name__)
 
 

@@ -10,7 +10,8 @@ import pendulum
 import json
 
 from .cogs.utils import context
-from . import bot_tasks, app_settings
+from . import bot_tasks
+from aadiscordbot.app_settings import DISCORD_BOT_ACCESS_DENIED_REACT
 
 import discord
 from discord.ext import commands, tasks
@@ -185,7 +186,7 @@ class AuthBot(commands.Bot):
                 "Sorry, I don't have the required permissions to do that here:\n{0}".format(error.missing_perms)
             )
         elif isinstance(error, commands.MissingPermissions):
-            await ctx.message.add_reaction(chr(0x1F44E))
+            await ctx.message.add_reaction(chr(DISCORD_BOT_ACCESS_DENIED_REACT))
             await ctx.message.reply("Sorry, you do not have permission to do that here.")
         elif isinstance(error, commands.NotOwner):
             print(error)

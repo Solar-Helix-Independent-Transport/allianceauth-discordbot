@@ -11,11 +11,9 @@ from aadiscordbot import providers
 import datetime
 from django.utils import timezone
 
-import logging
 import pendulum
-import traceback
-# log = logging.getLogger(__name__)
-
+import logging
+logger = logging.getLogger(__name__)
 
 class Sov(commands.Cog):
     """

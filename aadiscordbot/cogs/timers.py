@@ -11,9 +11,8 @@ from aadiscordbot.app_settings import timerboard_active
 
 import datetime
 
-import logging
 import pendulum
-import traceback
+import logging
 logger = logging.getLogger(__name__)
 
 
