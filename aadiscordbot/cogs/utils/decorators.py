@@ -1,5 +1,5 @@
 from allianceauth.services.modules.discord.models import DiscordUser
-from aadiscordbot import app_settings
+from aadiscordbot.app_settings import DISCORD_BOT_ADMIN_USER
 from discord.ext import commands
 import functools
 import os
@@ -15,13 +15,13 @@ os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 def sender_has_perm(perm):
     def predicate(ctx):
         id = ctx.message.author.id
-        if id in app_settings.get_admins():
+        if id in DISCORD_BOT_ADMIN_USER:
             return True
         try:
             has_perm = DiscordUser.objects.get(uid=id).user.has_perm(perm)
             if has_perm:
                 return True
-            if id in app_settings.get_admins():
+            if id in DISCORD_BOT_ADMIN_USER:
                 return True
             else:
                 raise commands.MissingPermissions(["auth_roles"])
@@ -34,7 +34,7 @@ def sender_has_perm(perm):
 def sender_is_admin():
     def predicate(ctx):
         id = ctx.message.author.id
-        if id in app_settings.get_admins():
+        if id in DISCORD_BOT_ADMIN_USER:
             return True
         else:
             raise commands.MissingPermissions(["Admin Array"])

@@ -6,7 +6,7 @@ from discord.colour import Color
 from ..app_settings import mumble_active, discord_active
 import django.core.exceptions
 # AA Contexts
-from aadiscordbot.app_settings import get_site_url, get_admins
+from aadiscordbot.app_settings import get_site_url, DISCORD_BOT_ADMIN_USER
 from django.contrib.auth.models import User
 from allianceauth.authentication.models import State
 from allianceauth.eveonline.models import EveAllianceInfo, EveCorporationInfo

@@ -4,7 +4,7 @@ from discord.embeds import Embed
 from discord.colour import Color
 from ..app_settings import mumble_active, discord_active
 # AA Contexts
-from aadiscordbot.app_settings import get_site_url, get_admins
+from aadiscordbot.app_settings import get_site_url, DISCORD_BOT_ADMIN_USER
 from aadiscordbot.cogs.utils.decorators import sender_is_admin
 from allianceauth.services.modules.discord.models import DiscordUser
 from django.contrib.auth.models import User
