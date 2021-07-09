@@ -2,7 +2,6 @@
 Market Price Checks
 """
 
-import logging
 import requests
 
 # Cog Stuff
@@ -11,6 +10,7 @@ from discord.embeds import Embed
 from discord.colour import Color
 
 
+import logging
 logger = logging.getLogger(__name__)
 
 

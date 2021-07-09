@@ -74,6 +74,19 @@ DISCORD_BOT_ADM_REGIONS = [10000002] # The Forge Example
 DISCORD_BOT_ADM_SYSTEMS = [30000142] # Jita Example
 DISCORD_BOT_ADM_CONSTELLATIONS = [20000020] # Kimitoro Example
 ```
+
+```python
+## Insert AADiscorcbot's logging into Django Logging config
+LOGGING['handlers']['bot_log_file']= {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'log/discord_bot.log'),
+            'formatter': 'verbose',
+            'maxBytes': 1024 * 1024 * 5,  
+            'backupCount': 5,
+        }
+LOGGING['loggers']['aadiscordbot'] = {'handlers': ['bot_log_file'],'level': 'DEBUG'}
+```
 * Optional Settings
  ```python
 # configure the bots cogs.

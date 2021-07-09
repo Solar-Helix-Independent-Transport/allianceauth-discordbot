@@ -2,8 +2,6 @@
 "Time" cog for discordbot - https://github.com/pvyParts/allianceauth-discordbot
 """
 
-import logging
-
 from datetime import datetime
 
 import pytz
@@ -14,7 +12,7 @@ from discord.colour import Color
 
 from aadiscordbot.app_settings import get_site_url, timezones_active
 
-
+import logging
 logger = logging.getLogger(__name__)
 
 

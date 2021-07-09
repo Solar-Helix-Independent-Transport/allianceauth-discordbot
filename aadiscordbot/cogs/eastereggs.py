@@ -11,8 +11,6 @@ from allianceauth.services.modules.discord.models import DiscordUser
 import re
 
 import logging
-import pendulum
-import traceback
 logger = logging.getLogger(__name__)
 
 

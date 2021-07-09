@@ -2,14 +2,14 @@
 from discord.ext import commands
 from discord.embeds import Embed
 from discord.colour import Color
+from ..app_settings import mumble_active, discord_active
 # AA Contexts
-from aadiscordbot.app_settings import get_site_url, get_admins
+from aadiscordbot.app_settings import get_site_url, DISCORD_BOT_ADMIN_USER
+from aadiscordbot.cogs.utils.decorators import sender_is_admin
 from allianceauth.services.modules.discord.models import DiscordUser
+from django.contrib.auth.models import User
 
-import re
 import logging
-import pendulum
-import traceback
 logger = logging.getLogger(__name__)
 
 
@@ -46,13 +46,11 @@ class Auth(commands.Cog):
         return await ctx.send(embed=embed)
 
     @commands.command(pass_context=True)
+    @sender_is_admin()
     async def orphans(self, ctx):
         """
         Returns a list of users on this server, who are not known to AA
         """
-        if ctx.message.author.id not in get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
-            return await ctx.message.add_reaction(chr(0x1F44E))
-
         await ctx.trigger_typing()
         await ctx.send('Searching for Orphaned Discord Users')
         await ctx.trigger_typing()
@@ -86,14 +84,20 @@ class Auth(commands.Cog):
                 # lets also ignore bots here
                 pass
             else:
+                # Dump the payload if it gets too big
+                if len(payload) > 1000:
+                    try:
+                        await ctx.send(payload)
+                        payload = "The following Users cannot be located in Alliance Auth \n"
+                    except Exception as e:
+                        logger.error(e)
+                # keep building the payload
                 payload = payload + member.mention + "\n"
 
         try:
             await ctx.send(payload)
         except Exception as e:
             logger.error(e)
-            await ctx.send(payload[0:1999])
-            await ctx.send("Maximum Discord message length reached")
 
 
 def setup(bot):

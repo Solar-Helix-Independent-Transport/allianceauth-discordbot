@@ -9,12 +9,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from allianceauth.eveonline.models import EveCharacter
 from allianceauth.eveonline.evelinks import evewho
 # AA-Discordbot
-from aadiscordbot.cogs.utils.decorators import sender_has_perm
+from aadiscordbot.cogs.utils.decorators import message_in_channels, sender_has_perm
 from aadiscordbot.app_settings import aastatistics_active
 
 import logging
-import pendulum
-import traceback
 logger = logging.getLogger(__name__)
 
 
@@ -28,14 +26,12 @@ class Members(commands.Cog):
 
     @commands.command(pass_context=True)
     @sender_has_perm('corputils.view_alliance_corpstats')
+    @message_in_channels(settings.ADMIN_DISCORD_BOT_CHANNELS)
     async def lookup(self, ctx):
         """
         Gets Auth data about a character
         Input: a Eve Character Name
         """
-        if ctx.message.channel.id not in settings.ADMIN_DISCORD_BOT_CHANNELS:
-            return await ctx.message.add_reaction(chr(0x1F44E))
-
         input_name = ctx.message.content[8:]
         
         embed = Embed(
@@ -152,13 +148,12 @@ class Members(commands.Cog):
 
     @commands.command(pass_context=True)
     @sender_has_perm('corputils.view_alliance_corpstats')
+    @message_in_channels(settings.ADMIN_DISCORD_BOT_CHANNELS)
     async def altcorp(self, ctx):
         """
         Gets Auth data about an altcorp
         Input: a Eve Character Name
         """
-        if ctx.message.channel.id not in settings.ADMIN_DISCORD_BOT_CHANNELS:
-            return await ctx.message.add_reaction(chr(0x1F44E))
 
         input_name = ctx.message.content[9:]
         chars = EveCharacter.objects.filter(corporation_name=input_name)

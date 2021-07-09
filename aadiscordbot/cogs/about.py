@@ -5,13 +5,13 @@ from discord.colour import Color
 from discord.utils import get
 # AA Contexts
 from django.conf import settings
+from aadiscordbot.cogs.utils.decorators import sender_is_admin
 from aadiscordbot import app_settings, __version__, __branch__
 
 import pendulum
 import re
 
 import logging
-import traceback
 logger = logging.getLogger(__name__)
 
 
@@ -43,7 +43,7 @@ class About(commands.Cog):
 
         for m in matches:
             url = m.groups()
-        embed.set_footer(text="Lovingly developed for Init.™ by AaronKable")
+        embed.set_footer(text="Lovingly developed for Init.™ by AaronRin and ArielKable")
 
         embed.add_field(
             name="Number of Servers:", value=len(self.bot.guilds), inline=True
@@ -63,13 +63,11 @@ class About(commands.Cog):
         return await ctx.send(embed=embed)
 
     @commands.command(hidden=True)
+    @sender_is_admin()
     async def uptime(self, ctx):
         """
         Returns the uptime
         """
-        if ctx.message.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
-            return await ctx.message.add_reaction(chr(0x1F44E))
-
         await ctx.send(
             pendulum.now(tz="UTC").diff_for_humans(
                 self.bot.currentuptime, absolute=True
@@ -77,13 +75,11 @@ class About(commands.Cog):
         )
 
     @commands.command(hidden=True)
+    @sender_is_admin()
     async def get_webhooks(self, ctx):
         """
         Returns the webhooks for the channel
         """
-        if ctx.message.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
-            return await ctx.message.add_reaction(chr(0x1F44E))
-
         hooks = await ctx.message.channel.webhooks()
         if len(hooks) == 0:
             name = "{}_webhook".format(ctx.message.channel.name.replace(" ", "_"))
@@ -105,13 +101,11 @@ class About(commands.Cog):
         return await ctx.message.delete()
 
     @commands.command(hidden=True)
+    @sender_is_admin()
     async def new_channel(self, ctx):
         """
         create a new channel in a category.
         """
-        if ctx.message.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
-            return await ctx.message.add_reaction(chr(0x1F44E))
-
         await ctx.message.channel.trigger_typing()
 
         input_string = ctx.message.content[13:].split(' ')
@@ -138,13 +132,11 @@ class About(commands.Cog):
         return await ctx.message.add_reaction(chr(0x1F44D))
 
     @commands.command(hidden=True)
+    @sender_is_admin()
     async def add_role(self, ctx):
         """
         add a role from a channel.
         """
-        if ctx.message.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
-            return await ctx.message.add_reaction(chr(0x1F44E))
-
         await ctx.message.channel.trigger_typing()
 
         input_string = ctx.message.content[10:].split(' ')
@@ -161,13 +153,11 @@ class About(commands.Cog):
         return await ctx.message.add_reaction(chr(0x1F44D))
 
     @commands.command(hidden=True)
+    @sender_is_admin()
     async def rem_role(self, ctx):
         """
         remove a role from a channel.
         """
-        if ctx.message.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
-            return await ctx.message.add_reaction(chr(0x1F44E))
-
         await ctx.message.channel.trigger_typing()
 
         input_string = ctx.message.content[10:].split(' ')
@@ -185,13 +175,11 @@ class About(commands.Cog):
 
 
     @commands.command(hidden=True)
+    @sender_is_admin()
     async def list_role(self, ctx):
         """
         list roles from a channel.
         """
-        if ctx.message.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
-            return await ctx.message.add_reaction(chr(0x1F44E))
-
         await ctx.message.channel.trigger_typing()
 
         input_string = ctx.message.content[11:]
