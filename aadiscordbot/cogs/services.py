@@ -30,7 +30,7 @@ class Services(commands.Cog):
         self.bot = bot
 
     @commands.command(pass_context=True)
-    @sender_is_admin
+    @sender_is_admin()
     async def services(self, ctx):
         """
         service_registration STATE
@@ -88,7 +88,7 @@ class Services(commands.Cog):
                 logger.error(e)
 
     @commands.command(pass_context=True)
-    @sender_is_admin
+    @sender_is_admin()
     async def services_stats(self, ctx):
         """
         service_registration State>Alliance>Corp
