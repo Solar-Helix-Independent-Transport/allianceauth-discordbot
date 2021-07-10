@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [0.5.2] 2021-07-09
+
+### Added
+* More Permission Decorators
+### Fixes
+* Corrected a typo in the in_channel permissions decorater
+## [0.5.1] 2021-07-09
+### Added
+* Allows Prefix to be set as a setting
+### Fixed
+* Documents all settings in readme
+## [0.5.0] 2021-07-09
+### Fixes
+* Mostly internal changes
+* Logging is cleaned and documented
+* Permissions are moved into Decorators and consistent across all cogs (and can be used my others)
+* All app settings are properly sanitized and defaulted
+* Prefix and Access Denied reacc can be configured
+
 ## [0.4.0] 2021-05-05
 ### Added
 * Price Check Cog, PR #40 (@ppfeufer)
