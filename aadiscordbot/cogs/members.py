@@ -9,7 +9,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from allianceauth.eveonline.models import EveCharacter
 from allianceauth.eveonline.evelinks import evewho
 # AA-Discordbot
-from aadiscordbot.cogs.utils.decorators import message_in_channels, sender_has_perm
+from aadiscordbot.cogs.utils.decorators import message_in_channels, sender_has_any_perm
 from aadiscordbot.app_settings import aastatistics_active
 
 import logging
@@ -25,7 +25,7 @@ class Members(commands.Cog):
         self.bot = bot
 
     @commands.command(pass_context=True)
-    @sender_has_perm('corputils.view_alliance_corpstats')
+    @sender_has_any_perm(['corputils.view_alliance_corpstats', 'corpstats.view_alliance_corpstats'])
     @message_in_channels(settings.ADMIN_DISCORD_BOT_CHANNELS)
     async def lookup(self, ctx):
         """
@@ -147,7 +147,7 @@ class Members(commands.Cog):
             return await ctx.send(embed=embed)
 
     @commands.command(pass_context=True)
-    @sender_has_perm('corputils.view_alliance_corpstats')
+    @sender_has_any_perm(['corputils.view_alliance_corpstats', 'corpstats.view_alliance_corpstats'])
     @message_in_channels(settings.ADMIN_DISCORD_BOT_CHANNELS)
     async def altcorp(self, ctx):
         """
