@@ -1,59 +1,72 @@
-# Cog Stuff
 from discord.ext import commands
-from discord.embeds import Embed
-from discord.colour import Color
 from discord.utils import get
-# AA Contexts
-from django.conf import settings
-from aadiscordbot import app_settings
-from django.utils import timezone
-import pendulum
-import re
 
 import logging
-import traceback
 logger = logging.getLogger(__name__)
 
+from ..models import ReactionRoleBinding, ReactionRoleMessage
+from allianceauth.services.modules.discord.models import DiscordUser
 
-class About(commands.Cog):
+class Reactions(commands.Cog):
     """
-    All about me!
+    Auth Roles as reaction roles
+
     """
 
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(pass_context=True)
-    async def rr(self, ctx):
+    @commands.Cog.listener("on_raw_reaction_add")
+    async def add_react_listener(self, payload):
         """
-            Setup the Reaction Role Message
+            add role or group
         """
-        if ctx.message.author.id not in get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
-            return await ctx.message.add_reaction(chr(0x1F44E))
+        try: 
+            rr_msg = ReactionRoleMessage.objects.get(message=payload.message_id)
+            # do we have a binding?
+            emoji = payload.emoji.name
+            if payload.emoji.id is not None:
+                emoji = payload.emoji.id
+            try:
+                rr_binds = ReactionRoleBinding.objects.get(message=rr_msg, emoji=emoji)
+                user = DiscordUser.objects.get(uid=payload.user_id).user
+                if rr_binds.group:
+                    if rr_binds.group not in user.groups.all():
+                        user.groups.add(rr_binds.group)
+            except ReactionRoleBinding.DoesNotExist:
+                # admin adding new role?
+                if DiscordUser.objects.get(uid=payload.user_id).user.has_perm("reaction_role_message.manage_reactions"):
+                    gld = get(self.bot.guilds, id=payload.guild_id)
+                    chan = gld.get_channel(payload.channel_id)
+                    msg = await chan.fetch_message(payload.message_id)
+                    await msg.add_reaction(payload.emoji)
+                    ReactionRoleBinding.objects.create(message=rr_msg, emoji=emoji, emoji_text=payload.emoji.name)
+        except ReactionRoleMessage.DoesNotExist:
+            pass
 
-        await ctx.trigger_typing()
 
-        embed = Embed(title="Group Reaction Roles")
-        embed.set_thumbnail(
-            url="https://cdn.discordapp.com/icons/516758158748811264/ae3991584b0f800b181c936cfc707880.webp?size=128"
-        )
-        embed.colour = Color.blue()
+    @commands.Cog.listener("on_raw_reaction_remove")
+    async def rem_react_listener(self, payload):
+        """
+            rem role or group
+        """
+        try:
+            rr_msg = ReactionRoleMessage.objects.get(message=payload.message_id)
+            # do we have a binding?
+            emoji = payload.emoji.name
+            if payload.emoji.id is not None:
+                emoji = payload.emoji.id
+            try:
+                rr_binds = ReactionRoleBinding.objects.get(message=rr_msg, emoji=emoji)
+                user = DiscordUser.objects.get(uid=payload.user_id).user
+                if rr_binds.group:
+                    if rr_binds.group in user.groups.all():
+                        user.groups.remove(rr_binds.group)
+            except ReactionRoleBinding.DoesNotExist:
+                pass
+        except ReactionRoleMessage.DoesNotExist:
+            pass
 
-        embed.description = "Go and add your groups in the admin panel of auth and `!rr` again when you have."
-        regex = r"^(.+)\/d.+"
-        
-        matches = re.finditer(regex, settings.DISCORD_CALLBACK_URL, re.MULTILINE)
 
-        for m in matches:
-            url = m.groups()
-        embed.set_footer(text=f"Last Updated {timezone.now()}")
-
-        embed.add_field(
-            name="Auth Link", value="[{}]({})".format(url[0], url[0]), inline=True
-        )
-
-        # embed.add_field(
-        #     name="Creator", value="<@318309023478972417>", inline=False
-        # )
-
-        return await ctx.send(embed=embed)
+def setup(bot):
+    bot.add_cog(Reactions(bot))

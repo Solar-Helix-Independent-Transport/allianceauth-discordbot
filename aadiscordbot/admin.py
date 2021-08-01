@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Servers, Channels
+from .models import Servers, Channels, ReactionRoleBinding, ReactionRoleMessage
 
 from allianceauth.services.hooks import get_extension_logger
 
@@ -28,3 +28,7 @@ class ChannelsAdmin(admin.ModelAdmin):
             return obj.server.name
         except Exception as e:
             logger.error(e)
+
+
+admin.site.register(ReactionRoleMessage)
+admin.site.register(ReactionRoleBinding)
