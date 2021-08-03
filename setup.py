@@ -37,7 +37,7 @@ setup(
         "allianceauth>=2.7.0",
         "discord.py",
         "pendulum",
-        "aioredis",
+        "aioredis>2.0.0",
         "aiohttp",
     ],
 
