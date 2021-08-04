@@ -16,11 +16,29 @@ class Reactions(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    async def clean_emojis(self, payload):
+        gld = get(self.bot.guilds, id=payload.guild_id)
+        chan = gld.get_channel(payload.channel_id)
+        msg = await chan.fetch_message(payload.message_id)
+        rr_binds = ReactionRoleBinding.objects.filter(message=payload.message_id).values_list('emoji_text', flat=True)
+        for e in msg.reactions:
+            if isinstance(e.emoji, str):
+                if e.emoji not in rr_binds:
+                    async for u in e.users():
+                        await e.remove(u)
+            else:
+                if e.emoji.name not in rr_binds:
+                    async for u in e.users():
+                        await e.remove(u)
+
+
     @commands.Cog.listener("on_raw_reaction_add")
     async def add_react_listener(self, payload):
         """
             add role or group
         """
+        if payload.user_id == self.bot.user.id:
+            return True
         try: 
             rr_msg = ReactionRoleMessage.objects.get(message=payload.message_id)
             # do we have a binding?
@@ -41,15 +59,17 @@ class Reactions(commands.Cog):
                     msg = await chan.fetch_message(payload.message_id)
                     await msg.add_reaction(payload.emoji)
                     ReactionRoleBinding.objects.create(message=rr_msg, emoji=emoji, emoji_text=payload.emoji.name)
+            await self.clean_emojis(payload)
         except ReactionRoleMessage.DoesNotExist:
             pass
-
 
     @commands.Cog.listener("on_raw_reaction_remove")
     async def rem_react_listener(self, payload):
         """
             rem role or group
         """
+        if payload.user_id == self.bot.client_id:
+            return True
         try:
             rr_msg = ReactionRoleMessage.objects.get(message=payload.message_id)
             # do we have a binding?
@@ -64,6 +84,7 @@ class Reactions(commands.Cog):
                         user.groups.remove(rr_binds.group)
             except ReactionRoleBinding.DoesNotExist:
                 pass
+            await self.clean_emojis(payload)
         except ReactionRoleMessage.DoesNotExist:
             pass
 
