@@ -57,8 +57,9 @@ class Reactions(commands.Cog):
                     gld = get(self.bot.guilds, id=payload.guild_id)
                     chan = gld.get_channel(payload.channel_id)
                     msg = await chan.fetch_message(payload.message_id)
-                    await msg.add_reaction(payload.emoji)
                     ReactionRoleBinding.objects.create(message=rr_msg, emoji=emoji, emoji_text=payload.emoji.name)
+                    await msg.add_reaction(payload.emoji)
+
             await self.clean_emojis(payload)
         except ReactionRoleMessage.DoesNotExist:
             pass
