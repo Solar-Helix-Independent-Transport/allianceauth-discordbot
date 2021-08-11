@@ -2,12 +2,12 @@
 from discord.ext import commands
 from discord.embeds import Embed
 from discord.colour import Color
-from ..app_settings import mumble_active, discord_active
 # AA Contexts
-from aadiscordbot.app_settings import get_site_url, DISCORD_BOT_ADMIN_USER
+from aadiscordbot.app_settings import get_site_url
 from aadiscordbot.cogs.utils.decorators import sender_is_admin
 from allianceauth.services.modules.discord.models import DiscordUser
-from django.contrib.auth.models import User
+
+from aadiscordbot.models import Servers, Channels
 
 import logging
 logger = logging.getLogger(__name__)
@@ -98,6 +98,23 @@ class Auth(commands.Cog):
             await ctx.send(payload)
         except Exception as e:
             logger.error(e)
+
+    @commands.command(pass_context=True)
+    @sender_is_admin()
+    async def populate_models(self, ctx):
+        await ctx.channel.trigger_typing()
+        await ctx.message.add_reaction(chr(0x231B))
+
+        for guild in list(self.bot.guilds):
+            logger.debug(f"Server Name: {guild.name}")
+            logger.debug(f"Server ID: {guild.id}")
+            Servers.objects.update_or_create(server=guild.id,
+                                             defaults={'name': guild.name})
+            for channel in list(guild.channels):
+                logger.debug(f"Channel Name: {channel.name}")
+                logger.debug(f"Channel ID: {channel.id}")
+                Channels.objects.update_or_create(channel=channel.id,
+                                                  defaults={'server_id': guild.id, 'name': channel.name})
 
 
 def setup(bot):
