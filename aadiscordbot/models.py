@@ -40,3 +40,15 @@ class Channels(models.Model):
     class Meta:
         verbose_name = 'Channel'
         verbose_name_plural = 'Channels'
+
+
+class Message(models.Model):
+    """A saved discord message, Used by the Quote cog"""
+    server = models.ForeignKey(Servers, on_delete=models.CASCADE)
+    channel = models.ForeignKey(Channels, on_delete=models.CASCADE)
+    message = models.BigIntegerField(primary_key=True)
+    content = models.CharField(max_length=1000)
+    datetime = models.DateTimeField(blank=True, null=True)
+    author = models.PositiveBigIntegerField()
+    author_nick = models.CharField(max_length=50, blank=True, null=True)
+    reference = models.CharField(max_length=100, help_text="Nickname for this quote")
