@@ -78,14 +78,21 @@ class Quote(commands.Cog):
             return await ctx.reply("Quote not found")
 
         try:
-            discord_user = self.bot.get_user(quote.author)
+            discord_user = ctx.bot.get_user(quote.author)
         except:
             discord_user = None
 
         try:
-            quote_channel = self.bot.get_channel(quote.channel).mention
+            discord_channel = await ctx.bot.fetch_channel(quote.channel)
+            discord_channel_text = discord_channel.mention
         except:
-            quote_channel = quote.channel.name
+            discord_channel_text = quote.channel.name
+
+        try:
+            discord_message = await ctx.fetch_message(quote.message)
+        except:
+            discord_message = None
+
 
         embed = Embed(title=f"{quote.author_nick}")
         if discord_user is not None:
@@ -95,7 +102,9 @@ class Quote(commands.Cog):
             embed.add_field(name="User", value=discord_user.mention)
         embed.description = quote.content
         embed.add_field(name="Time", value=f"<t:{int(quote.datetime.timestamp())}>")
-        embed.add_field(name="Channel", value=quote_channel)
+        embed.add_field(name="Channel", value=discord_channel_text)
+        if discord_message is not None:
+            embed.add_field(name="Link", value=discord_message.jump_url)
 
         await ctx.message.clear_reaction(chr(0x231B))
         return await ctx.send(embed=embed)
