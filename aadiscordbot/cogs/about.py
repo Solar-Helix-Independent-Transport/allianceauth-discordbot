@@ -62,8 +62,8 @@ class About(commands.Cog):
 
         return await ctx.send(embed=embed)
 
-    @commands.command(hidden=True)
     @sender_is_admin()
+    @commands.command(hidden=True)
     async def uptime(self, ctx):
         """
         Returns the uptime
@@ -74,8 +74,8 @@ class About(commands.Cog):
             )
         )
 
-    @commands.command(hidden=True)
     @sender_is_admin()
+    @commands.command(hidden=True)
     async def get_webhooks(self, ctx):
         """
         Returns the webhooks for the channel
@@ -100,8 +100,8 @@ class About(commands.Cog):
 
         return await ctx.message.delete()
 
-    @commands.command(hidden=True)
     @sender_is_admin()
+    @commands.command(hidden=True)
     async def new_channel(self, ctx):
         """
         create a new channel in a category.
@@ -131,8 +131,8 @@ class About(commands.Cog):
 
         return await ctx.message.add_reaction(chr(0x1F44D))
 
-    @commands.command(hidden=True)
     @sender_is_admin()
+    @commands.command(hidden=True)
     async def add_role(self, ctx):
         """
         add a role from a channel.
@@ -152,8 +152,8 @@ class About(commands.Cog):
 
         return await ctx.message.add_reaction(chr(0x1F44D))
 
-    @commands.command(hidden=True)
     @sender_is_admin()
+    @commands.command(hidden=True)
     async def rem_role(self, ctx):
         """
         remove a role from a channel.
@@ -174,8 +174,8 @@ class About(commands.Cog):
         return await ctx.message.add_reaction(chr(0x1F44D))
 
 
-    @commands.command(hidden=True)
     @sender_is_admin()
+    @commands.command(hidden=True)
     async def list_role(self, ctx):
         """
         list roles from a channel.
