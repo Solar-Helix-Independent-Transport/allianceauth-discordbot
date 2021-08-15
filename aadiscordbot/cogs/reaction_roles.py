@@ -1,6 +1,6 @@
 from discord.ext import commands
 from discord.utils import get
-
+from .. import app_settings 
 import logging
 logger = logging.getLogger(__name__)
 
@@ -56,7 +56,7 @@ class Reactions(commands.Cog):
             except ReactionRoleBinding.DoesNotExist:
                 # admin adding new role?
                 logger.debug("got unknown emoji")
-                if DiscordUser.objects.get(uid=payload.user_id).user.has_perm("reaction_role_message.manage_reactions"):
+                if payload.user_id in app_settings.DISCORD_BOT_ADMIN_USER:
                     logger.debug("user can add, adding new emoji")
                     gld = get(self.bot.guilds, id=payload.guild_id)
                     chan = gld.get_channel(payload.channel_id)
