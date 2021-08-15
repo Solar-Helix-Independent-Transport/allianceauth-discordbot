@@ -44,7 +44,8 @@ DISCORD_BOT_COGS = getattr(settings, 'DISCORD_BOT_COGS', ["aadiscordbot.cogs.abo
                                                           "aadiscordbot.cogs.time",
                                                           "aadiscordbot.cogs.eastereggs",
                                                           "aadiscordbot.cogs.remind",
-                                                          "aadiscordbot.cogs.price_check",])
+                                                          "aadiscordbot.cogs.price_check",
+                                                          "aadiscordbot.cogs.reaction_roles"])
 
 DISCORD_BOT_ACCESS_DENIED_REACT = getattr(settings, 'DISCORD_BOT_ACCESS_DENIED_REACT', 0x1F44E )
 
