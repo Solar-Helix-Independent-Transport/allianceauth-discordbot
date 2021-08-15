@@ -16,6 +16,7 @@ class Reactions(commands.Cog):
         self.bot = bot
 
     async def clean_emojis(self, payload):
+        logger.debug("Ensuring emojis are tidy")
         gld = get(self.bot.guilds, id=payload.guild_id)
         chan = gld.get_channel(payload.channel_id)
         msg = await chan.fetch_message(payload.message_id)
@@ -42,17 +43,21 @@ class Reactions(commands.Cog):
             rr_msg = ReactionRoleMessage.objects.get(message=payload.message_id)
             # do we have a binding?
             emoji = payload.emoji.name
+            logger.debug("got emoji on known message")
             if payload.emoji.id is not None:
                 emoji = payload.emoji.id
             try:
                 rr_binds = ReactionRoleBinding.objects.get(message=rr_msg, emoji=emoji)
+                logger.debug("got known emoji")
                 user = DiscordUser.objects.get(uid=payload.user_id).user
                 if rr_binds.group:
                     if rr_binds.group not in user.groups.all():
                         user.groups.add(rr_binds.group)
             except ReactionRoleBinding.DoesNotExist:
                 # admin adding new role?
+                logger.debug("got unknown emoji")
                 if DiscordUser.objects.get(uid=payload.user_id).user.has_perm("reaction_role_message.manage_reactions"):
+                    logger.debug("user can add, adding new emoji")
                     gld = get(self.bot.guilds, id=payload.guild_id)
                     chan = gld.get_channel(payload.channel_id)
                     msg = await chan.fetch_message(payload.message_id)
@@ -73,6 +78,7 @@ class Reactions(commands.Cog):
         try:
             rr_msg = ReactionRoleMessage.objects.get(message=payload.message_id)
             # do we have a binding?
+            logger.debug("known messaage, removing user from group.")
             emoji = payload.emoji.name
             if payload.emoji.id is not None:
                 emoji = payload.emoji.id
