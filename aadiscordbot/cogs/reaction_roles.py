@@ -42,7 +42,7 @@ class Reactions(commands.Cog):
         try: 
             rr_msg = ReactionRoleMessage.objects.get(message=payload.message_id)
             # do we have a binding?
-            emoji = payload.emoji.name
+            emoji = payload.emoji.name.encode('utf-8')
             logger.debug("got emoji on known message")
             if payload.emoji.id is not None:
                 emoji = payload.emoji.id
@@ -79,7 +79,7 @@ class Reactions(commands.Cog):
             rr_msg = ReactionRoleMessage.objects.get(message=payload.message_id)
             # do we have a binding?
             logger.debug("known messaage, removing user from group.")
-            emoji = payload.emoji.name
+            emoji = payload.emoji.name.encode('utf-8')
             if payload.emoji.id is not None:
                 emoji = payload.emoji.id
             try:
