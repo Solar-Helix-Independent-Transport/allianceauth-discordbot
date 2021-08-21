@@ -331,8 +331,14 @@ class Sov(commands.Cog):
                                         h['system_name'].replace(" ", "_")
                                 )
         url = "https://evemaps.dotlan.net/map/{}/{}#adm"
+
         for k, v in output.items():
-            await ctx.send("__{}__\n{}\n{}".format(k, "\n".join(v), url.format(k.replace(" ", "_"), ",".join(urls[k.replace(" ", "_")]))))
+            n = 25
+            chunks = [list(v[i * n:(i + 1) * n]) for i in range((len(v) + n - 1) // n)]
+            for chunk in chunks:
+                await ctx.send("__{}__\n{}".format(k, "\n".join(chunk)))
+        await ctx.send(url.format(k.replace(" ", "_"), ",".join(urls[k.replace(" ", "_")])))
+
         embed = Embed(title="Disclaimer")
         embed.set_thumbnail(
             url="https://avatars3.githubusercontent.com/u/39349660?s=200&v=4"
