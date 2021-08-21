@@ -32,6 +32,15 @@ def get_admins():
     else:
         return admin
 
+
+def get_low_adm():
+    adm = getattr(settings, 'DISCORD_BOT_LOW_ADM', 2.5)
+    if isinstance(adm, (float, int)):
+        if adm < 0 or adm > 6:
+            return 4.5
+        else:
+            return adm
+
 DISCORD_BOT_COGS = getattr(settings, 'DISCORD_BOT_COGS',[ "aadiscordbot.cogs.about",
                                                           "aadiscordbot.cogs.members",
                                                           "aadiscordbot.cogs.timers",

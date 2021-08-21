@@ -6,7 +6,7 @@ from discord.colour import Color
 from django.conf import settings
 from allianceauth.eveonline.models import EveCharacter
 from aadiscordbot.cogs.utils.decorators import sender_has_perm
-from aadiscordbot import providers
+from aadiscordbot import app_settings, providers
 
 import datetime
 from django.utils import timezone
@@ -273,7 +273,7 @@ class Sov(commands.Cog):
         for s in sov_structures:
             if s.get('alliance_id') in own_ids:
                 if s.get('vulnerability_occupancy_level'):
-                    if s.get('vulnerability_occupancy_level') < 4.5:
+                    if s.get('vulnerability_occupancy_level') < app_settings.get_low_adm():
                         names[s.get('solar_system_id')] = {
                             "system_name": s.get('solar_system_id'),
                             "adm": s.get('vulnerability_occupancy_level')
