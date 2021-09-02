@@ -9,10 +9,12 @@ import pytz
 from discord.ext import commands
 from discord.embeds import Embed
 from discord.colour import Color
+from django.urls import reverse
 
 from aadiscordbot.app_settings import get_site_url, timezones_active
 
 import logging
+
 logger = logging.getLogger(__name__)
 
 
@@ -48,8 +50,12 @@ class Time(commands.Cog):
         if timezones_active():
             from timezones.models import Timezones
 
-            url = get_site_url() + "/timezones/"
-            configured_timezones = Timezones.objects.filter(is_enabled=True)
+            url = get_site_url() + reverse("timezones:index")
+            configured_timezones = (
+                Timezones.objects.select_related("timezone")
+                .filter(is_enabled=True)
+                .order_by("panel_name")
+            )
 
             # get configured timezones from module setting
             if configured_timezones.count() > 0:
