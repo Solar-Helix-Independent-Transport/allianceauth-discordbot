@@ -16,19 +16,9 @@ def send_channel_message_by_discord_id(channel_id, message_content, embed=False)
     raise Exception("This function should be called asynchronously. Failed to queue a message to Channel {}".format(channel_id))
 
 @shared_task
-def send_channel_message(channel_id, message_content, embed=False):
-    # DEPRECATED shim to queue a message to a Discord Channel
-    raise Exception("This function should be called asynchronously. Failed to queue a message to Channel {}. Warning! This function is deprecated.".format(channel_id))
-
-@shared_task
 def send_direct_message_by_discord_id(discord_user_id, message_content):
     # Queue a Private Message to a specific user
     raise Exception("This function should be called asynchronously. Failed to queue a message to User {}".format(discord_user_id))
-
-@shared_task
-def send_direct_message(user_id, message_content):
-    # DEPRECATED shim to queue a Private Message to a specific user
-    raise Exception("This function should be called asynchronously. Failed to queue a message to User {}. Warning! This function is deprecated.".format(discord_user_id))
 
 @shared_task
 def send_direct_message_by_user_id(user_pk, message_content):

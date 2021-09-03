@@ -18,13 +18,6 @@ async def send_channel_message_by_discord_id(bot, args):
     channel_id = int(args[0])
     await bot.get_channel(channel_id).send(args[1].strip("'"))
 
-async def send_channel_message(bot, args):
-    warnings.warn(
-        "send_channel_message is deprecated, use send_channel_message_by_discord_id instead",
-        DeprecationWarning
-    )
-    await send_channel_message_by_discord_id(bot, args)
-
 async def send_direct_message_by_discord_id(bot, args):
     discord_user_id = int(args[0])
     logger.debug(f"Sending DM to Discord ID {discord_user_id}")
@@ -32,12 +25,6 @@ async def send_direct_message_by_discord_id(bot, args):
     channel = await bot.get_user(discord_user_id).create_dm()
     await channel.send(args[1].strip("'"))
 
-async def send_direct_message(bot, args):
-    warnings.warn(
-        "send_direct_message is deprecated, use send_direct_message_by_discord_id instead",
-        DeprecationWarning
-    )
-    await send_direct_message_by_discord_id(bot, args)
 
 async def send_direct_message_by_user_id(bot, args):
     # App isn't loaded when this file is imported, so importing here
