@@ -7,7 +7,7 @@ AA-Discordbot for [Alliance Auth](https://gitlab.com/allianceauth/allianceauth).
 ## Features
 
 * Bot Framework, easily extensible with more Cogs
-* Integration with Alliance Auth, able to fetch data directly from its django project.
+* Integration with Alliance Auth, able to fetch data directly from its Django project.
 * Channel/Direct messaging feature, with Tasks and a Queue/Consumer
 * Current Cogs
   * About
@@ -20,6 +20,7 @@ AA-Discordbot for [Alliance Auth](https://gitlab.com/allianceauth/allianceauth).
   * Auth
     * !auth - A direct link to the Auth Install to catch users familiar with other bots.
     * !orphans - Returns a list of users on this server without a matched AA account.
+    * !populate_models - Populates Django models for Servers and Channels, can be used as helpers for other uses, may be required for some Cogs.
   * !timers - The next upcoming timer
   * Members
     * !lookup - Fetch a users Main, Affiliation, State, Groups and linked characters from any character.
@@ -38,6 +39,10 @@ AA-Discordbot for [Alliance Auth](https://gitlab.com/allianceauth/allianceauth).
     * amarr - Check an item price on Amarr market
     * jita -  Check an item price on Jita market
     * price - Check an item price on Jita and Amarr market
+  * Quote:
+    * savequote [name] (*Reply*) - Reply to a post to save it as a given name
+    * quote [name] - Retrieve quote with given name
+    * listquotes - Retrieve all saved quotes
   * Easter Eggs,
     * !happybirthday [text] - Wishes the text a happy birthday, works with user mentions
 
@@ -140,6 +145,7 @@ programs=beat,worker,gunicorn,authbot
 priority=999
 ```
 
+* Confirm your discord bot is online with `!uptime`, Optionally run `!populate_models`.
 ## Settings
 
 | Setting | Default | Description |
