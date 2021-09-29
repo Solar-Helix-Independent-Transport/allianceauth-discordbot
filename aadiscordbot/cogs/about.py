@@ -1,4 +1,5 @@
 # Cog Stuff
+import discord
 from discord.ext import commands
 from discord.embeds import Embed
 from discord.colour import Color
@@ -438,6 +439,21 @@ class About(commands.Cog):
             "`uptime` how ong have we been live"
         ]
         return await ctx.send("\n".join(command_list))
+
+    @commands.command(hidden=True)
+    async def moverole(selk, ctx, role: discord.Role, pos: int):
+        if ctx.message.author.id != 318309023478972417:  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+            return await ctx.message.add_reaction(chr(0x1F44E))
+
+        try:
+            await role.edit(position=int(pos))
+            await ctx.send("Role moved.")
+        except discord.Forbidden:
+            await ctx.send("You do not have permission to do that")
+        except discord.HTTPException:
+            await ctx.send("Failed to move role")
+        except discord.InvalidArgument:
+            await ctx.send("Invalid argument")
 
 def setup(bot):
     bot.add_cog(About(bot))
