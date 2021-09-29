@@ -333,7 +333,7 @@ class About(commands.Cog):
         await ctx.send(F"Discord may get cranky, this may take some time.\nRole count:{len(ctx.guild.roles)}")
         roles = []
         for role_model in ctx.guild.roles:
-            roles.append(f"`{role_model.name}`")
+            roles.append(f"`{role_model.name} {role_model.position}` ")
         roles.sort()
         chunks = [roles[x:x+50] for x in range(0, len(roles), 50)]
         for c in chunks:
@@ -439,6 +439,7 @@ class About(commands.Cog):
             "`uptime` how ong have we been live"
         ]
         return await ctx.send("\n".join(command_list))
+
 
     @commands.command(hidden=True)
     async def moverole(selk, ctx, role: discord.Role, pos: int):
