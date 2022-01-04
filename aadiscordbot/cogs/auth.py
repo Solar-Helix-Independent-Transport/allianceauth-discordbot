@@ -4,7 +4,8 @@ from discord.embeds import Embed
 from discord.colour import Color
 # AA Contexts
 from aadiscordbot.app_settings import get_site_url, get_admins
-from allianceauth.services.modules.discord.models import DiscordUser
+
+from django.conf import settings
 
 import re
 import logging
@@ -45,55 +46,28 @@ class Auth(commands.Cog):
 
         return await ctx.send(embed=embed)
 
-    @commands.command(pass_context=True)
-    async def orphans(self, ctx):
+    @commands.slash_command(name='auth', guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    async def auth_slash(self, ctx):
         """
-        Returns a list of users on this server, who are not known to AA
+        Returns a link to the AllianceAuth Install
+        Used by many other Bots and is a common command that users will attempt to run.
         """
-        if ctx.message.author.id not in get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
-            return await ctx.message.add_reaction(chr(0x1F44E))
+        
+        embed = Embed(title="AllianceAuth")
+        embed.set_thumbnail(
+            url="https://assets.gitlab-static.net/uploads/-/system/project/avatar/6840712/Alliance_auth.png?width=128"
+        )
+        embed.colour = Color.blue()
 
-        await ctx.trigger_typing()
-        await ctx.send('Searching for Orphaned Discord Users')
-        await ctx.trigger_typing()
+        embed.description = "All Authentication functions for this Discord server are handled through our Alliance Auth install"
 
-        payload = "The following Users cannot be located in Alliance Auth \n"
+        url = get_site_url()
 
-        member_list = ctx.message.guild.members
+        embed.add_field(
+            name="Auth Link", value="[{}]({})".format(url, url), inline=False
+        )
 
-        for member in member_list:
-            id = member.id
-
-            try:
-                discord_exists = DiscordUser.objects.get(uid=id)
-                discord_is_bot = member.bot
-            except Exception as e:
-                logger.error(e)
-                discord_exists = False
-                discord_is_bot = False
-
-            try:
-                discord_is_bot = member.bot
-            except Exception as e:
-                logger.error(e)
-                discord_is_bot = False
-
-            if discord_exists is not False:
-                # nothing to do, the user exists. Move on with ur life dude.
-                pass
-
-            elif discord_is_bot is True:
-                # lets also ignore bots here
-                pass
-            else:
-                payload = payload + member.mention + "\n"
-
-        try:
-            await ctx.send(payload)
-        except Exception as e:
-            logger.error(e)
-            await ctx.send(payload[0:1999])
-            await ctx.send("Maximum Discord message length reached")
+        return await ctx.respond(embed=embed)
 
 
 def setup(bot):

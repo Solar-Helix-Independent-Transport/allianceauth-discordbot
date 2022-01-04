@@ -332,12 +332,16 @@ class Sov(commands.Cog):
                                 )
         url = "https://evemaps.dotlan.net/map/{}/{}#adm"
 
-        for k, v in output.items():
-            n = 25
-            chunks = [list(v[i * n:(i + 1) * n]) for i in range((len(v) + n - 1) // n)]
-            for chunk in chunks:
-                await ctx.send("__{}__\n{}".format(k, "\n".join(chunk)))
-        await ctx.send(url.format(k.replace(" ", "_"), ",".join(urls[k.replace(" ", "_")])))
+        if len(output) > 0:
+            for k, v in output.items():
+                n = 25
+                chunks = [list(v[i * n:(i + 1) * n]) for i in range((len(v) + n - 1) // n)]
+                for chunk in chunks:
+                    await ctx.send("__{}__\n{}".format(k, "\n".join(chunk)))
+            await ctx.send(url.format(k.replace(" ", "_"), ",".join(urls[k.replace(" ", "_")])))
+
+        else:
+            await ctx.send(f"No Systems with ADM below {app_settings.get_low_adm()}")
 
         embed = Embed(title="Disclaimer")
         embed.set_thumbnail(

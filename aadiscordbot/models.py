@@ -1,6 +1,8 @@
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth.models import Group
+from allianceauth.services.modules.discord.models import DiscordUser
 
 class DiscordBot(models.Model):
     """Meta model for app permissions"""
@@ -66,3 +68,18 @@ class ReactionRoleBinding(models.Model):
 
     def __str__(self):
         return '{}: {} ({})'.format(self.message.name, self.emoji_text, self.group)
+
+class AuthBotConfiguration(models.Model):
+
+    admin_users = models.ManyToManyField(DiscordUser, blank=True)
+
+    def __str__(self):
+        return "AuthBot Configuration"
+
+    def save(self, *args, **kwargs):
+        if not self.pk and AuthBotConfiguration.objects.exists():
+            # Force a single object
+            raise ValidationError(
+                'Only one Settings Model can there be at a time! No Sith Lords there are here!')
+        self.pk = self.id = 1  # If this happens to be deleted and recreated, force it to be 1
+        return super().save(*args, **kwargs)

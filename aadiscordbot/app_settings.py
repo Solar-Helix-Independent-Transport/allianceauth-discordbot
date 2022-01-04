@@ -26,12 +26,8 @@ def timerboard_active():
 
 
 def get_admins():
-    admin = getattr(settings, 'DISCORD_BOT_ADMIN_USER', [])
-    if isinstance(admin, int):
-        return [admin]
-    else:
-        return admin
-
+    from .models import AuthBotConfiguration
+    return list(AuthBotConfiguration.objects.get(pk=1).admin_users.all().values_list('uid', flat=True))
 
 def get_low_adm():
     adm = getattr(settings, 'DISCORD_BOT_LOW_ADM', 2.5)
@@ -42,6 +38,7 @@ def get_low_adm():
             return adm
 
 DISCORD_BOT_COGS = getattr(settings, 'DISCORD_BOT_COGS',[ "aadiscordbot.cogs.about",
+                                                          "aadiscordbot.cogs.admin",
                                                           "aadiscordbot.cogs.members",
                                                           "aadiscordbot.cogs.timers",
                                                           "aadiscordbot.cogs.auth",

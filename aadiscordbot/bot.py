@@ -13,6 +13,7 @@ from .cogs.utils import context
 from . import bot_tasks, app_settings
 
 import discord
+from discord import TextChannel, Role, CategoryChannel
 from discord.ext import commands, tasks
 
 import django
@@ -23,6 +24,7 @@ from allianceauth import hooks
 from kombu import Connection, Queue, Consumer
 from socket import timeout
 import concurrent.futures
+
 
 description = """
 AuthBot is watching...
@@ -41,6 +43,8 @@ queue_keys = [f"{queuename}",
               f"{queuename}\x06\x167",
               f"{queuename}\x06\x168",
               f"{queuename}\x06\x169"]
+
+
 
 class AuthBot(commands.Bot):
     def __init__(self):
@@ -62,6 +66,7 @@ class AuthBot(commands.Bot):
         self.session = aiohttp.ClientSession(loop=self.loop)
         self.tasks = []
 
+
         self.message_connection = Connection(getattr(settings, "BROKER_URL", 'redis://localhost:6379/0'))
         queues = []
         for que in queue_keys:
@@ -77,7 +82,6 @@ class AuthBot(commands.Bot):
                 except Exception as e:
                     print(f"Failed to load cog {cog}", file=sys.stderr)
                     traceback.print_exc()
-
 
     def on_queue_message(self, body, message):
         print('RECEIVED MESSAGE: {0!r}'.format(body))
@@ -115,8 +119,8 @@ class AuthBot(commands.Bot):
         await self.change_presence(activity=activity)
 
         self.poll_queue.start()
-
         logger.info("Ready")
+
 
     async def process_commands(self, message):
         ctx = await self.get_context(message, cls=context.Context)
@@ -193,8 +197,9 @@ class AuthBot(commands.Bot):
             await ctx.message.add_reaction(chr(0x274C))
 
     def run(self):
+        #self.load_extension("aadiscordbot.slash.admin")
         super().run(settings.DISCORD_BOT_TOKEN, reconnect=True)
-
+    
 ## Fetching Tasks from celery queue for the message sending loop
 async def get_task(bot):
     logger.debug("im getting a task")
@@ -212,3 +217,4 @@ async def get_task(bot):
         logger.error("Get Task Failed")
         logger.error(e)
         pass
+

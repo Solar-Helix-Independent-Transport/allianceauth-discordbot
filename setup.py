@@ -34,11 +34,11 @@ setup(
     ],
     python_requires='~=3.6',
     install_requires=[
-        "allianceauth>=2.7.0",
-        "discord.py",
+        "allianceauth>=2.8.0",
+        "py-cord @ git+https://github.com/Pycord-Development/pycord.git#egg=py-cord",
         "pendulum",
         "aioredis<2.0.0",
-        "aiohttp",
+        "aiohttp"
     ],
 
 )

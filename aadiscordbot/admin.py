@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Servers, Channels, ReactionRoleBinding, ReactionRoleMessage
+from .models import Servers, Channels, ReactionRoleBinding, ReactionRoleMessage, AuthBotConfiguration
 
 from allianceauth.services.hooks import get_extension_logger
 
@@ -29,6 +29,9 @@ class ChannelsAdmin(admin.ModelAdmin):
         except Exception as e:
             logger.error(e)
 
+@admin.register(AuthBotConfiguration)
+class AuthBotConfigurationAdmin(admin.ModelAdmin):
+    filter_horizontal = ['admin_users']
 
 admin.site.register(ReactionRoleMessage)
 admin.site.register(ReactionRoleBinding)
