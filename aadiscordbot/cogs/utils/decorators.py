@@ -24,3 +24,4 @@ def sender_has_perm(perm):
             logger.error(e)
             raise commands.MissingPermissions(["not_linked"])
     return commands.check(predicate)
+

@@ -55,7 +55,6 @@ pip install -U git+https://github.com/pvyParts/allianceauth-discordbot.git
 
  ```python
 ## Settings for Allianceauth-Discordbot
-DISCORD_BOT_ADMIN_USER = [140706470856622080] #This UserID is allowed to run any command
 # Admin Commands
 ADMIN_DISCORD_BOT_CHANNELS = [111, 222, 333]
 # Sov Commands
@@ -72,15 +71,18 @@ DISCORD_BOT_ADM_CONSTELLATIONS = [20000020] # Kimitoro Example
 ```
 * Optional Settings
  ```python
-# configure the bots cogs.
-DISCORD_BOT_COGS =[ "aadiscordbot.cogs.about",
-                    "aadiscordbot.cogs.members",
-                    "aadiscordbot.cogs.timers",
-                    "aadiscordbot.cogs.auth",
-                    "aadiscordbot.cogs.sov",
-                    "aadiscordbot.cogs.time",
-                    "aadiscordbot.cogs.eastereggs",
-                    "aadiscordbot.cogs.remind",]
+# configure the bots in-built cogs.
+DISCORD_BOT_COGS = ["aadiscordbot.cogs.about", # about the bot
+                     "aadiscordbot.cogs.admin", # Discord server admin helpers
+                     "aadiscordbot.cogs.members", # Member lookup commnands
+                     "aadiscordbot.cogs.timers", # timerboard integrateion
+                     "aadiscordbot.cogs.auth", # return auth url
+                     "aadiscordbot.cogs.sov", # some sove helpers
+                     "aadiscordbot.cogs.time", # whats the time Mr Eve Server
+                     "aadiscordbot.cogs.eastereggs", # some "fun" commands from ariel...
+                     "aadiscordbot.cogs.remind", # very Basic in memor y reminder tool
+                     "aadiscordbot.cogs.reaction_roles" # auth group integrated reaction roles
+                    ] 
 ```
 
 * Add the below lines to `myauth/celery.py` somewhere above the `app.autodiscover_tasks...` line
@@ -122,9 +124,13 @@ programs=beat,worker,gunicorn,authbot
 priority=999
 ```
 
+Last but not least, go to admin and configure your admin users in teh bot config model.
+
 ## Integrations
 * [Statistics](https://github.com/pvyParts/aa-statistics)
   * Adds zkill Monthly/Yearly stats to !lookup
+* [timezones](http://url.com)
+  * Updates teh `time` command to have all timezones configured in auth.
 
 ## Using AA-Discordbot from my project
 
@@ -132,20 +138,78 @@ priority=999
 [aadiscordbot/tasks.py](https://github.com/pvyParts/allianceauth-discordbot/blob/master/aadiscordbot/tasks.py)
 
 ```python
+from django.contrib.auth.models import User
+
 ## Use a small helper to check if AA-Discordbot is installs
 def discord_bot_active():
     return 'aadiscordbot' in settings.INSTALLED_APPS
 
 ## Only import it, if it is installed
 if discord_bot_active():
-    import aadiscordbot.tasks
+    from aadiscordbot.tasks import send_message
+    # if you wanty to send discord embed imor them too.
+    from discord import Embed, Color
 
-## These two tasks can be called to Queue up a Message
+## this helper can be called to Queue up a Message
 ## AA Should not act on these, only AA-DiscordBot will consume them
 if discord_bot_active():
-    aadiscordbot.tasks.send_direct_message_by_user_id.delay(user_pk, message_content)
-    aadiscordbot.tasks.send_direct_message_by_discord_id.delay(discord_user_id, message_content)
-    aadiscordbot.tasks.send_channel_message_by_discord_id.delay(channel_id, message_content, embed=False)
+    e = Embed(title="Testing Embeds!", 
+              description="This is a Test Embed.\n\n```with some code block```", 
+              color=Color.dark_orange())
+    usr = User.objects.get(pk=1)
+
+    # discord ID of user
+    msg = "Channel ID Tests"
+    e = Embed(title="Channel ID Tests!",
+              description="This is a Test Embed.\n\n```Discord Channel ID```",
+              color=Color.yellow())
+    e.add_field(name="Test Field 1", value="Value of some kind goes here")
+    send_message(channel_id=639252062818926642, embed=e) # Embed
+    send_message(channel_id=639252062818926642, message=msg) # Message
+    send_message(channel_id=639252062818926642, message=msg, embed=e) # Both
+
+    # Discord ID of channel
+    msg = "User ID Tests"
+    e = Embed(title="User ID Tests!",
+              description="This is a Test Embed.\n\n```Discord User ID```",
+              color=Color.nitro_pink())
+    e.add_field(name="Test Field 1", value="Value of some kind goes here")
+
+    send_message(user_id=318309023478972417, embed=e) # Embed
+    send_message(user_id=318309023478972417, message=msg) # Message
+    send_message(user_id=318309023478972417, message=msg, embed=e) # Both
+
+    # User model
+    msg = "Auth User Model Tests"
+    e = Embed(title="Auth User Model Tests!",
+              description="This is a Test Embed.\n\n```Auth User Model```",
+              color=Color.dark_orange())
+    e.add_field(name="Test Field 1", value="Value of some kind goes here")
+    send_message(user=usr, embed=e) # Embed
+    send_message(user=usr, message=msg) # Message
+    send_message(user=usr, message=msg, embed=e) # Both
+
+    # User PK id
+    msg = "Auth User PK Tests"
+    e = Embed(title="Auth User PK Tests!",
+              description="This is a Test Embed.\n\n```Auth User PK```",
+              color=Color.brand_green())
+    e.add_field(name="Test Field 1", value="Value of some kind goes here")
+    send_message(user_pk=1, embed=e) # Embed
+    send_message(user_pk=1, message=msg) # Message
+    send_message(user_pk=1, message=msg, embed=e) # Both
+
+    # Mixture of all of the above
+    msg = "All Together Tests"
+    e = Embed(title="All Together Tests!",
+              description="This is a Test Embed.\n\n```All Together```",
+              color=Color.blurple())
+    e.add_field(name="Test Field 1", value="Value of some kind goes here")
+    send_message(channel_id=639252062818926642,
+                user_id=318309023478972417,
+                user=User.objects.get(pk=1),
+                message=msg,
+                embed=e)
 ```
 
 ### Register Cogs (Handling Commands)

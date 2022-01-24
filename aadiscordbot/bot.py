@@ -87,12 +87,14 @@ class AuthBot(commands.Bot):
         print('RECEIVED MESSAGE: {0!r}'.format(body))
         try:
             task_headers = message.headers
+            _args = body[0]
+            _kwargs = body[1]
 
             if 'aadiscordbot.tasks.' in task_headers["task"]:
                 task = task_headers["task"].replace("aadiscordbot.tasks.", '')
                 task_function = getattr(bot_tasks, task, False)
                 if task_function:
-                    self.tasks.append((task_function, body[0]))
+                    self.tasks.append((task_function, _args, _kwargs))
                     if not bot_tasks.run_tasks.is_running():
                         bot_tasks.run_tasks.start(self)
                 else:
@@ -147,26 +149,6 @@ class AuthBot(commands.Bot):
                 #logging.exception(e)
                 message_avail = False
 
-    async def queue_consumer(self, task):
-        logger.debug("Queue Consumer has started")
-        try:
-            task_headers = task["headers"]
-            task_header_args = eval(task_headers["argsrepr"])
-
-            if 'aadiscordbot.tasks.' in task_headers["task"]:
-                task = task_headers["task"].replace("aadiscordbot.tasks.", '')
-                task_function = getattr(bot_tasks, task, False)
-                if task_function:
-                    await task_function(self, task_header_args)
-                else:
-                    logger.debug("No bot_task for that auth_task?")
-            else:
-                logger.debug("i got an invalid auth_task")
-
-        except Exception as e:
-            logger.error("Queue Consumer Failed")
-            logger.error(e, exc_info=1)
-
 
     async def on_resumed(self):
         print("Resumed...")
@@ -200,21 +182,3 @@ class AuthBot(commands.Bot):
         #self.load_extension("aadiscordbot.slash.admin")
         super().run(settings.DISCORD_BOT_TOKEN, reconnect=True)
     
-## Fetching Tasks from celery queue for the message sending loop
-async def get_task(bot):
-    logger.debug("im getting a task")
-    try:
-        task = await bot.redis.execute("brpop", queuename, *queue_keys, 1)
-        if task != None:
-            logger.info('ive got a task')
-            logger.debug(task)
-            return json.loads(task[1])
-        else:
-            logger.debug("No tasks in queue")
-            return False
-
-    except Exception as e:
-        logger.error("Get Task Failed")
-        logger.error(e)
-        pass
-
