@@ -47,10 +47,15 @@ class Reactions(commands.Cog):
                 emoji = payload.emoji.id
             try:
                 rr_binds = ReactionRoleBinding.objects.get(message=rr_msg, emoji=emoji)
-                user = DiscordUser.objects.get(uid=payload.user_id).user
                 if rr_binds.group:
-                    if rr_binds.group not in user.groups.all():
-                        user.groups.add(rr_binds.group)
+                    try:
+                        user = DiscordUser.objects.get(uid=payload.user_id).user
+                        if rr_binds.group not in user.groups.all():
+                                user.groups.add(rr_binds.group)
+                    except DiscordUser.DoesNotExist:
+                        if rr_msg.non_auth_users:
+                            pass
+                        return await self.clean_emojis(payload)
             except ReactionRoleBinding.DoesNotExist:
                 # admin adding new role?
                 if DiscordUser.objects.get(uid=payload.user_id).user.has_perm("reaction_role_message.manage_reactions"):
@@ -79,10 +84,15 @@ class Reactions(commands.Cog):
                 emoji = payload.emoji.id
             try:
                 rr_binds = ReactionRoleBinding.objects.get(message=rr_msg, emoji=emoji)
-                user = DiscordUser.objects.get(uid=payload.user_id).user
-                if rr_binds.group:
-                    if rr_binds.group in user.groups.all():
-                        user.groups.remove(rr_binds.group)
+                try:
+                    user = DiscordUser.objects.get(uid=payload.user_id).user
+                    if rr_binds.group:
+                        if rr_binds.group in user.groups.all():
+                            user.groups.remove(rr_binds.group)
+                except DiscordUser.DoesNotExist:
+                    if rr_msg.non_auth_users:
+                        pass
+                    return await self.clean_emojis(payload)
             except ReactionRoleBinding.DoesNotExist:
                 pass
             await self.clean_emojis(payload)

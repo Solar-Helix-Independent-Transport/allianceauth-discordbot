@@ -50,6 +50,8 @@ class ReactionRoleMessage(models.Model):
     message = models.BigIntegerField(primary_key=True)
     name = models.CharField(max_length=100)
 
+    non_auth_users = models.BooleanField(default=False, help_text="Can Non Authed/public discord members gain groups from this Reaction Roles Message")
+
     def __str__(self):
         return '{}'.format(self.name)
 
