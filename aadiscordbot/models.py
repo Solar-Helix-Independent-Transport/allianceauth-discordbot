@@ -8,9 +8,9 @@ class DiscordBot(models.Model):
     """Meta model for app permissions"""
 
     class Meta:
-        managed = False                         
+        managed = False
         default_permissions = ()
-        permissions = ( 
+        permissions = (
             ('basic_access', 'Can access this app'), 
         )
 
@@ -69,7 +69,11 @@ class ReactionRoleBinding(models.Model):
     message = models.ForeignKey(ReactionRoleMessage, on_delete=models.CASCADE)
 
     def __str__(self):
-        return '{}: {} ({})'.format(self.message.name, self.emoji_text, self.group)
+        try:
+            b = eval(self.emoji_text).decode('utf-8')
+        except:
+            b = self.emoji_text
+        return '{}: {} ({})'.format(self.message.name, b, self.group)
 
 class AuthBotConfiguration(models.Model):
 

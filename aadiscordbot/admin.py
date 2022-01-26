@@ -33,5 +33,12 @@ class ChannelsAdmin(admin.ModelAdmin):
 class AuthBotConfigurationAdmin(admin.ModelAdmin):
     filter_horizontal = ['admin_users']
 
-admin.site.register(ReactionRoleMessage)
+@admin.register(ReactionRoleMessage)
+class ChannelsAdmin(admin.ModelAdmin):
+    list_display = ('name', 'non_auth_users')
+    ordering = ('name',)
+
+    search_fields = ('name',)
+
+
 admin.site.register(ReactionRoleBinding)
