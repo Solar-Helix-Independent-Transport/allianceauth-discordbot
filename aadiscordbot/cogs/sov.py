@@ -11,11 +11,9 @@ from aadiscordbot import app_settings, providers
 import datetime
 from django.utils import timezone
 
-import logging
 import pendulum
-import traceback
-# log = logging.getLogger(__name__)
-
+import logging
+logger = logging.getLogger(__name__)
 
 class Sov(commands.Cog):
     """
@@ -26,13 +24,11 @@ class Sov(commands.Cog):
         self.bot = bot
 
     @commands.command(pass_context=True)
+    @message_in_channels(settings.SOV_DISCORD_BOT_CHANNELS)
     async def vuln(self, ctx):
         """
         Timers for region/constelation/system/alliance
         """
-        if ctx.message.channel.id not in settings.SOV_DISCORD_BOT_CHANNELS:
-            return await ctx.message.add_reaction(chr(0x1F44E))
-
         await ctx.trigger_typing()
 
         name_search = ctx.message.content[6:]
@@ -139,13 +135,11 @@ class Sov(commands.Cog):
         return True
 
     @commands.command(pass_context=True)
+    @message_in_channels(settings.SOV_DISCORD_BOT_CHANNELS)
     async def sov(self, ctx):
         """
         Timers for region/constelation/system/alliance
         """
-        if ctx.message.channel.id not in settings.SOV_DISCORD_BOT_CHANNELS:
-            return await ctx.message.add_reaction(chr(0x1F44E))
-
         await ctx.trigger_typing()
 
         name_search = ctx.message.content[5:]
@@ -251,13 +245,11 @@ class Sov(commands.Cog):
         return True
 
     @commands.command(pass_context=True)
+    @message_in_channels(settings.SOV_DISCORD_BOT_CHANNELS)
     async def lowadm(self, ctx):
         """
         Timers for region/constelation/system/alliance
         """
-        if ctx.message.channel.id not in settings.ADM_DISCORD_BOT_CHANNELS:
-            return await ctx.message.add_reaction(chr(0x1F44E))
-
         await ctx.trigger_typing()
 
         own_ids = settings.DISCORD_BOT_SOV_STRUCTURE_OWNER_IDS

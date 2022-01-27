@@ -7,6 +7,7 @@ from discord.utils import get
 
 # AA Contexts
 from django.conf import settings
+from aadiscordbot.cogs.utils.decorators import sender_is_admin
 from aadiscordbot import app_settings, __version__, __branch__
 
 import pendulum
@@ -46,7 +47,7 @@ class About(commands.Cog):
 
         for m in matches:
             url = m.groups()
-        embed.set_footer(text="Lovingly developed for Init.™ by AaronKable")
+        embed.set_footer(text="Lovingly developed for Init.™ by AaronRin and ArielKable")
 
         embed.add_field(
             name="Number of Servers:", value=len(self.bot.guilds), inline=True
@@ -66,173 +67,16 @@ class About(commands.Cog):
         return await ctx.send(embed=embed)
 
     @commands.command(hidden=True)
+    @sender_is_admin()
     async def uptime(self, ctx):
         """
         Returns the uptime
         """
-        if ctx.message.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
-            return await ctx.message.add_reaction(chr(0x1F44E))
-
         await ctx.send(
             pendulum.now(tz="UTC").diff_for_humans(
                 self.bot.currentuptime, absolute=True
             )
         )
-
-    @commands.command(hidden=True)
-    async def get_webhooks(self, ctx):
-        """
-        Returns the webhooks for the channel
-        """
-        if ctx.message.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
-            return await ctx.message.add_reaction(chr(0x1F44E))
-
-        hooks = await ctx.message.channel.webhooks()
-        if len(hooks) == 0:
-            name = "{}_webhook".format(ctx.message.channel.name.replace(" ", "_"))
-            hook = await ctx.message.channel.create_webhook(
-                        name=name
-                    )
-            await ctx.message.author.send("{} - {}".format(
-                hook.name,
-                hook.url
-            ))
-
-        else:
-            for hook in hooks:
-                await ctx.message.author.send("{} - {}".format(
-                    hook.name,
-                    hook.url
-                ))
-
-        return await ctx.message.delete()
-
-    @commands.command(hidden=True)
-    async def dump_channels(self, ctx):
-        """
-        dump all channels and roles.
-        """
-        if ctx.message.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
-            return await ctx.message.add_reaction(chr(0x1F44E))
-
-        await ctx.message.channel.trigger_typing()
-        
-        await ctx.send(F"Discord may get cranky, this may take some time.\n\nChannels: {len(ctx.guild.channels)}\n\nRoles:{len(ctx.guild.roles)}")
-        for channel_name in ctx.guild.channels:
-            roles = {}
-            for role in channel_name.overwrites:
-                roles[role.name] = {}
-                overides = channel_name.overwrites_for(role)
-                for _name, _value in overides:
-                    if _value is not None:
-                        roles[role.name][_name] = _value
-                pass
-            embed = Embed(title=f"'{channel_name.name}' Channel Roles")
-            embed.colour = Color.blue()
-            message = ""
-            for key, role in roles.items():
-                _msg = f"\n`{key}` Role:\n"
-                for r, v in role.items():
-                    _msg += f"{r}: {v}\n"
-                message += _msg
-            embed.description = message
-            await ctx.send(embed=embed)
-
-    @commands.command(hidden=True)
-    async def list_roles(self, ctx):
-        """
-        dump all roles with no members.
-        """
-        if ctx.message.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
-            return await ctx.message.add_reaction(chr(0x1F44E))
-
-        await ctx.message.channel.trigger_typing()
-        
-        await ctx.send(F"Discord may get cranky, this may take some time.\nRole count:{len(ctx.guild.roles)}")
-        roles = []
-        for role_model in ctx.guild.roles:
-            roles.append(f"`{role_model.name} {role_model.position}` ")
-        roles.sort()
-        chunks = [roles[x:x+50] for x in range(0, len(roles), 50)]
-        for c in chunks:
-            await ctx.send("\n".join(c))
-
-    @commands.command(hidden=True)
-    async def rem_channel(self, ctx):
-        """
-        deletes a channel... User beware....
-        """
-        if ctx.message.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
-            return await ctx.message.add_reaction(chr(0x1F44E))
-
-        await ctx.message.channel.trigger_typing()
-        
-        input_string = ctx.message.content[13:]
-
-        parts = input_string.split("|")
-        channel_name = get(ctx.guild.channels, name=parts[0])
-
-        if channel_name:
-            hash = hashlib.sha1(channel_name.name.encode("UTF-8")).hexdigest()[:10]
-            if len(parts) == 1:
-                await ctx.send(f"This will delete the channel {channel_name.name}\nto confirm reply\n")
-                return await ctx.send(f"`!rem_channel {channel_name.name}|{hash}`")
-            if len(parts) == 2:
-                name = channel_name.name
-                await channel_name.delete()
-                return await ctx.send(f"Deleted `{name}`")
-
-    @commands.command(hidden=True)
-    async def list_cats(self, ctx):
-        """
-        Lists all Cats....
-        """
-        if ctx.message.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
-            return await ctx.message.add_reaction(chr(0x1F44E))
-
-        await ctx.message.channel.trigger_typing()
-
-        for category in ctx.message.guild.categories:
-            await ctx.send(f"{category.name}")
-            await ctx.send(f"`{category.id}`")
-
-
-    @commands.command(hidden=True)
-    async def help_admin(self, ctx):
-        """
-        Hidden help...
-        """
-        if ctx.message.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
-            return await ctx.message.add_reaction(chr(0x1F44E))
-
-        await ctx.message.channel.trigger_typing()
-
-        command_list = [
-            "`get_webhooks` gets a webhook for the current channel and sneds via DM",
-            "`rem_channel` `channel_name` removes a channel",
-            "`list_cats` lists all cats",
-            "`list_role` `channel_name` Lists roles attached to a channel",
-            "`list_roles` lists all roles",
-            "`dump_channels` dumps all channels and roles ( will be rate limited )",
-            "`uptime` how long have we been live"
-        ]
-        return await ctx.send("\n".join(command_list))
-
-
-    @commands.command(hidden=True)
-    async def moverole(selk, ctx, role: discord.Role, pos: int):
-        if ctx.message.author.id != 318309023478972417:  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
-            return await ctx.message.add_reaction(chr(0x1F44E))
-
-        try:
-            await role.edit(position=int(pos))
-            await ctx.send("Role moved.")
-        except discord.Forbidden:
-            await ctx.send("You do not have permission to do that")
-        except discord.HTTPException:
-            await ctx.send("Failed to move role")
-        except discord.InvalidArgument:
-            await ctx.send("Invalid argument")
 
 def setup(bot):
     bot.add_cog(About(bot))

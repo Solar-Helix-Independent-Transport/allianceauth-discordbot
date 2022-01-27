@@ -2,15 +2,13 @@
 from discord.ext import commands
 from discord.embeds import Embed
 from discord.colour import Color
+from ..app_settings import mumble_active, discord_active
 # AA Contexts
 from aadiscordbot.app_settings import get_site_url, get_admins
 
 from django.conf import settings
 
-import re
 import logging
-import pendulum
-import traceback
 logger = logging.getLogger(__name__)
 
 
@@ -52,7 +50,6 @@ class Auth(commands.Cog):
         Returns a link to the AllianceAuth Install
         Used by many other Bots and is a common command that users will attempt to run.
         """
-        
         embed = Embed(title="AllianceAuth")
         embed.set_thumbnail(
             url="https://assets.gitlab-static.net/uploads/-/system/project/avatar/6840712/Alliance_auth.png?width=128"

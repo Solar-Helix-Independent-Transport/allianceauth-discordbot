@@ -34,6 +34,10 @@ AA-Discordbot for [Alliance Auth](https://gitlab.com/allianceauth/allianceauth).
     * !time - Returns the current EVE Time.
   * Timers
     * !timer - Returns the next Structure timer from allianceauth.timerboard.
+  * PriceCheck:
+    * amarr - Check an item price on Amarr market
+    * jita -  Check an item price on Jita market
+    * price - Check an item price on Jita and Amarr market
   * Easter Eggs,
     * !happybirthday [text] - Wishes the text a happy birthday, works with user mentions
 
@@ -41,12 +45,12 @@ AA-Discordbot for [Alliance Auth](https://gitlab.com/allianceauth/allianceauth).
 
 * Update your [Discord Developer Application](https://discord.com/developers/applications) to include the Privileged Intents that we call. Please add Server Members and Presence (for future development).
 
-![screenshot](https://imgur.com/3Sr4yFZ)
+![screenshot](https://i.imgur.com/hCcdLnB.png)
 
 * Install the app with your venv active
 
 ```bash
-pip install -U git+https://github.com/pvyParts/allianceauth-discordbot.git
+pip install allianceauth-discordbot
 ```
 
 * Add `'aadiscordbot',` to your INSTALLED_APPS list in local.py.
@@ -68,6 +72,19 @@ DISCORD_BOT_MEMBER_ALLIANCES = [111, 222, 333] # A list of alliances to be consi
 DISCORD_BOT_ADM_REGIONS = [10000002] # The Forge Example
 DISCORD_BOT_ADM_SYSTEMS = [30000142] # Jita Example
 DISCORD_BOT_ADM_CONSTELLATIONS = [20000020] # Kimitoro Example
+```
+
+```python
+## Insert AADiscorcbot's logging into Django Logging config
+LOGGING['handlers']['bot_log_file']= {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'log/discord_bot.log'),
+            'formatter': 'verbose',
+            'maxBytes': 1024 * 1024 * 5,  
+            'backupCount': 5,
+        }
+LOGGING['loggers']['aadiscordbot'] = {'handlers': ['bot_log_file'],'level': 'DEBUG'}
 ```
 * Optional Settings
  ```python
