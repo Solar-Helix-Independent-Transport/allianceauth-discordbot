@@ -41,4 +41,23 @@ class ChannelsAdmin(admin.ModelAdmin):
     search_fields = ('name',)
 
 
-admin.site.register(ReactionRoleBinding)
+@admin.register(ReactionRoleBinding)
+class ChannelsAdmin(admin.ModelAdmin):
+    list_display = ('message_name', 'emoji_decoded', 'group')
+
+    search_fields = ('message_name', 'emoji_decoded', 'group')
+
+    @staticmethod
+    def message_name(obj):
+        try:
+            return obj.message.name
+        except Exception as e:
+            logger.error(e)
+
+    @staticmethod
+    def emoji_decoded(ob):
+        try:
+            b = eval(ob.emoji_text).decode('utf-8')
+        except:
+            b = ob.emoji_text
+        return b

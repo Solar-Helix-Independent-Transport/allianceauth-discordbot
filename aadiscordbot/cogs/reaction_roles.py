@@ -1,3 +1,5 @@
+from aadiscordbot.cogs.utils.decorators import sender_has_perm
+from discord import reaction
 from discord.ext import commands
 from discord.utils import get
 
@@ -37,6 +39,12 @@ class Reactions(commands.Cog):
                         await e.remove(u)
 
 
+    @commands.command(pass_context=True)
+    @sender_has_perm('aadiscordbot.manage_reactions')
+    async def rr(self, ctx):
+        ReactionRoleMessage.objects.create(message=ctx.message.id, name=f"{ctx.message.channel.name} RR Message {ctx.message.id}")
+        return await ctx.message.add_reaction("👍")
+
     @commands.Cog.listener("on_raw_reaction_add")
     async def add_react_listener(self, payload):
         """
@@ -57,18 +65,19 @@ class Reactions(commands.Cog):
                     rr_binds = ReactionRoleBinding.objects.get(message=rr_msg, emoji=payload.emoji.name)
                 except:
                     # admin adding new role?
-                    if DiscordUser.objects.get(uid=payload.user_id).user.has_perm("reaction_role_message.manage_reactions"):
+                    if DiscordUser.objects.get(uid=payload.user_id).user.has_perm("aadiscordbot.manage_reactions"):
                         gld = get(self.bot.guilds, id=payload.guild_id)
                         chan = gld.get_channel(payload.channel_id)
                         msg = await chan.fetch_message(payload.message_id)
                         ReactionRoleBinding.objects.create(message=rr_msg, emoji=emoji, emoji_text=payload.emoji.name.encode('utf-8'))
                         await msg.add_reaction(payload.emoji)
+                        return await self.clean_emojis(payload)
             if rr_binds.group:
                 try:
                     user = DiscordUser.objects.get(uid=payload.user_id)
                     user= user.user
                     if rr_binds.group not in user.groups.all():
-                            user.groups.add(rr_binds.group.name)
+                            user.groups.add(rr_binds.group)
                 except DiscordUser.DoesNotExist:
                     if rr_msg.non_auth_users:
                         try:

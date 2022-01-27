@@ -126,6 +126,25 @@ priority=999
 
 Last but not least, go to admin and configure your admin users in teh bot config model.
 
+## Reaction Roles
+> ❗❗❗ **This will bypass the Group Leadership/Join Request System**: This is intended for open groups but not limited to it! ❗❗❗
+
+The bot is able to run a reaction roles syustem that is compatable with auth and public users on a discord.
+ - If a member is part of auth it will do auth syncing of roles
+ - If a member is not found in auth and the reaction role message has the public flag set it will assign roles to anyone who reacts
+
+### How To Reaction Role!
+ 1. Setup the inital Message you wish to use buy using the command !rr
+   - *Optional* Edit the name and settings of this message in `Admin > Discord Bot > Reaction Role Messages`
+ 2. React to the message with the reactions you wish to use.
+ 3. The bot will counter react to the reactions when it creates the binding in auth.
+ 4. Goto `Admin > Discord Bot > Reaction Role Bindings`
+ 5. Assign the groups you want for each reaction
+
+#### Messages Admin
+![https://cdn.discordapp.com/attachments/639369068930924546/936082605156237332/unknown.png](https://cdn.discordapp.com/attachments/639369068930924546/936082605156237332/unknown.png)
+#### Reactions Admin
+![https://cdn.discordapp.com/attachments/639369068930924546/936084126379962378/unknown.png](https://cdn.discordapp.com/attachments/639369068930924546/936084126379962378/unknown.png)
 ## Integrations
 * [Statistics](https://github.com/pvyParts/aa-statistics)
   * Adds zkill Monthly/Yearly stats to !lookup
@@ -220,7 +239,6 @@ In `auth_hooks.py`, define a function that returns an array of cog modules, and 
 def register_cogs():
     return ["yourapp.cogs.cog_a", "yourapp.cogs.cog_b"]
 ```
-
 
 ## Issues
 
