@@ -92,13 +92,15 @@ class PriceCheck(commands.Cog):
 
         if item_name != "":
             embed = Embed(
-                title="Price Lookup for {item_name}".format(item_name=item_name),
+                title="Price Lookup for {item_name}".format(
+                    item_name=item_name),
                 color=Color.green(),
             )
 
             for market in markets:
                 embed.add_field(
-                    name="{market_name} Market".format(market_name=market["name"]),
+                    name="{market_name} Market".format(
+                        market_name=market["name"]),
                     value="Prices for {item_name} on the {market_name} Market.".format(
                         item_name=item_name, market_name=market["name"]
                     ),

@@ -33,7 +33,7 @@ AuthBot is watching...
 
 logger = logging.getLogger(__name__)
 
-queuename="aadiscordbot"
+queuename = "aadiscordbot"
 queue_keys = [f"{queuename}",
               f"{queuename}\x06\x161",
               f"{queuename}\x06\x162",
@@ -44,7 +44,6 @@ queue_keys = [f"{queuename}",
               f"{queuename}\x06\x167",
               f"{queuename}\x06\x168",
               f"{queuename}\x06\x169"]
-
 
 
 class AuthBot(commands.Bot):
@@ -61,18 +60,20 @@ class AuthBot(commands.Bot):
         )
 
         self.redis = None
-        self.redis = self.loop.run_until_complete(aioredis.create_pool(getattr(settings, "BROKER_URL", "redis://localhost:6379/0"), minsize=5, maxsize=10))
+        self.redis = self.loop.run_until_complete(aioredis.create_pool(getattr(
+            settings, "BROKER_URL", "redis://localhost:6379/0"), minsize=5, maxsize=10))
         print('redis pool started', self.redis)
         self.client_id = client_id
         self.session = aiohttp.ClientSession(loop=self.loop)
         self.tasks = []
 
-
-        self.message_connection = Connection(getattr(settings, "BROKER_URL", 'redis://localhost:6379/0'))
+        self.message_connection = Connection(
+            getattr(settings, "BROKER_URL", 'redis://localhost:6379/0'))
         queues = []
         for que in queue_keys:
             queues.append(Queue(que))
-        self.message_consumer = Consumer(self.message_connection, queues, callbacks=[self.on_queue_message], accept=['json'])
+        self.message_consumer = Consumer(self.message_connection, queues, callbacks=[
+                                         self.on_queue_message], accept=['json'])
 
         django.setup()
 
@@ -117,13 +118,12 @@ class AuthBot(commands.Bot):
                                     type=discord.ActivityType.watching,
                                     state="Monitoring",
                                     details="Waiting for Shenanigans!",
-                                    emoji={"name":":smiling_imp:"}
+                                    emoji={"name": ":smiling_imp:"}
                                     )
         await self.change_presence(activity=activity)
 
         self.poll_queue.start()
         logger.info("Ready")
-
 
     async def process_commands(self, message):
         ctx = await self.get_context(message, cls=context.Context)
@@ -147,9 +147,8 @@ class AuthBot(commands.Bot):
                 with self.message_consumer:
                     self.message_connection.drain_events(timeout=0.01)
             except timeout as e:
-                #logging.exception(e)
+                # logging.exception(e)
                 message_avail = False
-
 
     async def on_resumed(self):
         print("Resumed...")
@@ -169,7 +168,8 @@ class AuthBot(commands.Bot):
             return await ctx.send(error)
         elif isinstance(error, commands.BotMissingPermissions):
             await ctx.send(
-                "Sorry, I don't have the required permissions to do that here:\n{0}".format(error.missing_perms)
+                "Sorry, I don't have the required permissions to do that here:\n{0}".format(
+                    error.missing_perms)
             )
         elif isinstance(error, commands.MissingPermissions):
             await ctx.message.add_reaction(chr(DISCORD_BOT_ACCESS_DENIED_REACT))
@@ -181,6 +181,5 @@ class AuthBot(commands.Bot):
             await ctx.message.add_reaction(chr(0x274C))
 
     def run(self):
-        #self.load_extension("aadiscordbot.slash.admin")
+        # self.load_extension("aadiscordbot.slash.admin")
         super().run(settings.DISCORD_BOT_TOKEN, reconnect=True)
-    

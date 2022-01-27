@@ -4,7 +4,8 @@ from django.db import migrations, models
 
 
 def add_settings(apps, schema_editor):
-    AuthBotConfiguration = apps.get_model('aadiscordbot', 'AuthBotConfiguration')
+    AuthBotConfiguration = apps.get_model(
+        'aadiscordbot', 'AuthBotConfiguration')
 
     # StructureLostShields
     AuthBotConfiguration.objects.create()

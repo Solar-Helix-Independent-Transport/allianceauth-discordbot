@@ -29,9 +29,11 @@ class ChannelsAdmin(admin.ModelAdmin):
         except Exception as e:
             logger.error(e)
 
+
 @admin.register(AuthBotConfiguration)
 class AuthBotConfigurationAdmin(admin.ModelAdmin):
     filter_horizontal = ['admin_users']
+
 
 @admin.register(ReactionRoleMessage)
 class ChannelsAdmin(admin.ModelAdmin):

@@ -5,6 +5,7 @@ from discord.ext import tasks
 from discord import Embed
 logger = logging.getLogger(__name__)
 
+
 @tasks.loop()
 async def run_tasks(bot):
     if len(bot.tasks) > 0:
@@ -12,6 +13,7 @@ async def run_tasks(bot):
         await task(bot, *args, **kwargs)
     else:
         run_tasks.stop()
+
 
 async def send_channel_message_by_discord_id(bot, channel_id, message, embed=False):
     logger.debug("I am running a Send Channel Message Task")
@@ -21,12 +23,14 @@ async def send_channel_message_by_discord_id(bot, channel_id, message, embed=Fal
     else:
         await bot.get_channel(channel_id).send(message)
 
+
 async def send_channel_message(bot, channel_id, message, embed=False):
     warnings.warn(
         "send_channel_message is deprecated, use send_channel_message_by_discord_id instead",
         DeprecationWarning
     )
     await send_channel_message_by_discord_id(bot, channel_id, message, embed=embed)
+
 
 async def send_direct_message_by_discord_id(bot, discord_user_id, message, embed=False):
     logger.debug(f"Sending DM to Discord ID {discord_user_id}")
@@ -38,12 +42,14 @@ async def send_direct_message_by_discord_id(bot, discord_user_id, message, embed
     else:
         await channel.send(message)
 
+
 async def send_direct_message(bot, discord_user_id, message, embed=False):
     warnings.warn(
         "send_direct_message is deprecated, use send_direct_message_by_discord_id instead",
         DeprecationWarning
     )
     await send_direct_message_by_discord_id(bot, discord_user_id, message, embed=embed)
+
 
 async def send_direct_message_by_user_id(bot, user_pk, message, embed=False):
     # App isn't loaded when this file is imported, so importing here
@@ -60,4 +66,3 @@ async def send_direct_message_by_user_id(bot, user_pk, message, embed=False):
             await channel.send(message)
     else:
         logger.debug(f"No discord account on record for user_pk={user_pk}")
-

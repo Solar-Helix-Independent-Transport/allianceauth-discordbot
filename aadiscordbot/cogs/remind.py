@@ -26,7 +26,9 @@ class Remind(commands.Cog):
         embed = Embed(color=0x55a7f7, timestamp=datetime.utcnow())
         seconds = 0
         if reminder is None:
-            embed.add_field(name='Warning', value='Please specify what do you want me to remind you about.')  # Error message
+            # Error message
+            embed.add_field(
+                name='Warning', value='Please specify what do you want me to remind you about.')
         if time.lower().endswith("d"):
             seconds += int(time[:-1]) * 60 * 60 * 24
             counter = f"{seconds // 60 // 60 // 24} days"
@@ -46,7 +48,8 @@ class Remind(commands.Cog):
             embed.add_field(name='Warning',
                             value='You have specified a too short duration!\nMinimum duration is 5 minutes.')
         elif seconds > 7776000:
-            embed.add_field(name='Warning', value='You have specified a too long duration!\nMaximum duration is 90 days.')
+            embed.add_field(
+                name='Warning', value='You have specified a too long duration!\nMaximum duration is 90 days.')
         else:
             await ctx.send(f"Alright, I will remind you about {reminder} in {counter}.")
             await asyncio.sleep(seconds)

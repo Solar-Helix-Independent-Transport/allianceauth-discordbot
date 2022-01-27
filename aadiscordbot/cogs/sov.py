@@ -15,6 +15,7 @@ import pendulum
 import logging
 logger = logging.getLogger(__name__)
 
+
 class Sov(commands.Cog):
     """
     All about sov!
@@ -50,13 +51,15 @@ class Sov(commands.Cog):
         }
 
         for r in hit_ids['r']:
-            constellations = providers.esi.client.Universe.get_universe_regions_region_id(region_id=r).result()["constellations"]
+            constellations = providers.esi.client.Universe.get_universe_regions_region_id(
+                region_id=r).result()["constellations"]
             for c in constellations:
                 if c not in hit_ids["c"]:
                     hit_ids["c"].append(c)
 
         for c in hit_ids['c']:
-            systems = providers.esi.client.Universe.get_universe_constellations_constellation_id(constellation_id=c).result()["systems"]
+            systems = providers.esi.client.Universe.get_universe_constellations_constellation_id(
+                constellation_id=c).result()["systems"]
             for s in systems:
                 if s not in hit_ids["s"]:
                     hit_ids["s"].append(s)
@@ -66,7 +69,8 @@ class Sov(commands.Cog):
         hits = []
         names = []
         alliances = []
-        dt_comp = datetime.datetime.utcnow().replace(tzinfo=timezone.utc) + datetime.timedelta(hours=1)
+        dt_comp = datetime.datetime.utcnow().replace(tzinfo=timezone.utc) + \
+            datetime.timedelta(hours=1)
 
         for s in sov_structures:
             start = s.get('vulnerable_start_time', False)
@@ -84,10 +88,12 @@ class Sov(commands.Cog):
 
         names_alli = {}
         for a in set(alliances):
-            res = providers.esi.client.Alliance.get_alliances_alliance_id(alliance_id=a).result()
+            res = providers.esi.client.Alliance.get_alliances_alliance_id(
+                alliance_id=a).result()
             names_alli[a] = res.get("ticker")
 
-        names = providers.esi.client.Universe.post_universe_names(ids=list(set(names))).result()
+        names = providers.esi.client.Universe.post_universe_names(
+            ids=list(set(names))).result()
 
         nms = {}
         for n in names:
@@ -111,12 +117,12 @@ class Sov(commands.Cog):
             time = ""
             if h['vulnerable_start_time'] > dt_now:
                 time = " in **{}**".format(pendulum.now(tz="UTC").diff_for_humans(
-                            h['vulnerable_start_time'], absolute=True
-                        ))
+                    h['vulnerable_start_time'], absolute=True
+                ))
             else:
                 time = " for **{}**".format(pendulum.now(tz="UTC").diff_for_humans(
-                            h['vulnerable_end_time'], absolute=True
-                        ))
+                    h['vulnerable_end_time'], absolute=True
+                ))
             output.append(
                 base_str.format(
                     h['system_name'],
@@ -128,7 +134,8 @@ class Sov(commands.Cog):
             )
 
         n = 10
-        chunks = [list(output[i * n:(i + 1) * n]) for i in range((len(output) + n - 1) // n)]
+        chunks = [list(output[i * n:(i + 1) * n])
+                  for i in range((len(output) + n - 1) // n)]
 
         for c in chunks:
             await ctx.send("\n".join(c))
@@ -161,13 +168,15 @@ class Sov(commands.Cog):
         }
 
         for r in hit_ids['r']:
-            constellations = providers.esi.client.Universe.get_universe_regions_region_id(region_id=r).result()["constellations"]
+            constellations = providers.esi.client.Universe.get_universe_regions_region_id(
+                region_id=r).result()["constellations"]
             for c in constellations:
                 if c not in hit_ids["c"]:
                     hit_ids["c"].append(c)
 
         for c in hit_ids['c']:
-            systems = providers.esi.client.Universe.get_universe_constellations_constellation_id(constellation_id=c).result()["systems"]
+            systems = providers.esi.client.Universe.get_universe_constellations_constellation_id(
+                constellation_id=c).result()["systems"]
             for s in systems:
                 if s not in hit_ids["s"]:
                     hit_ids["s"].append(s)
@@ -193,10 +202,12 @@ class Sov(commands.Cog):
 
         names_alli = {}
         for a in set(alliances):
-            res = providers.esi.client.Alliance.get_alliances_alliance_id(alliance_id=a).result()
+            res = providers.esi.client.Alliance.get_alliances_alliance_id(
+                alliance_id=a).result()
             names_alli[a] = res.get("ticker")
 
-        names = providers.esi.client.Universe.post_universe_names(ids=list(set(names))).result()
+        names = providers.esi.client.Universe.post_universe_names(
+            ids=list(set(names))).result()
 
         nms = {}
         for n in names:
@@ -225,8 +236,8 @@ class Sov(commands.Cog):
             if h['vulnerable_start_time']:
                 if h['vulnerable_start_time'] > dt_now:
                     time = " in **{}**".format(pendulum.now(tz="UTC").diff_for_humans(
-                                h['vulnerable_start_time'], absolute=True
-                            ))
+                        h['vulnerable_start_time'], absolute=True
+                    ))
             output.append(
                 base_str.format(
                     h['system_name'],
@@ -238,7 +249,8 @@ class Sov(commands.Cog):
             )
 
         n = 15
-        chunks = [list(output[i * n:(i + 1) * n]) for i in range((len(output) + n - 1) // n)]
+        chunks = [list(output[i * n:(i + 1) * n])
+                  for i in range((len(output) + n - 1) // n)]
 
         for c in chunks:
             await ctx.send("\n".join(c))
@@ -279,7 +291,8 @@ class Sov(commands.Cog):
         constelations = {}
         region_id = {}
         for n in systems:
-            system = providers.esi.client.Universe.get_universe_systems_system_id(system_id=n).result()
+            system = providers.esi.client.Universe.get_universe_systems_system_id(
+                system_id=n).result()
             names[n]["system_name"] = system.get("name")
             names[n]["system_id"] = system.get("system_id")
             names[n]["constellation_id"] = system.get("constellation_id")
@@ -287,8 +300,10 @@ class Sov(commands.Cog):
                 constelations[system.get("constellation_id")] = {}
 
         for c, v in constelations.items():
-            const = providers.esi.client.Universe.get_universe_constellations_constellation_id(constellation_id=c).result()
-            region = providers.esi.client.Universe.get_universe_regions_region_id(region_id=const.get("region_id")).result()
+            const = providers.esi.client.Universe.get_universe_constellations_constellation_id(
+                constellation_id=c).result()
+            region = providers.esi.client.Universe.get_universe_regions_region_id(
+                region_id=const.get("region_id")).result()
             v["region_id"] = const.get("region_id")
             v["region_name"] = region.get("name")
             v["constellation_name"] = const.get("name")
@@ -312,22 +327,23 @@ class Sov(commands.Cog):
                 if h['region_name'] not in output:
                     output[h['region_name']] = []
                 output[h['region_name']].append(
-                                    base_str.format(
-                                        h['system_name'],
-                                        h['adm']
-                                    )
-                                )
+                    base_str.format(
+                        h['system_name'],
+                        h['adm']
+                    )
+                )
                 if h['region_name'].replace(" ", "_") not in urls:
                     urls[h['region_name'].replace(" ", "_")] = []
                 urls[h['region_name'].replace(" ", "_")].append(
-                                        h['system_name'].replace(" ", "_")
-                                )
+                    h['system_name'].replace(" ", "_")
+                )
         url = "https://evemaps.dotlan.net/map/{}/{}#adm"
 
         if len(output) > 0:
             for k, v in output.items():
                 n = 25
-                chunks = [list(v[i * n:(i + 1) * n]) for i in range((len(v) + n - 1) // n)]
+                chunks = [list(v[i * n:(i + 1) * n])
+                          for i in range((len(v) + n - 1) // n)]
                 for chunk in chunks:
                     await ctx.send("__{}__\n{}".format(k, "\n".join(chunk)))
             await ctx.send(url.format(k.replace(" ", "_"), ",".join(urls[k.replace(" ", "_")])))

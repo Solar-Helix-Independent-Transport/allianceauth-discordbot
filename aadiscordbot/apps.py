@@ -1,6 +1,7 @@
 from django.apps import AppConfig
 from . import __version__
 
+
 class AADiscordBotConfig(AppConfig):
     name = 'aadiscordbot'
     label = 'aadiscordbot'

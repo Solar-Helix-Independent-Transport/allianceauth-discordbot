@@ -70,7 +70,8 @@ def sender_has_any_perm(perms: list):
                 if id in DISCORD_BOT_ADMIN_USER:
                     return True
                 else:
-                    raise commands.MissingPermissions(["Missing Auth Permission"])
+                    raise commands.MissingPermissions(
+                        ["Missing Auth Permission"])
             except Exception as e:
                 logger.error(e)
                 raise commands.MissingPermissions(["Not Authenticated"])
@@ -95,4 +96,3 @@ def message_in_channels(channels: list):
         else:
             raise commands.MissingPermissions(["Not an Allowed Channel"])
     return commands.check(predicate)
-

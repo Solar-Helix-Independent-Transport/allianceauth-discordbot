@@ -15,7 +15,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ReactionRoleMessage',
             fields=[
-                ('message', models.BigIntegerField(primary_key=True, serialize=False)),
+                ('message', models.BigIntegerField(
+                    primary_key=True, serialize=False)),
                 ('name', models.CharField(max_length=100)),
             ],
             options={
@@ -25,11 +26,14 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ReactionRoleBinding',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
                 ('emoji', models.CharField(max_length=100)),
                 ('emoji_text', models.CharField(max_length=100)),
-                ('group', models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.CASCADE, to='auth.group')),
-                ('message', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='aadiscordbot.reactionrolemessage')),
+                ('group', models.ForeignKey(default=None, null=True,
+                 on_delete=django.db.models.deletion.CASCADE, to='auth.group')),
+                ('message', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='aadiscordbot.reactionrolemessage')),
             ],
         ),
     ]

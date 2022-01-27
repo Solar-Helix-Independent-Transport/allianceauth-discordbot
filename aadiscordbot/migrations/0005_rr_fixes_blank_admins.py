@@ -14,7 +14,8 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='reactionrolemessage',
             name='non_auth_users',
-            field=models.BooleanField(default=False, help_text='Can Non Authed/public discord members gain groups from this Reaction Roles Message'),
+            field=models.BooleanField(
+                default=False, help_text='Can Non Authed/public discord members gain groups from this Reaction Roles Message'),
         ),
         migrations.AlterField(
             model_name='authbotconfiguration',

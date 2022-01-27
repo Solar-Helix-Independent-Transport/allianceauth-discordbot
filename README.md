@@ -81,7 +81,7 @@ LOGGING['handlers']['bot_log_file']= {
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': os.path.join(BASE_DIR, 'log/discord_bot.log'),
             'formatter': 'verbose',
-            'maxBytes': 1024 * 1024 * 5,  
+            'maxBytes': 1024 * 1024 * 5,
             'backupCount': 5,
         }
 LOGGING['loggers']['aadiscordbot'] = {'handlers': ['bot_log_file'],'level': 'DEBUG'}
@@ -99,7 +99,7 @@ DISCORD_BOT_COGS = ["aadiscordbot.cogs.about", # about the bot
                      "aadiscordbot.cogs.eastereggs", # some "fun" commands from ariel...
                      "aadiscordbot.cogs.remind", # very Basic in memor y reminder tool
                      "aadiscordbot.cogs.reaction_roles" # auth group integrated reaction roles
-                    ] 
+                    ]
 ```
 
 * Add the below lines to `myauth/celery.py` somewhere above the `app.autodiscover_tasks...` line
@@ -189,8 +189,8 @@ if discord_bot_active():
 ## this helper can be called to Queue up a Message
 ## AA Should not act on these, only AA-DiscordBot will consume them
 if discord_bot_active():
-    e = Embed(title="Testing Embeds!", 
-              description="This is a Test Embed.\n\n```with some code block```", 
+    e = Embed(title="Testing Embeds!",
+              description="This is a Test Embed.\n\n```with some code block```",
               color=Color.dark_orange())
     usr = User.objects.get(pk=1)
 

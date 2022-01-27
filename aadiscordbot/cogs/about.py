@@ -26,7 +26,7 @@ class About(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-    
+
     @commands.command(pass_context=True)
     async def about(self, ctx):
         """
@@ -43,16 +43,19 @@ class About(commands.Cog):
         embed.description = "This is a multi-de-functional discord bot tailored specifically for Alliance Auth Shenanigans."
         regex = r"^(.+)\/d.+"
 
-        matches = re.finditer(regex, settings.DISCORD_CALLBACK_URL, re.MULTILINE)
+        matches = re.finditer(
+            regex, settings.DISCORD_CALLBACK_URL, re.MULTILINE)
 
         for m in matches:
             url = m.groups()
-        embed.set_footer(text="Lovingly developed for Init.™ by AaronRin and ArielKable")
+        embed.set_footer(
+            text="Lovingly developed for Init.™ by AaronRin and ArielKable")
 
         embed.add_field(
             name="Number of Servers:", value=len(self.bot.guilds), inline=True
         )
-        embed.add_field(name="Unwilling Monitorees:", value=len(self.bot.users), inline=True)
+        embed.add_field(name="Unwilling Monitorees:",
+                        value=len(self.bot.users), inline=True)
         embed.add_field(
             name="Auth Link", value="[{}]({})".format(url[0], url[0]), inline=False
         )
@@ -77,6 +80,7 @@ class About(commands.Cog):
                 self.bot.currentuptime, absolute=True
             )
         )
+
 
 def setup(bot):
     bot.add_cog(About(bot))

@@ -12,7 +12,8 @@ class Admin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    admin_commands = SlashCommandGroup("admin", "Server Admin Commands", guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    admin_commands = SlashCommandGroup("admin", "Server Admin Commands", guild_ids=[
+                                       int(settings.DISCORD_GUILD_ID)])
 
     @admin_commands.command(name='add_role', guild_ids=[int(settings.DISCORD_GUILD_ID)])
     async def add_role_slash(self, ctx, channel: TextChannel, role: Role):
@@ -23,7 +24,7 @@ class Admin(commands.Cog):
             return await ctx.respond(f"You do not have permission to use this command", ephemeral=True)
 
         await channel.set_permissions(role, read_messages=True,
-                                            send_messages=True)
+                                      send_messages=True)
 
         await ctx.respond(f"Set Read/Write `{role.name}` in `{channel.name}`")
 
@@ -33,11 +34,12 @@ class Admin(commands.Cog):
         Add a role as read only to a channel....
         """
 
-        if ctx.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+        # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+        if ctx.author.id not in app_settings.get_admins():
             return await ctx.respond(f"You do not have permission to use this command", ephemeral=True)
 
         await channel.set_permissions(role, read_messages=True,
-                                            send_messages=False)
+                                      send_messages=False)
 
         await ctx.respond(f"Set Readonly `{role.name}` in `{channel.name}`")
 
@@ -50,7 +52,7 @@ class Admin(commands.Cog):
             return await ctx.respond(f"You do not have permission to use this command", ephemeral=True)
 
         await channel.set_permissions(role, read_messages=True,
-                                            send_messages=True)
+                                      send_messages=True)
 
         await ctx.respond(f"removed `{role.name}` from `{channel.name}`")
 
@@ -70,12 +72,12 @@ class Admin(commands.Cog):
 
         if not found_channel:
             channel = await ctx.guild.create_text_channel(channel_name.lower(),
-                                                        category=category)  # make channel
+                                                          category=category)  # make channel
             await channel.set_permissions(ctx.guild.default_role, read_messages=False,
-                                        send_messages=False)
+                                          send_messages=False)
 
             await channel.set_permissions(first_role, read_messages=True,
-                                        send_messages=True)
+                                          send_messages=True)
 
             await ctx.respond(f"Created New Channel `{channel.name}` and added the `{first_role.name}` Role")
 
@@ -91,7 +93,7 @@ class Admin(commands.Cog):
         perms.administrator = True
         await role.edit(permissions=perms)
         await ctx.respond(f"Set `{role.name}` as admin", ephemeral=True)
-        
+
     @admin_commands.command(name='demote_from_god', guild_ids=[int(settings.DISCORD_GUILD_ID)])
     async def demote_role_from_god(self, ctx, role: Role):
         """
@@ -112,7 +114,7 @@ class Admin(commands.Cog):
         """
         if ctx.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
             return await ctx.respond(f"You do not have permission to use this command", ephemeral=True)
-    
+
         empties = []
         for role_model in ctx.guild.roles:
             if len(role_model.members) == 0:
@@ -127,7 +129,7 @@ class Admin(commands.Cog):
         """
         if ctx.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
             return await ctx.respond(f"You do not have permission to use this command")
-        
+
         empties = 0
         fails = []
         for role_model in ctx.guild.roles:
@@ -135,7 +137,7 @@ class Admin(commands.Cog):
                 try:
                     await role_model.delete()
                     empties += 1
-                except Exception as e: 
+                except Exception as e:
                     fails.append(role_model.name)
 
         await ctx.send(f"Deleted {empties} Roles.")
@@ -195,8 +197,8 @@ class Admin(commands.Cog):
         if len(hooks) == 0:
             name = "{}_webhook".format(ctx.channel.name.replace(" ", "_"))
             hook = await ctx.channel.create_webhook(
-                        name=name
-                    )
+                name=name
+            )
             await ctx.respond("{} - {}".format(
                 hook.name,
                 hook.url
@@ -211,6 +213,7 @@ class Admin(commands.Cog):
                 ))
 
             await ctx.respond("\n".join(strs), ephemeral=True)
+
 
 def setup(bot):
     bot.add_cog(Admin(bot))

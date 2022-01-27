@@ -1,3 +1,5 @@
+from allianceauth.services.modules.discord.models import DiscordUser
+from ..models import ReactionRoleBinding, ReactionRoleMessage
 from aadiscordbot.cogs.utils.decorators import sender_has_perm
 from discord import reaction
 from discord.ext import commands
@@ -8,8 +10,6 @@ import logging
 from pexpect import ExceptionPexpect
 logger = logging.getLogger(__name__)
 
-from ..models import ReactionRoleBinding, ReactionRoleMessage
-from allianceauth.services.modules.discord.models import DiscordUser
 
 class Reactions(commands.Cog):
     """
@@ -23,7 +23,8 @@ class Reactions(commands.Cog):
         gld = get(self.bot.guilds, id=payload.guild_id)
         chan = gld.get_channel(payload.channel_id)
         msg = await chan.fetch_message(payload.message_id)
-        rr_binds = ReactionRoleBinding.objects.filter(message=payload.message_id).values_list('emoji_text', flat=True)
+        rr_binds = ReactionRoleBinding.objects.filter(
+            message=payload.message_id).values_list('emoji_text', flat=True)
         for e in msg.reactions:
             if isinstance(e.emoji, str):
                 em = e.emoji.encode('utf-8')
@@ -38,11 +39,11 @@ class Reactions(commands.Cog):
                     async for u in e.users():
                         await e.remove(u)
 
-
     @commands.command(pass_context=True)
     @sender_has_perm('aadiscordbot.manage_reactions')
     async def rr(self, ctx):
-        ReactionRoleMessage.objects.create(message=ctx.message.id, name=f"{ctx.message.channel.name} RR Message {ctx.message.id}")
+        ReactionRoleMessage.objects.create(
+            message=ctx.message.id, name=f"{ctx.message.channel.name} RR Message {ctx.message.id}")
         return await ctx.message.add_reaction("👍")
 
     @commands.Cog.listener("on_raw_reaction_add")
@@ -52,32 +53,36 @@ class Reactions(commands.Cog):
         """
         if payload.user_id == self.bot.user.id:
             return True
-        try: 
-            rr_msg = ReactionRoleMessage.objects.get(message=payload.message_id)
+        try:
+            rr_msg = ReactionRoleMessage.objects.get(
+                message=payload.message_id)
             # do we have a binding?
             emoji = payload.emoji.name.encode('utf-8')
             if payload.emoji.id is not None:
                 emoji = payload.emoji.id
             try:
-                rr_binds = ReactionRoleBinding.objects.get(message=rr_msg, emoji=emoji)
+                rr_binds = ReactionRoleBinding.objects.get(
+                    message=rr_msg, emoji=emoji)
             except ReactionRoleBinding.DoesNotExist:
                 try:
-                    rr_binds = ReactionRoleBinding.objects.get(message=rr_msg, emoji=payload.emoji.name)
+                    rr_binds = ReactionRoleBinding.objects.get(
+                        message=rr_msg, emoji=payload.emoji.name)
                 except:
                     # admin adding new role?
                     if DiscordUser.objects.get(uid=payload.user_id).user.has_perm("aadiscordbot.manage_reactions"):
                         gld = get(self.bot.guilds, id=payload.guild_id)
                         chan = gld.get_channel(payload.channel_id)
                         msg = await chan.fetch_message(payload.message_id)
-                        ReactionRoleBinding.objects.create(message=rr_msg, emoji=emoji, emoji_text=payload.emoji.name.encode('utf-8'))
+                        ReactionRoleBinding.objects.create(
+                            message=rr_msg, emoji=emoji, emoji_text=payload.emoji.name.encode('utf-8'))
                         await msg.add_reaction(payload.emoji)
                         return await self.clean_emojis(payload)
             if rr_binds.group:
                 try:
                     user = DiscordUser.objects.get(uid=payload.user_id)
-                    user= user.user
+                    user = user.user
                     if rr_binds.group not in user.groups.all():
-                            user.groups.add(rr_binds.group)
+                        user.groups.add(rr_binds.group)
                 except DiscordUser.DoesNotExist:
                     if rr_msg.non_auth_users:
                         try:
@@ -86,7 +91,7 @@ class Reactions(commands.Cog):
                             user = get(gld.members, id=payload.user_id)
                             await user.add_roles(role)
                         except AttributeError:
-                            pass # No group or user or guild. zero fks given
+                            pass  # No group or user or guild. zero fks given
                     return await self.clean_emojis(payload)
             await self.clean_emojis(payload)
         except ReactionRoleMessage.DoesNotExist:
@@ -100,21 +105,24 @@ class Reactions(commands.Cog):
         if payload.user_id == self.bot.client_id:
             return True
         try:
-            rr_msg = ReactionRoleMessage.objects.get(message=payload.message_id)
+            rr_msg = ReactionRoleMessage.objects.get(
+                message=payload.message_id)
             # do we have a binding?
             emoji = payload.emoji.name.encode('utf-8')
             if payload.emoji.id is not None:
                 emoji = payload.emoji.id
             try:
-                rr_binds = ReactionRoleBinding.objects.get(message=rr_msg, emoji=emoji)
+                rr_binds = ReactionRoleBinding.objects.get(
+                    message=rr_msg, emoji=emoji)
             except ReactionRoleBinding.DoesNotExist:
                 try:
-                    rr_binds = ReactionRoleBinding.objects.get(message=rr_msg, emoji=payload.emoji.name)
+                    rr_binds = ReactionRoleBinding.objects.get(
+                        message=rr_msg, emoji=payload.emoji.name)
                 except ReactionRoleBinding.DoesNotExist:
                     return await self.clean_emojis(payload)
             try:
                 user = DiscordUser.objects.get(uid=payload.user_id)
-                user= user.user
+                user = user.user
                 if rr_binds.group:
                     if rr_binds.group in user.groups.all():
                         user.groups.remove(rr_binds.group)
@@ -126,7 +134,7 @@ class Reactions(commands.Cog):
                         user = get(gld.members, id=payload.user_id)
                         await user.remove_roles(role)
                     except AttributeError:
-                        pass # No group or user or guild. zero fks given
+                        pass  # No group or user or guild. zero fks given
                 return await self.clean_emojis(payload)
             await self.clean_emojis(payload)
         except ReactionRoleMessage.DoesNotExist:

@@ -59,7 +59,8 @@ class Services(commands.Cog):
                             except Exception as e:
                                 logger.error(e)
                         # keep building the payload
-                        payload = payload + user.profile.main_character.character_name + "(" + user.profile.main_character.corporation_ticker + ")" + "\n"
+                        payload = payload + user.profile.main_character.character_name + \
+                            "(" + user.profile.main_character.corporation_ticker + ")" + "\n"
             try:
                 await ctx.send(payload)
             except Exception as e:
@@ -81,7 +82,8 @@ class Services(commands.Cog):
                             except Exception as e:
                                 logger.error(e)
                         # keep building the payload
-                        payload = payload + user.profile.main_character.character_name + "(" + user.profile.main_character.corporation_ticker + ")" + "\n"
+                        payload = payload + user.profile.main_character.character_name + \
+                            "(" + user.profile.main_character.corporation_ticker + ")" + "\n"
             try:
                 await ctx.send(payload)
             except Exception as e:
@@ -96,13 +98,15 @@ class Services(commands.Cog):
         """
         mode = "None"
         try:
-            input = EveCorporationInfo.objects.get(corporation_name=ctx.message.content[16:])
+            input = EveCorporationInfo.objects.get(
+                corporation_name=ctx.message.content[16:])
             mode = "Corp"
         except django.core.exceptions.ObjectDoesNotExist:
             pass
 
         try:
-            input = EveAllianceInfo.objects.get(alliance_name=ctx.message.content[16:])
+            input = EveAllianceInfo.objects.get(
+                alliance_name=ctx.message.content[16:])
             mode = "Alliance"
         except django.core.exceptions.ObjectDoesNotExist:
             pass
@@ -115,13 +119,15 @@ class Services(commands.Cog):
 
         if mode == "Corp":
             try:
-                user_list = User.objects.filter(profile__main_character__corporation_id=input.id)
+                user_list = User.objects.filter(
+                    profile__main_character__corporation_id=input.id)
                 payload = "Services Stats for Corporation " + input.corporation_name + "\n"
             except Exception as e:
                 logger.error(e)
         elif mode == "Alliance":
             try:
-                user_list = User.objects.filter(profile__main_character__alliance_id=input.id)
+                user_list = User.objects.filter(
+                    profile__main_character__alliance_id=input.id)
                 payload = "Services Stats for Alliance " + input.alliance_name + "\n"
             except Exception as e:
                 logger.error(e)
@@ -156,9 +162,11 @@ class Services(commands.Cog):
                     pass
 
         if mumble_active():
-            payload = payload + "Mumble " + str(activations_mumble) + " / " + str(len(user_list)) + "\n"
+            payload = payload + "Mumble " + \
+                str(activations_mumble) + " / " + str(len(user_list)) + "\n"
         if discord_active():
-            payload = payload + "Discord " + str(activations_discord) + " / " + str(len(user_list)) + "\n"
+            payload = payload + "Discord " + \
+                str(activations_discord) + " / " + str(len(user_list)) + "\n"
 
         try:
             await ctx.send(payload)

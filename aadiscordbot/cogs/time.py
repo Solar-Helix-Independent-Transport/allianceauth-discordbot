@@ -117,7 +117,7 @@ class Time(commands.Cog):
         """
         return await ctx.respond(embed=self.build_embed())
 
-        
+
 def setup(bot):
     """
     setup the cog

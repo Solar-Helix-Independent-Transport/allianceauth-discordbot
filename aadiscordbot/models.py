@@ -4,6 +4,7 @@ from django.db import models
 from django.contrib.auth.models import Group
 from allianceauth.services.modules.discord.models import DiscordUser
 
+
 class DiscordBot(models.Model):
     """Meta model for app permissions"""
 
@@ -11,7 +12,7 @@ class DiscordBot(models.Model):
         managed = False
         default_permissions = ()
         permissions = (
-            ('basic_access', 'Can access this app'), 
+            ('basic_access', 'Can access this app'),
         )
 
 
@@ -50,20 +51,23 @@ class ReactionRoleMessage(models.Model):
     message = models.BigIntegerField(primary_key=True)
     name = models.CharField(max_length=100)
 
-    non_auth_users = models.BooleanField(default=False, help_text="Can Non Authed/public discord members gain groups from this Reaction Roles Message")
+    non_auth_users = models.BooleanField(
+        default=False, help_text="Can Non Authed/public discord members gain groups from this Reaction Roles Message")
 
     def __str__(self):
         return '{}'.format(self.name)
 
     class Meta:
-        permissions = ( 
-            ('manage_reactions', 'Can Manage Reaction Roles'), 
+        permissions = (
+            ('manage_reactions', 'Can Manage Reaction Roles'),
         )
+
 
 class ReactionRoleBinding(models.Model):
     """Reaction Links"""
 
-    group = models.ForeignKey(Group, on_delete=models.CASCADE, null=True, default=None)
+    group = models.ForeignKey(
+        Group, on_delete=models.CASCADE, null=True, default=None)
     emoji = models.CharField(max_length=100)
     emoji_text = models.CharField(max_length=100)
     message = models.ForeignKey(ReactionRoleMessage, on_delete=models.CASCADE)
@@ -74,6 +78,7 @@ class ReactionRoleBinding(models.Model):
         except:
             b = self.emoji_text
         return '{}: {} ({})'.format(self.message.name, b, self.group)
+
 
 class AuthBotConfiguration(models.Model):
 

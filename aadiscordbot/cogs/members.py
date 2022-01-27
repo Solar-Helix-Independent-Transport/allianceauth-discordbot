@@ -33,11 +33,12 @@ class Members(commands.Cog):
         Input: a Eve Character Name
         """
         input_name = ctx.message.content[8:]
-        
+
         embed = Embed(
-            title="Character Lookup {character_name}".format(character_name=input_name)
+            title="Character Lookup {character_name}".format(
+                character_name=input_name)
         )
-        
+
         try:
             char = EveCharacter.objects.get(character_name=input_name)
 
@@ -47,17 +48,20 @@ class Members(commands.Cog):
                 groups = char.character_ownership.user.groups.all().values_list('name', flat=True)
 
                 try:
-                    discord_string = "<@{}>".format(char.character_ownership.user.discord.uid)
+                    discord_string = "<@{}>".format(
+                        char.character_ownership.user.discord.uid)
                 except Exception as e:
                     logger.error(e)
                     discord_string = "unknown"
 
                 if aastatistics_active():
-                    alts = char.character_ownership.user.character_ownerships.all().select_related('character', 'character_stats').values_list('character__character_name', 'character__corporation_ticker', 'character__character_id', 'character__corporation_id', 'character__character_stats__zk_12m', 'character__character_stats__zk_3m')
+                    alts = char.character_ownership.user.character_ownerships.all().select_related('character', 'character_stats').values_list('character__character_name',
+                                                                                                                                               'character__corporation_ticker', 'character__character_id', 'character__corporation_id', 'character__character_stats__zk_12m', 'character__character_stats__zk_3m')
                     zk12 = 0
                     zk3 = 0
                 else:
-                    alts = char.character_ownership.user.character_ownerships.all().select_related('character').values_list('character__character_name', 'character__corporation_ticker', 'character__character_id', 'character__corporation_id')
+                    alts = char.character_ownership.user.character_ownerships.all().select_related('character').values_list(
+                        'character__character_name', 'character__corporation_ticker', 'character__character_id', 'character__corporation_id')
                     zk12 = "Not Installed"
                     zk3 = "Not Installed"
 
@@ -69,13 +73,14 @@ class Members(commands.Cog):
 
                 embed.colour = Color.blue()
                 embed.description = "**{0}** is linked to **{1} [{2}]** (State: {3})".format(
-                                                                                char,
-                                                                                main,
-                                                                                main.corporation_ticker,
-                                                                                state
-                                                                            )
+                    char,
+                    main,
+                    main.corporation_ticker,
+                    state
+                )
 
-                alt_list = ["[{}](https://evewho.com/character/{}) *[ [{}](https://evewho.com/corporation/{}) ]*".format(a[0], a[2], a[1], a[3]) for a in alts]
+                alt_list = ["[{}](https://evewho.com/character/{}) *[ [{}](https://evewho.com/corporation/{}) ]*".format(
+                    a[0], a[2], a[1], a[3]) for a in alts]
                 for idx, names in enumerate([alt_list[i:i + 6] for i in range(0, len(alt_list), 6)]):
                     if idx < 6:
                         embed.add_field(
@@ -108,13 +113,14 @@ class Members(commands.Cog):
             except ObjectDoesNotExist:
                 users = char.ownership_records.values('user')
                 users = User.objects.filter(id__in=users)
-                characters = EveCharacter.objects.filter(ownership_records__user__in=users).distinct()
+                characters = EveCharacter.objects.filter(
+                    ownership_records__user__in=users).distinct()
                 embed = Embed(title="Character Lookup")
                 embed.colour = Color.blue()
 
                 embed.description = "**{0}** is Unlinked searching for any characters linked to known users".format(
-                                                                    char,
-                                                                )
+                    char,
+                )
                 user_names = ["{}".format(user.username) for user in users]
                 embed.add_field(
                     name="Old Users", value=", ".join(user_names), inline=False

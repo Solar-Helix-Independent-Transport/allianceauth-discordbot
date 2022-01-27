@@ -15,7 +15,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='DiscordBot',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
             ],
             options={
                 'permissions': (('basic_access', 'Can access this app'),),
@@ -26,7 +27,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Servers',
             fields=[
-                ('server', models.BigIntegerField(primary_key=True, serialize=False)),
+                ('server', models.BigIntegerField(
+                    primary_key=True, serialize=False)),
                 ('name', models.CharField(max_length=100)),
             ],
             options={
@@ -37,9 +39,11 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Channels',
             fields=[
-                ('channel', models.BigIntegerField(primary_key=True, serialize=False)),
+                ('channel', models.BigIntegerField(
+                    primary_key=True, serialize=False)),
                 ('name', models.CharField(max_length=100)),
-                ('server', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='aadiscordbot.servers')),
+                ('server', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='aadiscordbot.servers')),
             ],
             options={
                 'verbose_name': 'Channel',
