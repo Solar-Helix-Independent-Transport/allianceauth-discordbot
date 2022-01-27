@@ -34,7 +34,6 @@ def send_message(message="", channel_id : int=None, user_id : int=None, user : U
     elif user_pk:
         send_direct_message_by_user_id.delay(user_pk, message, embed=embed)
 
-
 ## Note these Tasks do not DO anything. They can simply be called by AA to add the tasks to our Queue of choice to be consumed by bot.queueconsumer
 @shared_task
 def send_channel_message_by_discord_id(channel_id, message_content, embed=False):
