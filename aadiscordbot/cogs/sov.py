@@ -5,7 +5,7 @@ from discord.colour import Color
 # AA Contexts
 from django.conf import settings
 from allianceauth.eveonline.models import EveCharacter
-from aadiscordbot.cogs.utils.decorators import sender_has_perm
+from aadiscordbot.cogs.utils.decorators import message_in_channels, sender_has_perm
 from aadiscordbot import app_settings, providers
 
 import datetime
@@ -284,7 +284,7 @@ class Sov(commands.Cog):
                         }
 
         if len(names) == 0:
-            await ctx.send("All above 5! :ok_hand:")
+            await ctx.send(f"All above {app_settings.get_low_adm()}! :ok_hand:")
             return True
 
         systems = [k for k, v in names.items()]
