@@ -34,8 +34,8 @@ setup(
     ],
     python_requires='>=3.8',
     install_requires=[
-        "allianceauth>=2.8.0,<3.0.0",
-        "py-cord @ git+https://github.com/Pycord-Development/pycord.git#egg=py-cord",
+        "allianceauth>=2.9.0,<3.0.0",
+        "py-cord>=2.0.0b1",
         "pendulum>=2.1.2,<3.0.0",
         "aioredis<2.0.0",
         "aiohttp>=3.8.1,<4.0.0"
