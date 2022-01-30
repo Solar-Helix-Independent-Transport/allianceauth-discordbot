@@ -1,4 +1,5 @@
 from discord import TextChannel, Role, CategoryChannel
+import pendulum
 from .. import app_settings
 from django.conf import settings
 
@@ -128,7 +129,7 @@ class Admin(commands.Cog):
         delete all roles with no members.
         """
         if ctx.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
-            return await ctx.respond(f"You do not have permission to use this command")
+            return await ctx.respond(f"You do not have permission to use this command", ephemeral=True)
 
         empties = 0
         fails = []
@@ -151,7 +152,7 @@ class Admin(commands.Cog):
         Returns a list of users on this server, who are not known to AA
         """
         if ctx.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
-            return await ctx.respond(f"You do not have permission to use this command")
+            return await ctx.respond(f"You do not have permission to use this command", ephemeral=True)
 
         payload = "The following Users cannot be located in Alliance Auth \n"
 
@@ -191,7 +192,7 @@ class Admin(commands.Cog):
         Returns the webhooks for the channel
         """
         if ctx.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
-            return await ctx.respond(f"You do not have permission to use this command")
+            return await ctx.respond(f"You do not have permission to use this command", ephemeral=True)
 
         hooks = await ctx.channel.webhooks()
         if len(hooks) == 0:
@@ -213,6 +214,22 @@ class Admin(commands.Cog):
                 ))
 
             await ctx.respond("\n".join(strs), ephemeral=True)
+
+    @admin_commands.command(name='uptime', guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    async def uptime(self, ctx):
+        """
+        Returns the uptime of the bot
+        """
+        if ctx.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+            return await ctx.respond(f"You do not have permission to use this command", ephemeral=True)
+        try:
+            await ctx.respond(
+                pendulum.now(tz="UTC").diff_for_humans(
+                    self.bot.currentuptime, absolute=True
+                ), ephemeral=True
+            )
+        except AttributeError:
+            await ctx.respond("Still Booting up!", ephemeral=True)
 
 
 def setup(bot):

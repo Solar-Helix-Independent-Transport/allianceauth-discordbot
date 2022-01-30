@@ -69,18 +69,6 @@ class About(commands.Cog):
 
         return await ctx.send(embed=embed)
 
-    @commands.command(hidden=True)
-    @sender_is_admin()
-    async def uptime(self, ctx):
-        """
-        Returns the uptime
-        """
-        await ctx.send(
-            pendulum.now(tz="UTC").diff_for_humans(
-                self.bot.currentuptime, absolute=True
-            )
-        )
-
 
 def setup(bot):
     bot.add_cog(About(bot))

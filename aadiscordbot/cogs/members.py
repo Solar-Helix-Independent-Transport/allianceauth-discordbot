@@ -122,9 +122,13 @@ class Members(commands.Cog):
                     char,
                 )
                 user_names = ["{}".format(user.username) for user in users]
+                if len(user_names > 0):
+                    user_names = "No User Links found"
+
                 embed.add_field(
                     name="Old Users", value=", ".join(user_names), inline=False
                 )
+
                 alt_list = ["[{}](https://evewho.com/character/{}) *[ [{}](https://evewho.com/corporation/{}) ]*".format(a.character_name,
                                                                                                                          a.character_id,
                                                                                                                          a.corporation_ticker,
