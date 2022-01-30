@@ -122,7 +122,7 @@ class Members(commands.Cog):
                     char,
                 )
                 user_names = ["{}".format(user.username) for user in users]
-                if len(user_names) > 0:
+                if len(user_names) == 0:
                     user_names = "No User Links found"
                 else:
                     user_names = ", ".join(user_names)
