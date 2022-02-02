@@ -26,6 +26,7 @@ def register_url():
     return UrlHook(urls, 'celeryanalytics', r'^celeryanalytics/')
 """
 
+
 @hooks.register('discord_cogs_hook')
 def register_cogs():
     return app_settings.DISCORD_BOT_COGS

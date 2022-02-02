@@ -22,24 +22,23 @@ setup(
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',
-        'Framework :: Django :: 3.1',
+        'Framework :: Django :: 3.2',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Operating System :: OS Independent',
-        'Programming Language :: Python :: 3',        
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.8',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
     ],
-    python_requires='~=3.6',
+    python_requires='>=3.8',
     install_requires=[
-        "allianceauth>=2.7.0",
-        "discord.py",
-        "pendulum",
+        "allianceauth>=2.9.0,<3.0.0",
+        "py-cord>=2.0.0b1,<3.0.0",
+        "pendulum>=2.1.2,<3.0.0",
         "aioredis<2.0.0",
-        "aiohttp",
+        "aiohttp>=3.8.1,<4.0.0"
     ],
 
 )

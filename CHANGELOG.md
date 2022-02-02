@@ -42,7 +42,7 @@ First Non-Alpha Release, AA-Discord bot has been heavily tested by the community
 * App Cogs can now be customized to load external cogs
 * New shiny Time cog, using AA-Timezones
 ### Fixes
-* Use AA-Statistics, the rebranded authanalitics 
+* Use AA-Statistics, the rebranded authanalitics
 
 ### Docs
 Notated Integrations
@@ -68,7 +68,7 @@ The initial migration was edited here, be aware you might need to migrate zero b
 * Documented all Cogs. Plenty changed here to polish them just read the readme...
 * Adds tasks to send Direct and Private Messages
 ### Fixes
-* Postgres Compatability 
+* Postgres Compatability
 * Module Compatability, only imports features if they are installed.
 
 ## [0.1.13a PreRelease]

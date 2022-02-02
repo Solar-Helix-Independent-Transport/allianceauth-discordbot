@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Servers, Channels
+from .models import Servers, Channels, ReactionRoleBinding, ReactionRoleMessage, AuthBotConfiguration
 
 from allianceauth.services.hooks import get_extension_logger
 
@@ -28,3 +28,38 @@ class ChannelsAdmin(admin.ModelAdmin):
             return obj.server.name
         except Exception as e:
             logger.error(e)
+
+
+@admin.register(AuthBotConfiguration)
+class AuthBotConfigurationAdmin(admin.ModelAdmin):
+    filter_horizontal = ['admin_users']
+
+
+@admin.register(ReactionRoleMessage)
+class ChannelsAdmin(admin.ModelAdmin):
+    list_display = ('name', 'non_auth_users')
+    ordering = ('name',)
+
+    search_fields = ('name',)
+
+
+@admin.register(ReactionRoleBinding)
+class ChannelsAdmin(admin.ModelAdmin):
+    list_display = ('message_name', 'emoji_decoded', 'group')
+
+    search_fields = ('message_name', 'emoji_decoded', 'group')
+
+    @staticmethod
+    def message_name(obj):
+        try:
+            return obj.message.name
+        except Exception as e:
+            logger.error(e)
+
+    @staticmethod
+    def emoji_decoded(ob):
+        try:
+            b = eval(ob.emoji_text).decode('utf-8')
+        except:
+            b = ob.emoji_text
+        return b

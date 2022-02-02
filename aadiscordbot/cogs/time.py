@@ -12,6 +12,7 @@ from discord.colour import Color
 from django.urls import reverse
 
 from aadiscordbot.app_settings import get_site_url, timezones_active
+from django.conf import settings
 
 import logging
 
@@ -26,17 +27,10 @@ class Time(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(pass_context=True)
-    async def time(self, ctx):
-        """
-        Returns EVE Time
-        """
-
+    def build_embed(self):
         fmt_utc = "%H:%M:%S (UTC)\n%A %d. %b %Y"
         fmt = "%H:%M:%S (UTC %z)\n%A %d. %b %Y"
         url = None
-
-        await ctx.trigger_typing()
 
         embed = Embed(title="Time")
         embed.colour = Color.green()
@@ -107,7 +101,21 @@ class Time(commands.Cog):
                 inline=False,
             )
 
-        return await ctx.send(embed=embed)
+        return embed
+
+    @commands.command(pass_context=True)
+    async def time(self, ctx):
+        """
+        Returns EVE Time
+        """
+        return await ctx.send(embed=self.build_embed())
+
+    @commands.slash_command(name='time', guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    async def time_slash(self, ctx):
+        """
+        Returns EVE Time
+        """
+        return await ctx.respond(embed=self.build_embed())
 
 
 def setup(bot):

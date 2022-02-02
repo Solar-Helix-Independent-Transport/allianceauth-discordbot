@@ -59,7 +59,6 @@ pip install allianceauth-discordbot
 
  ```python
 ## Settings for Allianceauth-Discordbot
-DISCORD_BOT_ADMIN_USER = [140706470856622080] #This UserID is allowed to run any command
 # Admin Commands
 ADMIN_DISCORD_BOT_CHANNELS = [111, 222, 333]
 # Sov Commands
@@ -82,23 +81,25 @@ LOGGING['handlers']['bot_log_file']= {
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': os.path.join(BASE_DIR, 'log/discord_bot.log'),
             'formatter': 'verbose',
-            'maxBytes': 1024 * 1024 * 5,  
+            'maxBytes': 1024 * 1024 * 5,
             'backupCount': 5,
         }
 LOGGING['loggers']['aadiscordbot'] = {'handlers': ['bot_log_file'],'level': 'DEBUG'}
 ```
 * Optional Settings
  ```python
-# configure the bots cogs.
-DISCORD_BOT_COGS =[ "aadiscordbot.cogs.about",
-                    "aadiscordbot.cogs.members",
-                    "aadiscordbot.cogs.timers",
-                    "aadiscordbot.cogs.auth",
-                    "aadiscordbot.cogs.sov",
-                    "aadiscordbot.cogs.time",
-                    "aadiscordbot.cogs.eastereggs",
-                    "aadiscordbot.cogs.remind",
-                    "aadiscordbot.cogs.price_check",]
+# configure the bots in-built cogs.
+DISCORD_BOT_COGS = ["aadiscordbot.cogs.about", # about the bot
+                     "aadiscordbot.cogs.admin", # Discord server admin helpers
+                     "aadiscordbot.cogs.members", # Member lookup commnands
+                     "aadiscordbot.cogs.timers", # timerboard integrateion
+                     "aadiscordbot.cogs.auth", # return auth url
+                     "aadiscordbot.cogs.sov", # some sove helpers
+                     "aadiscordbot.cogs.time", # whats the time Mr Eve Server
+                     "aadiscordbot.cogs.eastereggs", # some "fun" commands from ariel...
+                     "aadiscordbot.cogs.remind", # very Basic in memor y reminder tool
+                     "aadiscordbot.cogs.reaction_roles" # auth group integrated reaction roles
+                    ]
 ```
 
 * Add the below lines to `myauth/celery.py` somewhere above the `app.autodiscover_tasks...` line
@@ -140,50 +141,120 @@ programs=beat,worker,gunicorn,authbot
 priority=999
 ```
 
-## Settings
+Last but not least, go to admin and configure your admin users in teh bot config model.
 
-| Setting | Default | Description |
-| ---- | ---- | ---- |
-|DISCORD_BOT_PREFIX | "!" | Prefix for all Discord commands | 
-|DISCORD_BOT_COGS | refer to app_settings chonky list | Loaded Base Cogs, other apps may load via hooks |
-|DISCORD_BOT_ACCESS_DENIED_REACT | 0x1F44E | Reacts when permissions are denied, exadecimal unicode emoji, default is a thumbs down
-|DISCORD_BOT_ADMIN_USER | [] | List of Discord IDs, these users can run any command as well as admin things
-|ADMIN_DISCORD_BOT_CHANNELS | [] | Admin commands can only be run in these channels
-|SOV_DISCORD_BOT_CHANNELS | [] | Sov commands can only be run in these channels
-|ADM_DISCORD_BOT_CHANNELS | [] | ADM commands can only be run in these channels
-|DISCORD_BOT_SOV_STRUCTURE_OWNER_IDS | [] | These sov structures are "owned" not hostile
-|DISCORD_BOT_MEMBER_ALLIANCES | [] | filters "mains" from alts
-|DISCORD_BOT_ADM_REGIONS | [] | Regions we care about ADM in
-|DISCORD_BOT_ADM_SYSTEMs | [] | Systems we care about ADM in
-|DISCORD_BOT_ADM_CONSTELLATIONS | [] | Constellations we care about ADM in
+## Reaction Roles
+> ❗❗❗ **This will bypass the Group Leadership/Join Request System**: This is intended for open groups but not limited to it! ❗❗❗
+
+The bot is able to run a reaction roles syustem that is compatable with auth and public users on a discord.
+ - If a member is part of auth it will do auth syncing of roles
+ - If a member is not found in auth and the reaction role message has the public flag set it will assign roles to anyone who reacts
+
+### How To Reaction Role!
+ 1. Setup the inital Message you wish to use buy using the command !rr
+   - *Optional* Edit the name and settings of this message in `Admin > Discord Bot > Reaction Role Messages`
+ 2. React to the message with the reactions you wish to use.
+ 3. The bot will counter react to the reactions when it creates the binding in auth.
+ 4. Goto `Admin > Discord Bot > Reaction Role Bindings`
+ 5. Assign the groups you want for each reaction
+
+#### Messages Admin
+![https://cdn.discordapp.com/attachments/639369068930924546/936082605156237332/unknown.png](https://cdn.discordapp.com/attachments/639369068930924546/936082605156237332/unknown.png)
+#### Reactions Admin
+![https://cdn.discordapp.com/attachments/639369068930924546/936084126379962378/unknown.png](https://cdn.discordapp.com/attachments/639369068930924546/936084126379962378/unknown.png)
 
 ## Integrations
 * [Statistics](https://github.com/pvyParts/aa-statistics)
   * Adds zkill Monthly/Yearly stats to !lookup
+* [timezones](http://url.com)
+  * Updates the `time` command to have all timezones configured in auth.
 
 ## Using AA-Discordbot from my project
 
 ### Send Messages
+You can use the send_message helper to send a message with text/embed to:
+  - Discord user_id
+  - Discord channel_id
+  - Auth User Model Object
+  - Auth user_pk
+
 [aadiscordbot/tasks.py](https://github.com/pvyParts/allianceauth-discordbot/blob/master/aadiscordbot/tasks.py)
 
+### Example Usage
 ```python
+from django.contrib.auth.models import User
+from django.apps import apps
+
 ## Use a small helper to check if AA-Discordbot is installs
 def discord_bot_active():
-    return 'aadiscordbot' in settings.INSTALLED_APPS
+    return apps.is_installed('aadiscordbot')
 
 ## Only import it, if it is installed
 if discord_bot_active():
-    import aadiscordbot.tasks
+    from aadiscordbot.tasks import send_message
+    # if you wanty to send discord embed imor them too.
+    from discord import Embed, Color
 
-## These two tasks can be called to Queue up a Message
+## this helper can be called to Queue up a Message
 ## AA Should not act on these, only AA-DiscordBot will consume them
 if discord_bot_active():
-    aadiscordbot.tasks.send_direct_message_by_user_id.delay(user_pk, message_content)
-    aadiscordbot.tasks.send_direct_message_by_discord_id.delay(discord_user_id, message_content)
-    aadiscordbot.tasks.send_channel_message_by_discord_id.delay(channel_id, message_content, embed=False)
+    usr = User.objects.get(pk=1)
+
+    # discord ID of user
+    msg = "Channel ID Tests"
+    e = Embed(title="Channel ID Tests!",
+              description="This is a Test Embed.\n\n```Discord Channel ID```",
+              color=Color.yellow())
+    e.add_field(name="Test Field 1", value="Value of some kind goes here")
+    send_message(channel_id=639252062818926642, embed=e) # Embed
+    send_message(channel_id=639252062818926642, message=msg) # Message
+    send_message(channel_id=639252062818926642, message=msg, embed=e) # Both
+
+    # Discord ID of channel
+    msg = "User ID Tests"
+    e = Embed(title="User ID Tests!",
+              description="This is a Test Embed.\n\n```Discord User ID```",
+              color=Color.nitro_pink())
+    e.add_field(name="Test Field 1", value="Value of some kind goes here")
+
+    send_message(user_id=318309023478972417, embed=e) # Embed
+    send_message(user_id=318309023478972417, message=msg) # Message
+    send_message(user_id=318309023478972417, message=msg, embed=e) # Both
+
+    # User model
+    msg = "Auth User Model Tests"
+    e = Embed(title="Auth User Model Tests!",
+              description="This is a Test Embed.\n\n```Auth User Model```",
+              color=Color.dark_orange())
+    e.add_field(name="Test Field 1", value="Value of some kind goes here")
+    send_message(user=usr, embed=e) # Embed
+    send_message(user=usr, message=msg) # Message
+    send_message(user=usr, message=msg, embed=e) # Both
+
+    # User PK id
+    msg = "Auth User PK Tests"
+    e = Embed(title="Auth User PK Tests!",
+              description="This is a Test Embed.\n\n```Auth User PK```",
+              color=Color.brand_green())
+    e.add_field(name="Test Field 1", value="Value of some kind goes here")
+    send_message(user_pk=1, embed=e) # Embed
+    send_message(user_pk=1, message=msg) # Message
+    send_message(user_pk=1, message=msg, embed=e) # Both
+
+    # Mixture of all of the above
+    msg = "All Together Tests"
+    e = Embed(title="All Together Tests!",
+              description="This is a Test Embed.\n\n```All Together```",
+              color=Color.blurple())
+    e.add_field(name="Test Field 1", value="Value of some kind goes here")
+    send_message(channel_id=639252062818926642,
+                user_id=318309023478972417,
+                user=User.objects.get(pk=1),
+                message=msg,
+                embed=e)
 ```
 
-### Register Cogs (Handling Commands)
+### Registering 3rd Party Cogs (Handling Commands)
 
 In `auth_hooks.py`, define a function that returns an array of cog modules, and register it as a `discord_cogs_hook`:
 ```python
@@ -192,7 +263,22 @@ def register_cogs():
     return ["yourapp.cogs.cog_a", "yourapp.cogs.cog_b"]
 ```
 
-
 ## Issues
 
 Please remember to report any aa-discordbot related issues using the issues on **this** repository.
+
+## Troubleshooting
+
+### Py-Cord and discord.py fighting in venv
+**Problem:**
+
+Spmething has gone funny with my venv after i installed another app that wanted `discord.py`
+
+**Reason:**
+
+This is due to the pycord lib sharing the `discord namespace`. Py-Cord is however a drop in replacement. So no issues should arise from using it over hte now legacy discord.py lib.
+
+**Fix:**
+ - uninstall `discord.py` by running `pip uninstall discord.py` with your venv active.
+ - reinstall `py-cord` by running `pip install -U py-cord==2.0.0b1` with your venv active.
+ - aproach the dev from the app that overode your py-cord to update to a maintained lib.
