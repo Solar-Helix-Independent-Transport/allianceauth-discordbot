@@ -12,17 +12,10 @@ AA-Discordbot for [Alliance Auth](https://gitlab.com/allianceauth/allianceauth).
 * Current Cogs
   * About
     * !about - Bot Information and Statistics
-    * !uptime - Shows the uptime of the bot
-    * !get_webhooks - Get or create a webhook for the current channel and DM it to the requestor
-    * !new_channel [category id] [channel name] - Create a new channel and close it to public access
-    * !add_role [channel name] [role name] - Add a role to a channel
-    * !rem_role [channel name] [role name] - Remove a role from a channel
   * Auth
-    * !auth - A direct link to the Auth Install to catch users familiar with other bots.
-    * !orphans - Returns a list of users on this server without a matched AA account.
-  * !timers - The next upcoming timer
+    * !auth or /auth - A direct link to the Auth Install to catch users familiar with other bots.
   * Members
-    * !lookup - Fetch a users Main, Affiliation, State, Groups and linked characters from any character.
+    * !lookup [search string] - Fetch a users Main, Affiliation, State, Groups and linked characters from any character.
     * !altcorp [search string] - search for users with characters in an altcorp
   * Remind
     * !remindme [5s/m/h/d text] - Sets a simple non-persistent reminder timer when the bot will respond with the text
@@ -31,7 +24,7 @@ AA-Discordbot for [Alliance Auth](https://gitlab.com/allianceauth/allianceauth).
     * !sov [context] - Returns a list of _all_ sov structures for a Region/Constellation/Solar_System or alliance
     * !lowadm - Lists sov in need of ADM-ing, context provided in settings.
   * Time
-    * !time - Returns the current EVE Time.
+    * !time or /time - Returns the current EVE Time.
   * Timers
     * !timer - Returns the next Structure timer from allianceauth.timerboard.
   * PriceCheck:
@@ -40,6 +33,18 @@ AA-Discordbot for [Alliance Auth](https://gitlab.com/allianceauth/allianceauth).
     * price - Check an item price on Jita and Amarr market
   * Easter Eggs,
     * !happybirthday [text] - Wishes the text a happy birthday, works with user mentions
+  * Admin
+    * Slash commands to help with setting up a discord server when you are not admin or owner.
+    * accessed via `/admin [command]`
+    * add_role / add_role_read / rem_role - add/remove a role to a channel
+    * new_channel - create a new channel and assign it a role for read access
+    * promote_role_to_god/demote_role_to_god - promote/demote a role to/from full admin so for when you need it
+    * empty_roles - list all roles on server with no members
+    * clear_empty_roles - remove all empty roles from the server
+    * orphans - find any user in discord with no auth user attached
+    * get_webhooks - returns any webhooks setup in this current channel, or creates one for you and returns that
+    * uptime - how long the bot has been up for
+
 
 ## Installation
 
@@ -75,7 +80,7 @@ DISCORD_BOT_ADM_CONSTELLATIONS = [20000020] # Kimitoro Example
 ```
 
 ```python
-## Insert AADiscorcbot's logging into Django Logging config
+## Insert AADiscordBot's logging into Django Logging config
 LOGGING['handlers']['bot_log_file']= {
             'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
@@ -94,10 +99,10 @@ DISCORD_BOT_COGS = ["aadiscordbot.cogs.about", # about the bot
                      "aadiscordbot.cogs.members", # Member lookup commnands
                      "aadiscordbot.cogs.timers", # timerboard integrateion
                      "aadiscordbot.cogs.auth", # return auth url
-                     "aadiscordbot.cogs.sov", # some sove helpers
+                     "aadiscordbot.cogs.sov", # some sov helpers
                      "aadiscordbot.cogs.time", # whats the time Mr Eve Server
                      "aadiscordbot.cogs.eastereggs", # some "fun" commands from ariel...
-                     "aadiscordbot.cogs.remind", # very Basic in memor y reminder tool
+                     "aadiscordbot.cogs.remind", # very Basic in memory reminder tool
                      "aadiscordbot.cogs.reaction_roles" # auth group integrated reaction roles
                     ]
 ```
@@ -141,7 +146,7 @@ programs=beat,worker,gunicorn,authbot
 priority=999
 ```
 
-Last but not least, go to admin and configure your admin users in teh bot config model.
+Last but not least, go to admin and configure your admin users in the bot config model.
 
 ## Reaction Roles
 > ❗❗❗ **This will bypass the Group Leadership/Join Request System**: This is intended for open groups but not limited to it! ❗❗❗
@@ -272,13 +277,13 @@ Please remember to report any aa-discordbot related issues using the issues on *
 ### Py-Cord and discord.py fighting in venv
 **Problem:**
 
-Spmething has gone funny with my venv after i installed another app that wanted `discord.py`
+Something has gone funny with my venv after i installed another app that wanted `discord.py`
 
 **Reason:**
 
-This is due to the Py-cord lib sharing the `discord` namespace. Py-Cord is however a drop in replacement. So no issues should arise from using it over hte now legacy discord.py lib.
+This is due to the Py-cord lib sharing the `discord` namespace. Py-Cord is however a drop in replacement. So no issues should arise from using it over the now legacy discord.py lib. **YMMV**
 
 **Fix:**
  1. Uninstall `discord.py` by running `pip uninstall discord.py` with your venv active.
  2. Reinstall `py-cord` by running `pip install -U py-cord==2.0.0b1` with your venv active.
- 3. Approach the dev from the app that overode your py-cord to update to a maintained lib.
+ 3. Approach the dev from the app that overrode your py-cord to update to a maintained lib.
