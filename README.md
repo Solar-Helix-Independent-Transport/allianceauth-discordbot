@@ -162,23 +162,32 @@ The bot is able to run a reaction roles syustem that is compatable with auth and
 ![https://cdn.discordapp.com/attachments/639369068930924546/936082605156237332/unknown.png](https://cdn.discordapp.com/attachments/639369068930924546/936082605156237332/unknown.png)
 #### Reactions Admin
 ![https://cdn.discordapp.com/attachments/639369068930924546/936084126379962378/unknown.png](https://cdn.discordapp.com/attachments/639369068930924546/936084126379962378/unknown.png)
+
 ## Integrations
 * [Statistics](https://github.com/pvyParts/aa-statistics)
   * Adds zkill Monthly/Yearly stats to !lookup
 * [timezones](http://url.com)
-  * Updates teh `time` command to have all timezones configured in auth.
+  * Updates the `time` command to have all timezones configured in auth.
 
 ## Using AA-Discordbot from my project
 
 ### Send Messages
+You can use the send_message helper to send a message with text/embed to:
+  - Discord user_id
+  - Discord channel_id
+  - Auth User Model Object
+  - Auth user_pk
+
 [aadiscordbot/tasks.py](https://github.com/pvyParts/allianceauth-discordbot/blob/master/aadiscordbot/tasks.py)
 
+### Example Usage
 ```python
 from django.contrib.auth.models import User
+from django.apps import apps
 
 ## Use a small helper to check if AA-Discordbot is installs
 def discord_bot_active():
-    return 'aadiscordbot' in settings.INSTALLED_APPS
+    return apps.is_installed('aadiscordbot')
 
 ## Only import it, if it is installed
 if discord_bot_active():
@@ -189,9 +198,6 @@ if discord_bot_active():
 ## this helper can be called to Queue up a Message
 ## AA Should not act on these, only AA-DiscordBot will consume them
 if discord_bot_active():
-    e = Embed(title="Testing Embeds!",
-              description="This is a Test Embed.\n\n```with some code block```",
-              color=Color.dark_orange())
     usr = User.objects.get(pk=1)
 
     # discord ID of user
@@ -248,7 +254,7 @@ if discord_bot_active():
                 embed=e)
 ```
 
-### Register Cogs (Handling Commands)
+### Registering 3rd Party Cogs (Handling Commands)
 
 In `auth_hooks.py`, define a function that returns an array of cog modules, and register it as a `discord_cogs_hook`:
 ```python
@@ -260,3 +266,19 @@ def register_cogs():
 ## Issues
 
 Please remember to report any aa-discordbot related issues using the issues on **this** repository.
+
+## Troubleshooting
+
+### Py-Cord and discord.py fighting in venv
+**Problem:**
+
+Spmething has gone funny with my venv after i installed another app that wanted `discord.py`
+
+**Reason:**
+
+This is due to the pycord lib sharing the `discord namespace`. Py-Cord is however a drop in replacement. So no issues should arise from using it over hte now legacy discord.py lib.
+
+**Fix:**
+ - uninstall `discord.py` by running `pip uninstall discord.py` with your venv active.
+ - reinstall `py-cord` by running `pip install -U py-cord==2.0.0b1` with your venv active.
+ - aproach the dev from the app that overode your py-cord to update to a maintained lib.
