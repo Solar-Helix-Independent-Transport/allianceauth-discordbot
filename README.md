@@ -276,9 +276,9 @@ Spmething has gone funny with my venv after i installed another app that wanted 
 
 **Reason:**
 
-This is due to the pycord lib sharing the `discord namespace`. Py-Cord is however a drop in replacement. So no issues should arise from using it over hte now legacy discord.py lib.
+This is due to the Py-cord lib sharing the `discord` namespace. Py-Cord is however a drop in replacement. So no issues should arise from using it over hte now legacy discord.py lib.
 
 **Fix:**
- - uninstall `discord.py` by running `pip uninstall discord.py` with your venv active.
- - reinstall `py-cord` by running `pip install -U py-cord==2.0.0b1` with your venv active.
- - aproach the dev from the app that overode your py-cord to update to a maintained lib.
+ 1. Uninstall `discord.py` by running `pip uninstall discord.py` with your venv active.
+ 2. Reinstall `py-cord` by running `pip install -U py-cord==2.0.0b1` with your venv active.
+ 3. Approach the dev from the app that overode your py-cord to update to a maintained lib.
