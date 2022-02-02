@@ -96,8 +96,8 @@ LOGGING['loggers']['aadiscordbot'] = {'handlers': ['bot_log_file'],'level': 'DEB
 # configure the bots in-built cogs.
 DISCORD_BOT_COGS = ["aadiscordbot.cogs.about", # about the bot
                      "aadiscordbot.cogs.admin", # Discord server admin helpers
-                     "aadiscordbot.cogs.members", # Member lookup commnands
-                     "aadiscordbot.cogs.timers", # timerboard integrateion
+                     "aadiscordbot.cogs.members", # Member lookup commands
+                     "aadiscordbot.cogs.timers", # timer board integration
                      "aadiscordbot.cogs.auth", # return auth url
                      "aadiscordbot.cogs.sov", # some sov helpers
                      "aadiscordbot.cogs.time", # whats the time Mr Eve Server
@@ -116,7 +116,7 @@ app.conf.task_routes = {'aadiscordbot.tasks.*': {'queue': 'aadiscordbot'}}
 ```
 
 * Run migrations `python manage.py migrate` (There should be none from this app)
-* Gather your staticfiles `python manage.py collectstatic` (There should be none from this app)
+* Gather your static files `python manage.py collectstatic` (There should be none from this app)
 
 * Fetch `bot_conf.py` from the Git Repo into the root of your AA install, beside `manage.py`
 
@@ -151,7 +151,7 @@ Last but not least, go to admin and configure your admin users in the bot config
 ## Reaction Roles
 > ❗❗❗ **This will bypass the Group Leadership/Join Request System**: This is intended for open groups but not limited to it! ❗❗❗
 
-The bot is able to run a reaction roles syustem that is compatable with auth and public users on a discord.
+The bot is able to run a reaction roles system that is compatible with auth and public users on a discord.
  - If a member is part of auth it will do auth syncing of roles
  - If a member is not found in auth and the reaction role message has the public flag set it will assign roles to anyone who reacts
 
@@ -197,7 +197,7 @@ def discord_bot_active():
 ## Only import it, if it is installed
 if discord_bot_active():
     from aadiscordbot.tasks import send_message
-    # if you wanty to send discord embed imor them too.
+    # if you want to send discord embed import them too.
     from discord import Embed, Color
 
 ## this helper can be called to Queue up a Message
