@@ -7,7 +7,6 @@ from discord.utils import get
 
 import logging
 
-from pexpect import ExceptionPexpect
 logger = logging.getLogger(__name__)
 
 
