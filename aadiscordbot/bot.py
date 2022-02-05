@@ -1,20 +1,15 @@
 import logging
 import sys
 import traceback
-import os
-
-import asyncio
 import aiohttp
 import aioredis
 import pendulum
-import json
 
 from .cogs.utils import context
 from . import bot_tasks
 from aadiscordbot.app_settings import DISCORD_BOT_ACCESS_DENIED_REACT, DISCORD_BOT_PREFIX
 
 import discord
-from discord import TextChannel, Role, CategoryChannel
 from discord.ext import commands, tasks
 
 import django
@@ -24,7 +19,6 @@ import django.db
 from allianceauth import hooks
 from kombu import Connection, Queue, Consumer
 from socket import timeout
-import concurrent.futures
 
 
 description = """
@@ -48,8 +42,8 @@ queue_keys = [f"{queuename}",
 
 class AuthBot(commands.Bot):
     def __init__(self):
+        django.setup()
         client_id = settings.DISCORD_APP_ID
-
         intents = discord.Intents.default()
         intents.members = True
 
@@ -74,8 +68,6 @@ class AuthBot(commands.Bot):
             queues.append(Queue(que))
         self.message_consumer = Consumer(self.message_connection, queues, callbacks=[
                                          self.on_queue_message], accept=['json'])
-
-        django.setup()
 
         for hook in hooks.get_hooks("discord_cogs_hook"):
             for cog in hook():
@@ -107,7 +99,6 @@ class AuthBot(commands.Bot):
         except Exception as e:
             logger.error("Queue Consumer Failed")
             logger.error(e, exc_info=1)
-
         message.ack()
 
     async def on_ready(self):
@@ -132,6 +123,11 @@ class AuthBot(commands.Bot):
             return
         django.db.close_old_connections()
         await self.invoke(ctx)
+        django.db.close_old_connections()
+
+    async def on_interaction(self, interaction):
+        django.db.close_old_connections()
+        await self.process_application_commands(interaction)
         django.db.close_old_connections()
 
     async def on_message(self, message):
