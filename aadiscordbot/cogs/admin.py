@@ -87,7 +87,7 @@ class Admin(commands.Cog):
         """
         set role as admin....
         """
-        if ctx.author.id != 318309023478972417:  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+        if ctx.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
             return await ctx.respond(f"You do not have permission to use this command", ephemeral=True)
 
         perms = role.permissions
@@ -100,7 +100,7 @@ class Admin(commands.Cog):
         """
         revoke role admin....
         """
-        if ctx.author.id != 318309023478972417:  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+        if ctx.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
             return await ctx.respond(f"You do not have permission to use this command", ephemeral=True)
 
         perms = role.permissions
