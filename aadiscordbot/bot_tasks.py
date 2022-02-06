@@ -10,7 +10,10 @@ logger = logging.getLogger(__name__)
 async def run_tasks(bot):
     if len(bot.tasks) > 0:
         task, args, kwargs = bot.tasks.pop(0)
-        await task(bot, *args, **kwargs)
+        try:
+            await task(bot, *args, **kwargs)
+        except:
+            logger.error(f"Failed to run task {task} {args} {kwargs}")
     else:
         run_tasks.stop()
 
