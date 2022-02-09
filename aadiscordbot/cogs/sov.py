@@ -1,4 +1,5 @@
 # Cog Stuff
+from typing import Optional
 from discord.ext import commands
 from discord.embeds import Embed
 from discord.colour import Color
@@ -7,7 +8,8 @@ from django.conf import settings
 from allianceauth.eveonline.models import EveCharacter
 from aadiscordbot.cogs.utils.decorators import message_in_channels, sender_has_perm
 from aadiscordbot import app_settings, providers
-
+from discord.commands import SlashCommandGroup
+from discord import Option
 import datetime
 from django.utils import timezone
 
@@ -24,15 +26,131 @@ class Sov(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(pass_context=True)
-    @message_in_channels(settings.SOV_DISCORD_BOT_CHANNELS)
-    async def vuln(self, ctx):
-        """
-        Timers for region/constelation/system/alliance
-        """
-        await ctx.trigger_typing()
+    sov_commands = SlashCommandGroup("sov", "Commands for Managing/Attacking Sov", guild_ids=[
+        int(settings.DISCORD_GUILD_ID)])
 
-        name_search = ctx.message.content[6:]
+    @sov_commands.command(name='lowadm', guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    async def lowadm(self, ctx, adm: Option(float, description="Optional ADM Level to flag under.", required=False)):
+        """
+        Systems with low ADMs.
+        """
+        if not adm:
+            adm = app_settings.get_low_adm()
+        #    @commands.command(pass_context=True)
+        #    @message_in_channels(settings.SOV_DISCORD_BOT_CHANNELS)
+
+        if ctx.channel.id not in settings.SOV_DISCORD_BOT_CHANNELS:
+            return await ctx.respond(f"You do not have permission to use this command here.", ephemeral=True)
+
+        await ctx.defer()
+
+        own_ids = settings.DISCORD_BOT_SOV_STRUCTURE_OWNER_IDS
+
+        include_regions = settings.DISCORD_BOT_ADM_REGIONS
+        include_systems = settings.DISCORD_BOT_ADM_SYSTEMS
+        include_constel = settings.DISCORD_BOT_ADM_CONSTELLATIONS
+
+        sov_structures = providers.esi.client.Sovereignty.get_sovereignty_structures().result()
+
+        names = {}
+        for s in sov_structures:
+            if s.get('alliance_id') in own_ids:
+                if s.get('vulnerability_occupancy_level'):
+                    if s.get('vulnerability_occupancy_level') < adm:
+                        names[s.get('solar_system_id')] = {
+                            "system_name": s.get('solar_system_id'),
+                            "adm": s.get('vulnerability_occupancy_level')
+                        }
+
+        if len(names) == 0:
+            await ctx.respond(f"All above {adm} :ok_hand:")
+            return True
+
+        systems = [k for k, v in names.items()]
+        constelations = {}
+        for n in systems:
+            system = providers.esi.client.Universe.get_universe_systems_system_id(
+                system_id=n).result()
+            names[n]["system_name"] = system.get("name")
+            names[n]["system_id"] = system.get("system_id")
+            names[n]["constellation_id"] = system.get("constellation_id")
+            if system.get("constellation_id") not in constelations:
+                constelations[system.get("constellation_id")] = {}
+
+        for c, v in constelations.items():
+            const = providers.esi.client.Universe.get_universe_constellations_constellation_id(
+                constellation_id=c).result()
+            region = providers.esi.client.Universe.get_universe_regions_region_id(
+                region_id=const.get("region_id")).result()
+            v["region_id"] = const.get("region_id")
+            v["region_name"] = region.get("name")
+            v["constellation_name"] = const.get("name")
+
+        out_array = {}
+        for k, v in names.items():
+            out_array[k] = {**v, **constelations[v["constellation_id"]]}
+
+        output = {}
+        base_str = "**{}** ADM:{}"
+        urls = {}
+        for k, h in sorted(out_array.items(), key=lambda e: e[1]['adm']):
+            show = False
+            if h['region_id'] in include_regions:
+                show = True
+            elif h['constellation_id'] in include_constel:
+                show = True
+            elif h['system_id'] in include_systems:
+                show = True
+            if show:
+                if h['region_name'] not in output:
+                    output[h['region_name']] = []
+                output[h['region_name']].append(
+                    base_str.format(
+                        h['system_name'],
+                        h['adm']
+                    )
+                )
+                if h['region_name'].replace(" ", "_") not in urls:
+                    urls[h['region_name'].replace(" ", "_")] = []
+                urls[h['region_name'].replace(" ", "_")].append(
+                    h['system_name'].replace(" ", "_")
+                )
+        url = "https://evemaps.dotlan.net/map/{}/{}#adm"
+
+        if len(output) > 0:
+            embed = Embed(title="Low ADMs!")
+            embed.set_thumbnail(
+                url="https://avatars3.githubusercontent.com/u/39349660?s=200&v=4"
+            )
+            embed.colour = Color.red()
+            embed.description = f"Showing systems with ADMs below {adm}. Due to an ESI bug this data might only update once a day at around 2200-2300 Eve Time. **YMMY**\n[For more info please see this issue](https://github.com/esi/esi-issues/issues/1092)"
+
+            await ctx.respond(embed=embed)
+
+            for k, v in output.items():
+                n = 25
+                chunks = [list(v[i * n:(i + 1) * n])
+                          for i in range((len(v) + n - 1) // n)]
+                for chunk in chunks:
+                    await ctx.send("__{}__\n{}".format(k, "\n".join(chunk)))
+            _urls = []
+            for r, s in urls.items():
+                _urls.append(url.format(r, ",".join(s)))
+            await ctx.send("\n\n".join(_urls))
+        else:
+            await ctx.respond(f"No Systems with ADM below {adm}!")
+
+        return True
+
+    @sov_commands.command(name='vulnerable', guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    async def vuln(self, ctx, name_search: Option(str, description="String to search against the sov database.")):
+        """
+        Vulnerabilities for region/constelation/system/alliance
+        """
+        if ctx.channel.id not in settings.SOV_DISCORD_BOT_CHANNELS:
+            return await ctx.respond(f"You do not have permission to use this command here.", ephemeral=True)
+
+        await ctx.defer()
 
         name_ids = providers.esi.client.Search.get_search(
             categories=['constellation',
@@ -83,7 +201,7 @@ class Sov(commands.Cog):
                         hits.append(s)
 
         if len(names) == 0:
-            await ctx.send(":sad: Nothing found for '{}'".format(name_search))
+            await ctx.respond(":sad: Nothing found for '{}'".format(name_search))
             return True
 
         names_alli = {}
@@ -136,20 +254,19 @@ class Sov(commands.Cog):
         n = 10
         chunks = [list(output[i * n:(i + 1) * n])
                   for i in range((len(output) + n - 1) // n)]
-
+        await ctx.respond("Found the following for `{}`\n\n".format(name_search))
         for c in chunks:
             await ctx.send("\n".join(c))
-        return True
 
-    @commands.command(pass_context=True)
-    @message_in_channels(settings.SOV_DISCORD_BOT_CHANNELS)
-    async def sov(self, ctx):
+    @sov_commands.command(name='search', guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    async def sov(self, ctx, name_search: Option(str, description="String to search against the sov database.")):
         """
-        Timers for region/constelation/system/alliance
+        Sov Details for region/constelation/system/alliance
         """
-        await ctx.trigger_typing()
+        if ctx.channel.id not in settings.SOV_DISCORD_BOT_CHANNELS:
+            return await ctx.respond(f"You do not have permission to use this command here.", ephemeral=True)
 
-        name_search = ctx.message.content[5:]
+        await ctx.defer()
 
         name_ids = providers.esi.client.Search.get_search(
             categories=['constellation',
@@ -197,7 +314,7 @@ class Sov(commands.Cog):
                     hits.append(s)
 
         if len(names) == 0:
-            await ctx.send(":sad: Nothing found for '{}'".format(name_search))
+            await ctx.respond(":sad: Nothing found for '{}'".format(name_search))
             return True
 
         names_alli = {}
@@ -251,115 +368,9 @@ class Sov(commands.Cog):
         n = 15
         chunks = [list(output[i * n:(i + 1) * n])
                   for i in range((len(output) + n - 1) // n)]
-
+        await ctx.respond("Found the following for `{}`\n\n".format(name_search))
         for c in chunks:
             await ctx.send("\n".join(c))
-        return True
-
-    @commands.command(pass_context=True)
-    @message_in_channels(settings.SOV_DISCORD_BOT_CHANNELS)
-    async def lowadm(self, ctx):
-        """
-        Timers for region/constelation/system/alliance
-        """
-        await ctx.trigger_typing()
-
-        own_ids = settings.DISCORD_BOT_SOV_STRUCTURE_OWNER_IDS
-
-        include_regions = settings.DISCORD_BOT_ADM_REGIONS
-        include_systems = settings.DISCORD_BOT_ADM_SYSTEMS
-        include_constel = settings.DISCORD_BOT_ADM_CONSTELLATIONS
-
-        sov_structures = providers.esi.client.Sovereignty.get_sovereignty_structures().result()
-
-        names = {}
-        alliances = []
-        for s in sov_structures:
-            if s.get('alliance_id') in own_ids:
-                if s.get('vulnerability_occupancy_level'):
-                    if s.get('vulnerability_occupancy_level') < app_settings.get_low_adm():
-                        names[s.get('solar_system_id')] = {
-                            "system_name": s.get('solar_system_id'),
-                            "adm": s.get('vulnerability_occupancy_level')
-                        }
-
-        if len(names) == 0:
-            await ctx.send(f"All above {app_settings.get_low_adm()}! :ok_hand:")
-            return True
-
-        systems = [k for k, v in names.items()]
-        constelations = {}
-        region_id = {}
-        for n in systems:
-            system = providers.esi.client.Universe.get_universe_systems_system_id(
-                system_id=n).result()
-            names[n]["system_name"] = system.get("name")
-            names[n]["system_id"] = system.get("system_id")
-            names[n]["constellation_id"] = system.get("constellation_id")
-            if system.get("constellation_id") not in constelations:
-                constelations[system.get("constellation_id")] = {}
-
-        for c, v in constelations.items():
-            const = providers.esi.client.Universe.get_universe_constellations_constellation_id(
-                constellation_id=c).result()
-            region = providers.esi.client.Universe.get_universe_regions_region_id(
-                region_id=const.get("region_id")).result()
-            v["region_id"] = const.get("region_id")
-            v["region_name"] = region.get("name")
-            v["constellation_name"] = const.get("name")
-
-        out_array = {}
-        for k, v in names.items():
-            out_array[k] = {**v, **constelations[v["constellation_id"]]}
-
-        output = {}
-        base_str = "**{}** ADM:{}"
-        urls = {}
-        for k, h in sorted(out_array.items(), key=lambda e: e[1]['adm']):
-            show = False
-            if h['region_id'] in include_regions:
-                show = True
-            elif h['constellation_id'] in include_constel:
-                show = True
-            elif h['system_id'] in include_systems:
-                show = True
-            if show:
-                if h['region_name'] not in output:
-                    output[h['region_name']] = []
-                output[h['region_name']].append(
-                    base_str.format(
-                        h['system_name'],
-                        h['adm']
-                    )
-                )
-                if h['region_name'].replace(" ", "_") not in urls:
-                    urls[h['region_name'].replace(" ", "_")] = []
-                urls[h['region_name'].replace(" ", "_")].append(
-                    h['system_name'].replace(" ", "_")
-                )
-        url = "https://evemaps.dotlan.net/map/{}/{}#adm"
-
-        if len(output) > 0:
-            for k, v in output.items():
-                n = 25
-                chunks = [list(v[i * n:(i + 1) * n])
-                          for i in range((len(v) + n - 1) // n)]
-                for chunk in chunks:
-                    await ctx.send("__{}__\n{}".format(k, "\n".join(chunk)))
-            await ctx.send(url.format(k.replace(" ", "_"), ",".join(urls[k.replace(" ", "_")])))
-
-        else:
-            await ctx.send(f"No Systems with ADM below {app_settings.get_low_adm()}")
-
-        embed = Embed(title="Disclaimer")
-        embed.set_thumbnail(
-            url="https://avatars3.githubusercontent.com/u/39349660?s=200&v=4"
-        )
-        embed.colour = Color.red()
-        embed.description = "Due to an ESI bug this data might only update once a day at around 2200-2300 Eve Time. **YMMY**\n[For more info please see this issue](https://github.com/esi/esi-issues/issues/1092)"
-        await ctx.send(embed=embed)
-
-        return True
 
 
 def setup(bot):

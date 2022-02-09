@@ -24,6 +24,8 @@ class Admin(commands.Cog):
         if ctx.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
             return await ctx.respond(f"You do not have permission to use this command", ephemeral=True)
 
+        await ctx.defer()
+
         await channel.set_permissions(role, read_messages=True,
                                       send_messages=True)
 
@@ -39,6 +41,8 @@ class Admin(commands.Cog):
         if ctx.author.id not in app_settings.get_admins():
             return await ctx.respond(f"You do not have permission to use this command", ephemeral=True)
 
+        await ctx.defer()
+
         await channel.set_permissions(role, read_messages=True,
                                       send_messages=False)
 
@@ -52,6 +56,8 @@ class Admin(commands.Cog):
         if ctx.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
             return await ctx.respond(f"You do not have permission to use this command", ephemeral=True)
 
+        await ctx.defer()
+
         await channel.set_permissions(role, read_messages=True,
                                       send_messages=True)
 
@@ -64,6 +70,8 @@ class Admin(commands.Cog):
         """
         if ctx.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
             return await ctx.respond(f"You do not have permission to use this command", ephemeral=True)
+
+        await ctx.defer()
 
         found_channel = False
 
@@ -90,6 +98,8 @@ class Admin(commands.Cog):
         if ctx.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
             return await ctx.respond(f"You do not have permission to use this command", ephemeral=True)
 
+        await ctx.defer(ephemeral=True)
+
         perms = role.permissions
         perms.administrator = True
         await role.edit(permissions=perms)
@@ -103,6 +113,8 @@ class Admin(commands.Cog):
         if ctx.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
             return await ctx.respond(f"You do not have permission to use this command", ephemeral=True)
 
+        await ctx.defer(ephemeral=True)
+
         perms = role.permissions
         perms.administrator = False
         await role.edit(permissions=perms)
@@ -115,6 +127,8 @@ class Admin(commands.Cog):
         """
         if ctx.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
             return await ctx.respond(f"You do not have permission to use this command", ephemeral=True)
+
+        await ctx.defer()
 
         empties = []
         for role_model in ctx.guild.roles:
@@ -131,6 +145,8 @@ class Admin(commands.Cog):
         if ctx.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
             return await ctx.respond(f"You do not have permission to use this command", ephemeral=True)
 
+        await ctx.defer()
+
         empties = 0
         fails = []
         for role_model in ctx.guild.roles:
@@ -141,10 +157,10 @@ class Admin(commands.Cog):
                 except Exception as e:
                     fails.append(role_model.name)
 
-        await ctx.send(f"Deleted {empties} Roles.")
+        await ctx.respond(f"Deleted {empties} Roles.")
         chunks = [fails[x:x+50] for x in range(0, len(fails), 50)]
         for c in chunks:
-            await ctx.send("\n".join(c))
+            await ctx.respond("\n".join(c))
 
     @admin_commands.command(name='orphans', guild_ids=[int(settings.DISCORD_GUILD_ID)])
     async def orphans_slash(self, ctx):
@@ -153,6 +169,8 @@ class Admin(commands.Cog):
         """
         if ctx.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
             return await ctx.respond(f"You do not have permission to use this command", ephemeral=True)
+
+        await ctx.defer()
 
         payload = "The following Users cannot be located in Alliance Auth \n"
 
@@ -193,6 +211,8 @@ class Admin(commands.Cog):
         """
         if ctx.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
             return await ctx.respond(f"You do not have permission to use this command", ephemeral=True)
+
+        await ctx.defer(ephemeral=True)
 
         hooks = await ctx.channel.webhooks()
         if len(hooks) == 0:
