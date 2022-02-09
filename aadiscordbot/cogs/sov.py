@@ -145,7 +145,7 @@ class Sov(commands.Cog):
     @sov_commands.command(name='vulnerable', guild_ids=[int(settings.DISCORD_GUILD_ID)])
     async def vuln(self, ctx, name_search: Option(str, description="String to search against the sov database.")):
         """
-        Vulnerabilities for region/constelation/system/alliance
+        Vulnerable Sov Structures for region/constelation/system/alliance
         """
         if ctx.channel.id not in settings.SOV_DISCORD_BOT_CHANNELS:
             return await ctx.respond(f"You do not have permission to use this command here.", ephemeral=True)
@@ -254,8 +254,17 @@ class Sov(commands.Cog):
         n = 10
         chunks = [list(output[i * n:(i + 1) * n])
                   for i in range((len(output) + n - 1) // n)]
-        await ctx.respond("Found the following for `{}`\n\n".format(name_search))
-        for c in chunks:
+        overflow = ""
+        if len(output) > 50:
+            overflow = "Only showing first 50..."
+        await ctx.respond("Found {} Vunerable Structures for `{}`\n{}\n".format(
+            len(output),
+            name_search,
+            overflow
+        )
+        )
+
+        for c in chunks[:5]:
             await ctx.send("\n".join(c))
 
     @sov_commands.command(name='search', guild_ids=[int(settings.DISCORD_GUILD_ID)])
@@ -368,8 +377,18 @@ class Sov(commands.Cog):
         n = 15
         chunks = [list(output[i * n:(i + 1) * n])
                   for i in range((len(output) + n - 1) // n)]
-        await ctx.respond("Found the following for `{}`\n\n".format(name_search))
-        for c in chunks:
+        overflow = ""
+        if len(output) > 50:
+            overflow = "Only showing first 50..."
+
+        await ctx.respond("Found {} Sov structures for `{}`\n{}\n".format(
+            len(output),
+            name_search,
+            overflow
+        )
+        )
+
+        for c in chunks[:5]:
             await ctx.send("\n".join(c))
 
 
