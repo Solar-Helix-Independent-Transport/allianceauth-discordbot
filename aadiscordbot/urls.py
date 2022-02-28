@@ -1,10 +1,3 @@
-from django.conf.urls import url
-from django.urls import path
+app_name = "aa-discordbot"
 
-from . import views
-
-app_name = 'aa-discordbot'
-
-urlpatterns = [
-
-]
+urlpatterns = []
