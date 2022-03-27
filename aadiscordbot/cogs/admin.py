@@ -58,10 +58,10 @@ class Admin(commands.Cog):
 
         await ctx.defer()
 
-        await channel.set_permissions(role, read_messages=True,
-                                      send_messages=True)
+        await channel.set_permissions(role, read_messages=False,
+                                      send_messages=False)
 
-        await ctx.respond(f"removed `{role.name}` from `{channel.name}`")
+        await ctx.respond(f"Removed `{role.name}` from `{channel.name}`")
 
     @admin_commands.command(name='new_channel', guild_ids=[int(settings.DISCORD_GUILD_ID)])
     async def new_channel_slash(self, ctx, category: CategoryChannel, channel_name: str, first_role: Role):
