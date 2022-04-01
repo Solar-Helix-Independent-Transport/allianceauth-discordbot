@@ -31,7 +31,7 @@ class Abuse(commands.Cog):
     async def respond_to_abuse(self, message):
         replies = [
             "get a dog up ya, cunt",
-            "Can I help you? Do you want a  timed out?",
+            "Can I help you? Do you want a time out?",
             "No u",
             "How about Nooooooooo!",
             "Thats a horrible thing to say about your mother",
