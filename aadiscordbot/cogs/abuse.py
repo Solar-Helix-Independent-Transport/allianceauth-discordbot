@@ -42,6 +42,8 @@ class Abuse(commands.Cog):
             "Thats what she said"
         ]
         rand = randrange(0, len(replies)-1)
+        if message.mention_everyone:
+            return
         if self.bot.user.mentioned_in(message):
             await message.reply(replies[rand])
 
