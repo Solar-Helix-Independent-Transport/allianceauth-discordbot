@@ -108,8 +108,6 @@ class Time(commands.Cog):
         """
         Returns EVE Time
         """
-        if ctx.author.id != 318309023478972417:
-            return await ctx.reply("Time for you to get a watch!")
 
         return await ctx.send(embed=self.build_embed())
 
@@ -118,8 +116,6 @@ class Time(commands.Cog):
         """
         Returns EVE Time
         """
-        if ctx.author.id != 318309023478972417:
-            return await ctx.respond("Time for you to get a watch!")
 
         return await ctx.respond(embed=self.build_embed())
 
