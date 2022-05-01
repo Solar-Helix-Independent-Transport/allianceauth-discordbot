@@ -108,6 +108,7 @@ class Time(commands.Cog):
         """
         Returns EVE Time
         """
+
         return await ctx.send(embed=self.build_embed())
 
     @commands.slash_command(name='time', guild_ids=[int(settings.DISCORD_GUILD_ID)])
@@ -115,6 +116,7 @@ class Time(commands.Cog):
         """
         Returns EVE Time
         """
+
         return await ctx.respond(embed=self.build_embed())
 
 
