@@ -7,5 +7,5 @@ class AADiscordBotConfig(AppConfig):
     label = 'aadiscordbot'
     verbose_name = 'Discord Bot v{}'.format(__version__)
 
-    def ready(self):
-        import aadiscordbot.signals
+    # def ready(self):
+    #    import aadiscordbot.signals
