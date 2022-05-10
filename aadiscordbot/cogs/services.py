@@ -11,10 +11,10 @@ from django.contrib.auth.models import User
 from allianceauth.authentication.models import State
 from allianceauth.eveonline.models import EveAllianceInfo, EveCorporationInfo
 
-if discord_active:
+if discord_active():
     from allianceauth.services.modules.discord.models import DiscordUser
 
-if mumble_active:
+if mumble_active():
     from allianceauth.services.modules.mumble.auth_hooks import MumbleUser
 
 import logging
