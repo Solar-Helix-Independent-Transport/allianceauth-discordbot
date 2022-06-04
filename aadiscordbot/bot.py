@@ -46,12 +46,14 @@ class AuthBot(commands.Bot):
         client_id = settings.DISCORD_APP_ID
         intents = discord.Intents.default()
         intents.members = True
+        intents.message_content = True
 
         super().__init__(
             command_prefix=DISCORD_BOT_PREFIX,
             description=description,
             intents=intents,
         )
+        print(f"Authbot Started with command prefix {DISCORD_BOT_PREFIX}")
 
         self.redis = None
         self.redis = self.loop.run_until_complete(aioredis.create_pool(getattr(
@@ -117,8 +119,7 @@ class AuthBot(commands.Bot):
         logger.info("Ready")
 
     async def process_commands(self, message):
-        ctx = await self.get_context(message, cls=context.Context)
-
+        ctx = await self.get_context(message)
         if ctx.command is None:
             return
         django.db.close_old_connections()

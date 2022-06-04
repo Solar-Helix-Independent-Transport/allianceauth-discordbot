@@ -1,4 +1,6 @@
 # Cog Stuff
+from discord import AutocompleteContext
+from discord.commands import option
 from discord.ext import commands
 from discord.embeds import Embed
 from discord.colour import Color
@@ -24,16 +26,7 @@ class Members(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(pass_context=True)
-    @sender_has_any_perm(['corputils.view_alliance_corpstats', 'corpstats.view_alliance_corpstats'])
-    @message_in_channels(settings.ADMIN_DISCORD_BOT_CHANNELS)
-    async def lookup(self, ctx):
-        """
-        Gets Auth data about a character
-        Input: a Eve Character Name
-        """
-        input_name = ctx.message.content[8:]
-
+    def get_lookup_embed(self, input_name):
         embed = Embed(
             title="Character Lookup {character_name}".format(
                 character_name=input_name)
@@ -109,7 +102,7 @@ class Members(commands.Cog):
                     name="Discord Link", value=discord_string, inline=False
                 )
 
-                return await ctx.send(embed=embed)
+                return embed
             except ObjectDoesNotExist:
                 users = char.ownership_records.values('user')
                 users = User.objects.filter(id__in=users)
@@ -147,7 +140,7 @@ class Members(commands.Cog):
                         )
                         break
 
-                return await ctx.send(embed=embed)
+                return embed
 
         except EveCharacter.DoesNotExist:
             embed.colour = Color.red()
@@ -156,7 +149,35 @@ class Members(commands.Cog):
                 "Character **{character_name}** does not exist in our Auth system"
             ).format(character_name=input_name)
 
-            return await ctx.send(embed=embed)
+            return embed
+
+    @commands.command(pass_context=True)
+    @sender_has_any_perm(['corputils.view_alliance_corpstats', 'corpstats.view_alliance_corpstats'])
+    @message_in_channels(settings.ADMIN_DISCORD_BOT_CHANNELS)
+    async def lookup(self, ctx):
+        """
+        Gets Auth data about a character
+        Input: a Eve Character Name
+        """
+        input_name = ctx.message.content[8:]
+        return await ctx.send(embed=self.get_lookup_embed(input_name))
+
+    async def search_characters(ctx: AutocompleteContext):
+        """Returns a list of colors that begin with the characters entered so far."""
+        return list(EveCharacter.objects.filter(character_name__icontains=ctx.value).values_list('character_name', flat=True)[:10])
+
+    @commands.slash_command(name='lookup', guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    @option("character", description="Search for a Character!", autocomplete=search_characters)
+    async def slash_lookup(
+        self,
+        ctx,
+        character: str,
+    ):
+        await ctx.defer()
+
+        input_name = character
+
+        return await ctx.respond(embed=self.get_lookup_embed(input_name))
 
     @commands.command(pass_context=True)
     @sender_has_any_perm(['corputils.view_alliance_corpstats', 'corpstats.view_alliance_corpstats'])
