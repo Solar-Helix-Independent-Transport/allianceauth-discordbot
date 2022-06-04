@@ -21,7 +21,7 @@ def send_message(message="", channel_id: int = None, user_id: int = None, user: 
         :param embed: (optional) the embed to send.
     '''
     if embed:
-        embed = embed = embed.to_dict()
+        embed = embed.to_dict()
 
     if channel_id:
         send_channel_message_by_discord_id.delay(
