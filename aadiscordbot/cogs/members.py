@@ -11,7 +11,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from allianceauth.eveonline.models import EveCharacter
 from allianceauth.eveonline.evelinks import evewho
 # AA-Discordbot
-from aadiscordbot.cogs.utils.decorators import message_in_channels, sender_has_any_perm
+from aadiscordbot.cogs.utils.decorators import has_any_perm, in_channels, message_in_channels, sender_has_any_perm
 from aadiscordbot.app_settings import aastatistics_active
 
 import logging
@@ -173,22 +173,20 @@ class Members(commands.Cog):
         ctx,
         character: str,
     ):
-        await ctx.defer()
+        try:
+            in_channels(ctx.channel.id, settings.ADMIN_DISCORD_BOT_CHANNELS)
+            has_any_perm(ctx.author.id, [
+                         'corputils.view_alliance_corpstats', 'corpstats.view_alliance_corpstats'])
+            await ctx.defer()
+            return await ctx.respond(embed=self.get_lookup_embed(character))
+        except commands.MissingPermissions as e:
+            return await ctx.respond(e.missing_permissions[0], ephemeral=True)
 
-        input_name = character
+    async def search_corps_on_characters(ctx: AutocompleteContext):
+        """Returns a list of colors that begin with the characters entered so far."""
+        return list(EveCharacter.objects.filter(corporation_name__icontains=ctx.value).values_list('corporation_name', flat=True).distinct()[:10])
 
-        return await ctx.respond(embed=self.get_lookup_embed(input_name))
-
-    @commands.command(pass_context=True)
-    @sender_has_any_perm(['corputils.view_alliance_corpstats', 'corpstats.view_alliance_corpstats'])
-    @message_in_channels(settings.ADMIN_DISCORD_BOT_CHANNELS)
-    async def altcorp(self, ctx):
-        """
-        Gets Auth data about an altcorp
-        Input: a Eve Character Name
-        """
-
-        input_name = ctx.message.content[9:]
+    def build_altcorp_embeds(self, input_name):
         chars = EveCharacter.objects.filter(corporation_name=input_name)
         own_ids = [settings.DISCORD_BOT_MEMBER_ALLIANCES]
         alts_in_corp = []
@@ -220,12 +218,52 @@ class Members(commands.Cog):
                     "s" if m[1] > 1 else ""
                 )
             )
-
+        embeds = []
         for strings in [output[i:i + 10] for i in range(0, len(output), 10)]:
             embed = Embed(title=input_name)
             embed.colour = Color.blue()
             embed.description = "\n".join(strings)
-            await ctx.send(embed=embed)
+            embeds.append(embed)
+        return embeds
+
+    @commands.slash_command(name='altcorp', guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    @option("corporation", description="Search for a Character!", autocomplete=search_corps_on_characters)
+    async def slash_altcorp(
+        self,
+        ctx,
+        corporation: str,
+    ):
+        try:
+            in_channels(ctx.channel.id, settings.ADMIN_DISCORD_BOT_CHANNELS)
+            has_any_perm(ctx.author.id, [
+                         'corputils.view_alliance_corpstats', 'corpstats.view_alliance_corpstats'])
+            await ctx.defer()
+            embeds = self.build_altcorp_embeds(corporation)
+            if len(embeds):
+                e = embeds.pop()
+                await ctx.respond(embed=e)
+                for e in embeds:
+                    await ctx.send(embed=e)
+            else:
+                await ctx.respond("No Members Found!")
+        except commands.MissingPermissions as e:
+            return await ctx.respond(e.missing_permissions[0], ephemeral=True)
+
+    @commands.command(pass_context=True)
+    @sender_has_any_perm(['corputils.view_alliance_corpstats', 'corpstats.view_alliance_corpstats'])
+    @message_in_channels(settings.ADMIN_DISCORD_BOT_CHANNELS)
+    async def altcorp(self, ctx):
+        """
+        Gets Auth data about an altcorp
+        Input: a Eve Character Name
+        """
+        corporation = ctx.message.content[9:]
+        embeds = self.build_altcorp_embeds(corporation)
+        if len(embeds):
+            for e in embeds:
+                await ctx.send(embed=e)
+        else:
+            await ctx.send("No Members Found!")
 
 
 def setup(bot):
