@@ -46,7 +46,7 @@ class AuthBot(commands.Bot):
         client_id = settings.DISCORD_APP_ID
         intents = discord.Intents.default()
         intents.members = True
-        intents.message_content = True
+        # intents.message_content = True  # TODO make this optional?
 
         super().__init__(
             command_prefix=DISCORD_BOT_PREFIX,
