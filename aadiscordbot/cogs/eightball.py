@@ -57,6 +57,10 @@ class EightBall(commands.Cog):
         """
         await message.reply(self.eightball())
 
+    @commands.slash_command(name='8ball', guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    async def meb_slash(self, ctx, question: str):
+        await ctx.respond(f" You Asked: `{question}`\n\n{self.eightball()}")
+
 
 def setup(bot):
     bot.add_cog(EightBall(bot))
