@@ -1,9 +1,12 @@
-from discord import TextChannel, Role, CategoryChannel
+from allianceauth.eveonline.models import EveCharacter
+from allianceauth.eveonline.tasks import update_character
+from discord import AutocompleteContext, TextChannel, Role, CategoryChannel, option
 import pendulum
 from .. import app_settings
 from django.conf import settings
 
 from allianceauth.services.modules.discord.models import DiscordUser
+from django.core.exceptions import ObjectDoesNotExist
 
 from discord.commands import SlashCommandGroup
 from discord.ext import commands
@@ -250,6 +253,35 @@ class Admin(commands.Cog):
             )
         except AttributeError:
             await ctx.respond("Still Booting up!", ephemeral=True)
+
+    async def search_characters(ctx: AutocompleteContext):
+        """Returns a list of colors that begin with the characters entered so far."""
+        return list(EveCharacter.objects.filter(character_name__icontains=ctx.value).values_list('character_name', flat=True)[:10])
+
+    @admin_commands.command(name='force_sync', guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    @option("character", description="Search for a Character!", autocomplete=search_characters)
+    async def slash_sync(
+        self,
+        ctx,
+        character: str
+    ):
+        """
+        Queue Update tasks for the character and all alts.
+        """
+        if ctx.author.id not in app_settings.get_admins():
+            return await ctx.respond(f"You do not have permission to use this command", ephemeral=True)
+
+        try:
+            char = EveCharacter.objects.get(character_name=character)
+            alts = char.character_ownership.user.character_ownerships.all().select_related(
+                'character').values_list('character__character_id', flat=True)
+            for c in alts:
+                update_character.delay(c)
+            return await ctx.respond(f"Sent tasks to update **{character}**'s Alts")
+        except EveCharacter.DoesNotExist:
+            return await ctx.respond(f"Character **{character}** does not exist in our Auth system")
+        except ObjectDoesNotExist:
+            return await ctx.respond(f"**{character}** is Unlinked unable to update characters")
 
 
 def setup(bot):

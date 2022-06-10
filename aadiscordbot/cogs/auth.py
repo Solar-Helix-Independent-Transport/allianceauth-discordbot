@@ -1,4 +1,5 @@
 # Cog Stuff
+from aadiscordbot import __version__, __branch__
 from discord.ext import commands
 from discord.embeds import Embed
 from discord.colour import Color
@@ -63,6 +64,17 @@ class Auth(commands.Cog):
         embed.add_field(
             name="Auth Link", value="[{}]({})".format(url, url), inline=False
         )
+
+        embed.add_field(
+            name="Number of Servers:", value=len(self.bot.guilds), inline=True
+        )
+        embed.add_field(name="Unwilling Monitorees:",
+                        value=len(self.bot.users), inline=True)
+        embed.add_field(
+            name="Version", value="{}@{}".format(__version__, __branch__), inline=False
+        )
+        embed.set_footer(
+            text="Lovingly developed for Init.™ by AaronRin and ArielKable")
 
         return await ctx.respond(embed=embed)
 
