@@ -1,13 +1,14 @@
 import logging
 import sys
 import traceback
+from aadiscordbot import app_settings
 import aiohttp
 import aioredis
 import pendulum
 
 from .cogs.utils import context
 from . import bot_tasks
-from aadiscordbot.app_settings import DISCORD_BOT_ACCESS_DENIED_REACT, DISCORD_BOT_PREFIX
+from aadiscordbot.app_settings import DISCORD_BOT_ACCESS_DENIED_REACT, DISCORD_BOT_MESSAGE_INTENT, DISCORD_BOT_PREFIX
 
 import discord
 from discord.ext import commands, tasks
@@ -20,12 +21,16 @@ from allianceauth import hooks
 from kombu import Connection, Queue, Consumer
 from socket import timeout
 
+import aadiscordbot
+
 
 description = """
 AuthBot is watching...
 """
 
 logger = logging.getLogger(__name__)
+
+INVITE_URL = f"https://discord.com/api/oauth2/authorize?client_id={settings.DISCORD_APP_ID}&permissions=8&scope=bot%20applications.commands"
 
 queuename = "aadiscordbot"
 queue_keys = [f"{queuename}",
@@ -46,7 +51,7 @@ class AuthBot(commands.Bot):
         client_id = settings.DISCORD_APP_ID
         intents = discord.Intents.default()
         intents.members = True
-        # intents.message_content = True  # TODO make this optional?
+        intents.message_content = app_settings.DISCORD_BOT_MESSAGE_INTENT
 
         super().__init__(
             command_prefix=DISCORD_BOT_PREFIX,
@@ -70,14 +75,16 @@ class AuthBot(commands.Bot):
             queues.append(Queue(que))
         self.message_consumer = Consumer(self.message_connection, queues, callbacks=[
                                          self.on_queue_message], accept=['json'])
-
+        self.cog_names_loaded = []
+        self.cog_names_failed = []
         for hook in hooks.get_hooks("discord_cogs_hook"):
             for cog in hook():
                 try:
                     self.load_extension(cog)
+                    self.cog_names_loaded.append(cog)
                 except Exception as e:
-                    print(f"Failed to load cog {cog}", file=sys.stderr)
-                    traceback.print_exc()
+                    logger.exception(f"Failed to load cog {cog}")
+                    self.cog_names_failed.append(cog)
 
     def on_queue_message(self, body, message):
         print('RECEIVED MESSAGE: {0!r}'.format(body))
@@ -136,6 +143,25 @@ class AuthBot(commands.Bot):
             return
         await self.process_commands(message)
 
+    async def sync_commands(self, *args, **kwargs):
+        try:
+            return await super(__class__, self).sync_commands(*args, **kwargs)
+        except discord.Forbidden:
+            logger.error(
+                "******************************************************")
+            logger.error("|   AuthBot was Unable to Sync Slash Commands!!!!")
+            logger.error(
+                "|   Please ensure your bot was invited to the server with the correct scopes")
+            logger.error("|")
+            logger.error("|   To redo your scopes,")
+            logger.error("|      1. Refresh Scopes with this link:")
+            logger.error(f"|        {INVITE_URL}   ")
+            logger.error(
+                "|      2. Move the bots role to top of the roles tree if its not there already")
+            logger.error("|      3. Restart Bot")
+            logger.error(
+                "******************************************************")
+
     @tasks.loop(seconds=1.0)
     async def poll_queue(self):
         message_avail = True
@@ -179,4 +205,38 @@ class AuthBot(commands.Bot):
 
     def run(self):
         # self.load_extension("aadiscordbot.slash.admin")
-        super().run(settings.DISCORD_BOT_TOKEN, reconnect=True)
+        try:
+
+            logger.info(
+                "******************************************************")
+            logger.info(f"         ##            Alliance Auth 'AuthBot'")
+            logger.info(
+                f"        ####           Version         :  {aadiscordbot.__version__}")
+            logger.info(
+                f"       #######         Branch          :  {aadiscordbot.__branch__}")
+            logger.info(
+                f"      #########        Message Intents :  {app_settings.DISCORD_BOT_MESSAGE_INTENT}")
+            logger.info(
+                f"     ######## ((       Prefix          :  {app_settings.DISCORD_BOT_PREFIX}")
+            logger.info(
+                f"    ###### ((((((      Bot Join Link   :  {INVITE_URL}")
+            logger.info(f"   ###        ((((     Starting up...")
+            logger.info(f"  ##             ((")
+            logger.info(f"                       [Cogs Loaded]")
+            for c in self.cog_names_loaded:
+                logger.info(f"                         - {c}")
+            if len(self.cog_names_failed):
+                logger.info(f"                       [Cog Failures]")
+                for c in self.cog_names_failed:
+                    logger.info(f"                         - {c}")
+            logger.info(
+                "******************************************************")
+
+            super().run(settings.DISCORD_BOT_TOKEN, reconnect=True)
+        except discord.PrivilegedIntentsRequired as e:
+            logger.error("Unable to start bot with Messages Intent! "
+                         "Please enable the Message Intent for your bot. "
+                         "https://support-dev.discord.com/hc/en-us/articles/4404772028055"
+                         "{e}", exc_info=False)
+            logger.info("If you wish to run without the Message Intent disable it in the local.py. "
+                        "DISCORD_BOT_MESSAGE_INTENT=False", exc_info=False)
