@@ -11,13 +11,13 @@ logger = logging.getLogger(__name__)
 
 
 def send_message(message="", channel_id: int = None, user_id: int = None, user: User = None, user_pk: User = None, embed: Embed = None):
-    ''' Helper function to queue discord messages fromt the bot
+    ''' Helper function to queue discord messages from the bot
 
         :param message: (optional) The text to send (default "").
         :param channel_id: (optional) the discord channel_id to send a message to.
-        :param channel_id: (optional) the disccord user_id to send a message to as a DM.
-        :param user: (optional) the Auth User Model to send a message.
-        :param user_pk: (optional) the auth Users PK to send a message.
+        :param user_id: (optional) the discord user_id to send a message to as a DM.
+        :param user: (optional) the Auth User Model to send a message as a DM.
+        :param user_pk: (optional) the Auth Users PK to send a message as a DM.
         :param embed: (optional) the embed to send.
     '''
     if embed:
