@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.1.0]
+
+### Added
+* Updated Discord lib
++ Added startup checks to ensure admins know if there is an iuus with their bot
++ Moved more commands to slash
+
+## [3.0.1] - [3.0.5]
++ Updated things, fixed odd bugs
+
+## [3.0.0]
+
+### Added
+* Moved to new Discord library
++ Swapped many commands to Slash
++ Full Reaction Roles support with public member access
+
 ## [0.5.2] 2021-07-09
 
 ### Added
