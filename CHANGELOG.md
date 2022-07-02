@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.1.1]
+
+### Fixes
+* Added very verbose logging to any startup errors
++ Added a 2 min cool down on hard failures at startup
+
 ## [3.1.0]
 
 ### Added
