@@ -171,7 +171,7 @@ The bot is able to run a reaction roles system that is compatible with auth and 
 ## Integrations
 * [Statistics](https://github.com/pvyParts/aa-statistics)
   * Adds zkill Monthly/Yearly stats to !lookup
-* [timezones](http://url.com)
+* [timezones](https://github.com/ppfeufer/aa-timezones)
   * Updates the `time` command to have all timezones configured in auth.
 
 ## Using AA-Discordbot from my project
