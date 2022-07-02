@@ -1,5 +1,6 @@
 import logging
 import sys
+import time
 import traceback
 from aadiscordbot import app_settings
 import aiohttp
@@ -231,12 +232,16 @@ class AuthBot(commands.Bot):
                     logger.info(f"                         - {c}")
             logger.info(
                 "******************************************************")
-
             super().run(settings.DISCORD_BOT_TOKEN, reconnect=True)
         except discord.PrivilegedIntentsRequired as e:
-            logger.error("Unable to start bot with Messages Intent! "
+            logger.error("Unable to start bot with Messages Intent! Going to Sleep for 2min. "
                          "Please enable the Message Intent for your bot. "
                          "https://support-dev.discord.com/hc/en-us/articles/4404772028055"
-                         "{e}", exc_info=False)
+                         f"{e}", exc_info=False)
             logger.info("If you wish to run without the Message Intent disable it in the local.py. "
                         "DISCORD_BOT_MESSAGE_INTENT=False", exc_info=False)
+            time.sleep(120)
+        except Exception as e:
+            logger.error("Unable to start bot! going to sleep for 2 min. "
+                         f"{e}", exc_info=True)
+            time.sleep(120)
