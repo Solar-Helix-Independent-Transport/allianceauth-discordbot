@@ -86,3 +86,11 @@ DISCORD_BOT_ADM_CONSTELLATIONS = getattr(
 
 DISCORD_BOT_MESSAGE_INTENT = getattr(
     settings, 'DISCORD_BOT_MESSAGE_INTENT', True)
+
+DISCORD_BOT_TOKEN = getattr(
+    settings, 'AUTHBOT_DISCORD_BOT_TOKEN', getattr(
+        settings, 'DISCORD_BOT_TOKEN', None))
+
+DISCORD_APP_ID = getattr(
+    settings, 'AUTHBOT_DISCORD_APP_ID', getattr(
+        settings, 'DISCORD_APP_ID', None))

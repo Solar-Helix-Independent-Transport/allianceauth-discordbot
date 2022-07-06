@@ -31,7 +31,7 @@ AuthBot is watching...
 
 logger = logging.getLogger(__name__)
 
-INVITE_URL = f"https://discord.com/api/oauth2/authorize?client_id={settings.DISCORD_APP_ID}&permissions=8&scope=bot%20applications.commands"
+INVITE_URL = f"https://discord.com/api/oauth2/authorize?client_id={app_settings.DISCORD_APP_ID}&permissions=8&scope=bot%20applications.commands"
 
 queuename = "aadiscordbot"
 queue_keys = [f"{queuename}",
@@ -49,7 +49,7 @@ queue_keys = [f"{queuename}",
 class AuthBot(commands.Bot):
     def __init__(self):
         django.setup()
-        client_id = settings.DISCORD_APP_ID
+        client_id = app_settings.DISCORD_APP_ID
         intents = discord.Intents.default()
         intents.members = True
         intents.message_content = app_settings.DISCORD_BOT_MESSAGE_INTENT
@@ -232,7 +232,7 @@ class AuthBot(commands.Bot):
                     logger.info(f"                         - {c}")
             logger.info(
                 "******************************************************")
-            super().run(settings.DISCORD_BOT_TOKEN, reconnect=True)
+            super().run(app_settings.DISCORD_BOT_TOKEN, reconnect=True)
         except discord.PrivilegedIntentsRequired as e:
             logger.error("Unable to start bot with Messages Intent! Going to Sleep for 2min. "
                          "Please enable the Message Intent for your bot. "
