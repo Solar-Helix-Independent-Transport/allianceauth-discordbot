@@ -268,6 +268,13 @@ def register_cogs():
     return ["yourapp.cogs.cog_a", "yourapp.cogs.cog_b"]
 ```
 
+## Optional Settings
+### Isolate AuthBot from Auth's Discord Service
+```python
+AUTHBOT_DISCORD_APP_ID = 'App ID for dedicated bot'
+AUTHBOT_DISCORD_BOT_TOKEN = 'Token for dedicated bot'
+```
+
 ## Issues
 
 Please remember to report any aa-discordbot related issues using the issues on **this** repository.
