@@ -6,12 +6,15 @@ from discord.colour import Color
 # AA Contexts
 from django.conf import settings
 from allianceauth.eveonline.models import EveCharacter
+from allianceauth.services.modules.discord.models import DiscordUser
+
 from aadiscordbot.cogs.utils.decorators import message_in_channels, sender_has_perm
 from aadiscordbot import app_settings, providers
 from discord.commands import SlashCommandGroup
 from discord import Option
 import datetime
 from django.utils import timezone
+from esi.models import Token
 
 import pendulum
 import logging
@@ -28,6 +31,12 @@ class Sov(commands.Cog):
 
     sov_commands = SlashCommandGroup("sov", "Commands for Managing/Attacking Sov", guild_ids=[
         int(settings.DISCORD_GUILD_ID)])
+
+    def get_search_token(self, uid):
+        user = DiscordUser.objects.get(uid=uid).user
+        tokens = Token.objects.filter(user=user).require_scopes(
+            ['esi-search.search_structures.v1'])
+        return tokens.first()
 
     @sov_commands.command(name='lowadm', guild_ids=[int(settings.DISCORD_GUILD_ID)])
     async def lowadm(self, ctx, adm: Option(float, description="Optional ADM Level to flag under.", required=False)):
@@ -150,15 +159,20 @@ class Sov(commands.Cog):
         if ctx.channel.id not in settings.SOV_DISCORD_BOT_CHANNELS:
             return await ctx.respond(f"You do not have permission to use this command here.", ephemeral=True)
 
-        await ctx.defer()
+        await ctx.defer(ephemeral=True)
 
-        name_ids = providers.esi.client.Search.get_search(
+        token = self.get_search_token(ctx.author.id)
+        if not token:
+            await ctx.respond("No Search token found on auth, please add one", ephemeral=True)
+        name_ids = providers.esi.client.Search.get_characters_character_id_search(
             categories=['constellation',
                         'solar_system',
                         'region',
                         'alliance'
                         ],
-            search=name_search
+            search=name_search,
+            character_id=token.character_id,
+            token=token.valid_access_token()
         ).result()
 
         hit_ids = {
@@ -275,15 +289,19 @@ class Sov(commands.Cog):
         if ctx.channel.id not in settings.SOV_DISCORD_BOT_CHANNELS:
             return await ctx.respond(f"You do not have permission to use this command here.", ephemeral=True)
 
-        await ctx.defer()
-
-        name_ids = providers.esi.client.Search.get_search(
+        await ctx.defer(ephemeral=True)
+        token = self.get_search_token(ctx.author.id)
+        if not token:
+            await ctx.respond("No Search token found on auth, please add one", ephemeral=True)
+        name_ids = providers.esi.client.Search.get_characters_character_id_search(
             categories=['constellation',
                         'solar_system',
                         'region',
                         'alliance'
                         ],
-            search=name_search
+            search=name_search,
+            character_id=token.character_id,
+            token=token.valid_access_token()
         ).result()
 
         hit_ids = {
