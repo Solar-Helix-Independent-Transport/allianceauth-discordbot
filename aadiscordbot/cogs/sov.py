@@ -163,7 +163,7 @@ class Sov(commands.Cog):
 
         token = self.get_search_token(ctx.author.id)
         if not token:
-            await ctx.respond("No Search token found on auth, please add one", ephemeral=True)
+            return await ctx.respond("No Search token found on auth, please add one", ephemeral=True)
         name_ids = providers.esi.client.Search.get_characters_character_id_search(
             categories=['constellation',
                         'solar_system',
@@ -292,7 +292,7 @@ class Sov(commands.Cog):
         await ctx.defer(ephemeral=True)
         token = self.get_search_token(ctx.author.id)
         if not token:
-            await ctx.respond("No Search token found on auth, please add one", ephemeral=True)
+            return await ctx.respond("No Search token found on auth, please add one", ephemeral=True)
         name_ids = providers.esi.client.Search.get_characters_character_id_search(
             categories=['constellation',
                         'solar_system',
