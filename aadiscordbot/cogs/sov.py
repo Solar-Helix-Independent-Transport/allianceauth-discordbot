@@ -159,7 +159,7 @@ class Sov(commands.Cog):
         if ctx.channel.id not in settings.SOV_DISCORD_BOT_CHANNELS:
             return await ctx.respond(f"You do not have permission to use this command here.", ephemeral=True)
 
-        await ctx.defer(ephemeral=True)
+        await ctx.defer()
 
         token = self.get_search_token(ctx.author.id)
         if not token:
@@ -275,7 +275,7 @@ class Sov(commands.Cog):
             len(output),
             name_search,
             overflow
-        )
+        ), ephemeral=False
         )
 
         for c in chunks[:5]:
@@ -289,7 +289,7 @@ class Sov(commands.Cog):
         if ctx.channel.id not in settings.SOV_DISCORD_BOT_CHANNELS:
             return await ctx.respond(f"You do not have permission to use this command here.", ephemeral=True)
 
-        await ctx.defer(ephemeral=True)
+        await ctx.defer()
         token = self.get_search_token(ctx.author.id)
         if not token:
             return await ctx.respond("No Search token found on auth, please add one", ephemeral=True)
@@ -403,7 +403,7 @@ class Sov(commands.Cog):
             len(output),
             name_search,
             overflow
-        )
+        ), ephemeral=False
         )
 
         for c in chunks[:5]:
