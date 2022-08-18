@@ -3,6 +3,7 @@ import logging
 import sys
 import time
 import traceback
+from typing import Dict
 from aadiscordbot import app_settings
 import aiohttp
 import aioredis
@@ -22,6 +23,8 @@ import django.db
 
 from allianceauth import hooks
 from kombu import Connection, Queue, Consumer
+from celery.utils.time import rate
+from kombu.utils.limits import TokenBucket
 from socket import timeout
 
 import aadiscordbot
@@ -64,6 +67,21 @@ class PendingQueue:
         return next_task
 
 
+class RateLimiter:
+    def __init__(self):
+        self.rate_buckets = {}
+
+    def bucket_for_task(self, task):
+        limit = rate(app_settings.DISCORD_BOT_TASK_RATE_LIMITS.get(task, None))
+        return TokenBucket(limit, capacity=1) if limit else None
+
+    def check_rate_limit(self, task):
+        if task not in self.rate_buckets:
+            self.rate_buckets[task] = self.bucket_for_task(task)
+        #logger.debug(f" {self.rate_buckets[task].capacity} {self.rate_buckets[task].fill_rate} {self.rate_buckets[task].expected_time()}")
+        return self.rate_buckets[task].can_consume()
+
+
 class AuthBot(commands.Bot):
     def __init__(self):
         django.setup()
@@ -88,6 +106,7 @@ class AuthBot(commands.Bot):
 
         self.tasks = []
         self.pending_tasks = PendingQueue()
+        self.rate_limits = RateLimiter()
 
         self.message_connection = Connection(
             getattr(settings, "BROKER_URL", 'redis://localhost:6379/0'))

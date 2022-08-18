@@ -94,3 +94,9 @@ DISCORD_BOT_TOKEN = getattr(
 DISCORD_APP_ID = getattr(
     settings, 'AUTHBOT_DISCORD_APP_ID', getattr(
         settings, 'DISCORD_APP_ID', None))
+
+
+DISCORD_BOT_TASK_RATE_LIMITS = getattr(settings, 'DISCORD_BOT_TASK_RATE_LIMITS',
+                                       {"send_channel_message_by_discord_id": "100/s",
+                                        "send_direct_message_by_discord_id": "100/s",
+                                        "send_direct_message_by_user_id": "100/s"})

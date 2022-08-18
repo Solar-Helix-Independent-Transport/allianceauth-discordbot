@@ -105,6 +105,17 @@ DISCORD_BOT_COGS = ["aadiscordbot.cogs.about", # about the bot
                      "aadiscordbot.cogs.remind", # very Basic in memory reminder tool
                      "aadiscordbot.cogs.reaction_roles" # auth group integrated reaction roles
                     ]
+
+# configure the optional rate limited
+# this is a bot_task function and how many / time period
+# 100/s equates to 100 per second max
+# 10/m equates to 10 per minute or 1 every 6 seconds max
+# 60/h equates to 60 per hour or one per minute max
+DISCORD_BOT_TASK_RATE_LIMITS = {
+        "send_channel_message_by_discord_id": "100/s",
+        "send_direct_message_by_discord_id": "1/s",
+        "send_direct_message_by_user_id": "1/s"
+        }
 ```
 
 * Add the below lines to `myauth/celery.py` somewhere above the `app.autodiscover_tasks...` line

@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.2.0]
+
+### New
+* Reworked the task consumer to alow tasks to persist a gracefull restart
+- Added a configurable global rate limit option on tasks
+
 ## [3.1.2]
 
 ### New

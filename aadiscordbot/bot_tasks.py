@@ -1,8 +1,9 @@
+from datetime import timedelta
 import logging
 import warnings
 import django
 
-from discord.utils import get
+from django.utils import timezone
 from discord.ext import tasks
 from discord import Embed
 logger = logging.getLogger(__name__)
@@ -11,19 +12,31 @@ logger = logging.getLogger(__name__)
 @tasks.loop()
 async def run_tasks(bot):
     django.db.close_old_connections()
+
     if len(bot.tasks) > 0:
         task, args, kwargs = bot.tasks.pop(0)
-        try:
-            await task(bot, *args, **kwargs)
-        except Exception as e:
-            logger.error(f"Failed to run task {task} {args} {kwargs} {e}")
+        requeue_task = False
+        if hasattr(bot, 'rate_limits'):
+            if not bot.rate_limits.check_rate_limit(task.__name__):
+                requeue_task = True
+        if requeue_task:
+            # timeout ( for now lets just add 1 second )
+            timeout = 1
+            eta = timezone.now() + timedelta(seconds=timeout)
+            bot.pending_tasks.append((eta, (task, args, kwargs)))
+            #logger.debug(f"Rate Limit hit! Re Queueing `{task}`")
+        else:
+            try:
+                await task(bot, *args, **kwargs)
+            except Exception as e:
+                logger.error(f"Failed to run task {task} {args} {kwargs} {e}")
     else:
         run_tasks.stop()
     django.db.close_old_connections()
 
 
 async def send_channel_message_by_discord_id(bot, channel_id, message, embed=False):
-    logger.debug("I am running a Send Channel Message Task")
+    logger.debug(f"Sending Channel Message to Discord ID {channel_id}")
     if embed:
         e = Embed.from_dict(embed)
         await bot.get_channel(channel_id).send(message, embed=e)
