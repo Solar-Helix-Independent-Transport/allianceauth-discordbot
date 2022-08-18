@@ -1,5 +1,7 @@
 import logging
 import warnings
+import django
+
 from discord.utils import get
 from discord.ext import tasks
 from discord import Embed
@@ -8,14 +10,16 @@ logger = logging.getLogger(__name__)
 
 @tasks.loop()
 async def run_tasks(bot):
+    django.db.close_old_connections()
     if len(bot.tasks) > 0:
         task, args, kwargs = bot.tasks.pop(0)
         try:
             await task(bot, *args, **kwargs)
-        except:
-            logger.error(f"Failed to run task {task} {args} {kwargs}")
+        except Exception as e:
+            logger.error(f"Failed to run task {task} {args} {kwargs} {e}")
     else:
         run_tasks.stop()
+    django.db.close_old_connections()
 
 
 async def send_channel_message_by_discord_id(bot, channel_id, message, embed=False):

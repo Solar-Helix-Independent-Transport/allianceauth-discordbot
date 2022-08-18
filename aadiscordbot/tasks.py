@@ -10,7 +10,7 @@ from discord import Embed
 logger = logging.getLogger(__name__)
 
 
-def send_message(message="", channel_id: int = None, user_id: int = None, user: User = None, user_pk: User = None, embed: Embed = None):
+def send_message(message="", channel_id: int = None, user_id: int = None, user: User = None, user_pk: User = None, embed: Embed = None, countdown: int = 0):
     ''' Helper function to queue discord messages from the bot
 
         :param message: (optional) The text to send (default "").
@@ -19,22 +19,34 @@ def send_message(message="", channel_id: int = None, user_id: int = None, user: 
         :param user: (optional) the Auth User Model to send a message as a DM.
         :param user_pk: (optional) the Auth Users PK to send a message as a DM.
         :param embed: (optional) the embed to send.
+        :param countdown: (optional) seconds to delay the message send.
     '''
     if embed:
         embed = embed.to_dict()
 
     if channel_id:
-        send_channel_message_by_discord_id.delay(
-            channel_id, message, embed=embed)
+        send_channel_message_by_discord_id.apply_async(
+            args=[channel_id, message],
+            kwargs={"embed": embed},
+            countdown=countdown)
 
     if user_id:
-        send_direct_message_by_discord_id.delay(user_id, message, embed=embed)
+        send_direct_message_by_discord_id.apply_async(
+            args=[user_id, message],
+            kwargs={"embed": embed},
+            countdown=countdown)
 
     if user:
         pk = user.pk
-        send_direct_message_by_user_id.delay(pk, message, embed=embed)
+        send_direct_message_by_user_id.apply_async(
+            args=[pk, message],
+            kwargs={"embed": embed},
+            countdown=countdown)
     elif user_pk:
-        send_direct_message_by_user_id.delay(user_pk, message, embed=embed)
+        send_direct_message_by_user_id.apply_async(
+            args=[user_pk, message],
+            kwargs={"embed": embed},
+            countdown=countdown)
 
 # Note these Tasks do not DO anything. They can simply be called by AA to add the tasks to our Queue of choice to be consumed by bot.queueconsumer
 

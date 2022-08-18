@@ -1,3 +1,4 @@
+from datetime import datetime
 import logging
 import sys
 import time
@@ -16,6 +17,7 @@ from discord.ext import commands, tasks
 
 import django
 from django.conf import settings
+from django.utils import timezone
 import django.db
 
 from allianceauth import hooks
@@ -46,6 +48,22 @@ queue_keys = [f"{queuename}",
               f"{queuename}\x06\x169"]
 
 
+class PendingQueue:
+    def __init__(self):
+        self.data = []
+
+    def append(self, data):
+        self.data.append(data)
+        self.data.sort(key=lambda a: a[0])
+
+    def pop_next(self):
+        next_task = next(
+            (x for x in self.data if x[0] < timezone.now()), False)
+        if next_task:
+            del(self.data[self.data.index(next_task)])
+        return next_task
+
+
 class AuthBot(commands.Bot):
     def __init__(self):
         django.setup()
@@ -67,18 +85,24 @@ class AuthBot(commands.Bot):
         print('redis pool started', self.redis)
         self.client_id = client_id
         self.session = aiohttp.ClientSession(loop=self.loop)
+
         self.tasks = []
+        self.pending_tasks = PendingQueue()
 
         self.message_connection = Connection(
             getattr(settings, "BROKER_URL", 'redis://localhost:6379/0'))
+
         queues = []
         for que in queue_keys:
             queues.append(Queue(que))
+
         self.message_consumer = Consumer(self.message_connection, queues, callbacks=[
                                          self.on_queue_message], accept=['json'])
+
         self.cog_names_loaded = []
         self.cog_names_failed = []
-        for hook in hooks.get_hooks("discord_cogs_hook"):
+        hooks_ = hooks.get_hooks("discord_cogs_hook")
+        for hook in hooks_:
             for cog in hook():
                 try:
                     self.load_extension(cog)
@@ -88,9 +112,10 @@ class AuthBot(commands.Bot):
                     self.cog_names_failed.append(cog)
 
     def on_queue_message(self, body, message):
-        print('RECEIVED MESSAGE: {0!r}'.format(body))
+        logger.debug('RECEIVED MESSAGE: {0!r}'.format(body))
         try:
             task_headers = message.headers
+            eta = task_headers.get("eta", False)
             _args = body[0]
             _kwargs = body[1]
 
@@ -98,7 +123,16 @@ class AuthBot(commands.Bot):
                 task = task_headers["task"].replace("aadiscordbot.tasks.", '')
                 task_function = getattr(bot_tasks, task, False)
                 if task_function:
-                    self.tasks.append((task_function, _args, _kwargs))
+                    if eta:
+                        logger.debug(f"ETA RECEIVED: {eta}")
+                        eta_date = datetime.fromisoformat(eta)
+                        if eta_date < timezone.now():
+                            self.tasks.append((task_function, _args, _kwargs))
+                        else:
+                            self.pending_tasks.append(
+                                (eta_date, (task_function, _args, _kwargs)))
+                    else:
+                        self.tasks.append((task_function, _args, _kwargs))
                     if not bot_tasks.run_tasks.is_running():
                         bot_tasks.run_tasks.start(self)
                 else:
@@ -125,6 +159,43 @@ class AuthBot(commands.Bot):
 
         self.poll_queue.start()
         logger.info("Ready")
+
+    async def close(self):
+        # return tasks to queue
+
+        # recursive import
+        from aadiscordbot import tasks as celery_tasks
+
+        self.poll_queue.stop()
+        bot_tasks.run_tasks.stop()
+
+        recovered_messages = 0
+        lost_messages = 0
+        for task in self.tasks:
+            task_function = getattr(celery_tasks, task[0].__name__, False)
+            if task_function:
+                recovered_messages += 1
+                task_function.apply_async(args=task[1], kwargs=task[2])
+            else:
+                lost_messages += 1
+
+        for task in self.pending_tasks.data:
+            task_function = getattr(celery_tasks, task[1][0].__name__, False)
+            if task_function:
+                recovered_messages += 1
+                task_function.apply_async(
+                    args=task[1][1], kwargs=task[1][2], eta=task[0])
+            else:
+                lost_messages += 1
+
+        if recovered_messages:
+            logger.info(
+                f"Returned {recovered_messages} message pending tasks to the celery queue")
+        if lost_messages:
+            logger.warning(
+                f"Lost {recovered_messages} message pending tasks while trying to return them to the celery queue")
+
+        await super().close()
 
     async def process_commands(self, message):
         ctx = await self.get_context(message)
@@ -173,6 +244,15 @@ class AuthBot(commands.Bot):
             except timeout as e:
                 # logging.exception(e)
                 message_avail = False
+
+        next_task = self.pending_tasks.pop_next()
+        while next_task:
+            self.tasks.append(next_task[1])
+
+            if not bot_tasks.run_tasks.is_running():
+                bot_tasks.run_tasks.start(self)
+
+            next_task = self.pending_tasks.pop_next()
 
     async def on_resumed(self):
         print("Resumed...")
