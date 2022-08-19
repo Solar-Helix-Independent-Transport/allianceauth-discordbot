@@ -28,6 +28,7 @@ async def run_tasks(bot):
         else:
             try:
                 await task(bot, *args, **kwargs)
+                bot.statistics.add_task(task.__name__)
             except Exception as e:
                 logger.error(f"Failed to run task {task} {args} {kwargs} {e}")
     else:

@@ -1,6 +1,6 @@
 from allianceauth.eveonline.models import EveCharacter
 from allianceauth.eveonline.tasks import update_character
-from discord import AutocompleteContext, TextChannel, Role, CategoryChannel, option
+from discord import AutocompleteContext, Embed, TextChannel, Role, CategoryChannel, option
 import pendulum
 from .. import app_settings
 from django.conf import settings
@@ -253,6 +253,35 @@ class Admin(commands.Cog):
             )
         except AttributeError:
             await ctx.respond("Still Booting up!", ephemeral=True)
+
+    @admin_commands.command(name='stats', guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    async def stats(self, ctx):
+        """
+        Returns the uptime of the bot
+        """
+        if ctx.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+            return await ctx.respond(f"You do not have permission to use this command", ephemeral=True)
+        await ctx.defer(ephemeral=True)
+
+        embed = Embed(title="Bot Task Stats!")
+        embed.add_field(
+            name="Task Stats",
+            value=self.bot.statistics.to_string(),
+            inline=False
+        )
+        embed.add_field(
+            name="Rate Limits",
+            value=self.bot.rate_limits.to_string(),
+            inline=False
+        )
+        embed.add_field(
+            name="Tasks Pending",
+            value=f"```Queued:  {len(self.bot.tasks)}\nDefered: {self.bot.pending_tasks.outstanding()}```",
+            inline=False
+        )
+        await ctx.respond("",
+                          embed=embed, ephemeral=True
+                          )
 
     async def search_characters(ctx: AutocompleteContext):
         """Returns a list of colors that begin with the characters entered so far."""

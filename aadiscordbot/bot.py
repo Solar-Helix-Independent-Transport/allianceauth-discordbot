@@ -66,6 +66,9 @@ class PendingQueue:
             del(self.data[self.data.index(next_task)])
         return next_task
 
+    def outstanding(self):
+        return len(self.data)
+
 
 class RateLimiter:
     def __init__(self):
@@ -80,6 +83,50 @@ class RateLimiter:
             self.rate_buckets[task] = self.bucket_for_task(task)
         #logger.debug(f" {self.rate_buckets[task].capacity} {self.rate_buckets[task].fill_rate} {self.rate_buckets[task].expected_time()}")
         return self.rate_buckets[task].can_consume()
+
+    def to_string(self):
+        """
+            Print of Task Limiter Stats
+        """
+        out = ["```"]
+        for t, d in self.rate_buckets.items():
+            out.append(
+                f"{t}\n   Rate:  {d.fill_rate:.2}\n   TTL:   {d.expected_time():.2}")
+        out.append("```")
+        return "\n".join(out)
+
+
+class Statistics:
+    def __init__(self):
+        self.task_buckets = {}
+        self.start_time = timezone.now()
+
+    def add_task(self, task):
+        date = timezone.now().strftime("%Y/%m/%d")
+        if date not in self.task_buckets:
+            self.task_buckets[date] = {}
+        if task not in self.task_buckets[date]:
+            self.task_buckets[date][task] = 0
+        self.task_buckets[date][task] += 1
+
+    def reset(self):
+        self.task_buckets = {}
+
+    def to_string(self):
+        """
+            Print of Run Task Stats
+        """
+        gap = "                                         "
+        hdr = "  Task                                   Count"
+        out = ["```", "Date"]
+        for d, ts in self.task_buckets.items():
+            out.append(f"{d}")
+            out.append(hdr)
+            for t, c in ts.items():
+                out.append(f"    {t}{gap[len(str(t)):41]}{c}")
+            out.append("\n")
+        out.append("```")
+        return "\n".join(out)
 
 
 class AuthBot(commands.Bot):
@@ -107,6 +154,7 @@ class AuthBot(commands.Bot):
         self.tasks = []
         self.pending_tasks = PendingQueue()
         self.rate_limits = RateLimiter()
+        self.statistics = Statistics()
 
         self.message_connection = Connection(
             getattr(settings, "BROKER_URL", 'redis://localhost:6379/0'))
@@ -167,6 +215,8 @@ class AuthBot(commands.Bot):
     async def on_ready(self):
         if not hasattr(self, "currentuptime"):
             self.currentuptime = pendulum.now(tz="UTC")
+        if not hasattr(self, "statistics"):
+            self.statistics.start_time = timezone.now()
         activity = discord.Activity(name="Everything!",
                                     application_id=0,
                                     type=discord.ActivityType.watching,
