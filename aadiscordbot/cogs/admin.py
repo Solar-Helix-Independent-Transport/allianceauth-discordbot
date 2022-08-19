@@ -11,6 +11,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from discord.commands import SlashCommandGroup
 from discord.ext import commands
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class Admin(commands.Cog):
     def __init__(self, bot):
@@ -257,28 +261,47 @@ class Admin(commands.Cog):
     @admin_commands.command(name='stats', guild_ids=[int(settings.DISCORD_GUILD_ID)])
     async def stats(self, ctx):
         """
-        Returns the uptime of the bot
+        Returns the Task Stats of the bot.
         """
-        if ctx.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
-            return await ctx.respond(f"You do not have permission to use this command", ephemeral=True)
+
         await ctx.defer(ephemeral=True)
 
+        # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+        if ctx.author.id not in app_settings.get_admins():
+            return await ctx.respond(f"You do not have permission to use this command", ephemeral=True)
+
         embed = Embed(title="Bot Task Stats!")
-        embed.add_field(
-            name="Task Stats",
-            value=self.bot.statistics.to_string(),
-            inline=False
-        )
-        embed.add_field(
-            name="Rate Limits",
-            value=self.bot.rate_limits.to_string(),
-            inline=False
-        )
-        embed.add_field(
-            name="Tasks Pending",
-            value=f"```Queued:  {len(self.bot.tasks)}\nDefered: {self.bot.pending_tasks.outstanding()}```",
-            inline=False
-        )
+        try:
+            embed.description = f"Up time: {pendulum.now(tz='UTC').diff_for_humans(self.bot.currentuptime, absolute=True)}"
+        except Exception as e:
+            logger.debug(f"Up time Fail {e}", stack_info=True)
+        try:
+            embed.add_field(
+                name="Task Stats",
+                value=self.bot.statistics.to_string(),
+                inline=False
+            )
+        except Exception as e:
+            logger.debug(f"Stats Fail {e}", stack_info=True)
+
+        try:
+            embed.add_field(
+                name="Rate Limits",
+                value=self.bot.rate_limits.to_string(),
+                inline=False
+            )
+        except Exception as e:
+            logger.debug(f"Rates Fail {e}", stack_info=True)
+
+        try:
+            embed.add_field(
+                name="Tasks Pending",
+                value=f"```Queued:  {len(self.bot.tasks)}\nDefered: {self.bot.pending_tasks.outstanding()}```",
+                inline=False
+            )
+        except Exception as e:
+            logger.debug(f"Tasks Fail {e}", stack_info=True)
+
         await ctx.respond("",
                           embed=embed, ephemeral=True
                           )

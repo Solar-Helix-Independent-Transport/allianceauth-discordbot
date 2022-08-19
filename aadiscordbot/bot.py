@@ -275,9 +275,12 @@ class AuthBot(commands.Bot):
         django.db.close_old_connections()
 
     async def on_interaction(self, interaction):
-        django.db.close_old_connections()
-        await self.process_application_commands(interaction)
-        django.db.close_old_connections()
+        try:
+            django.db.close_old_connections()
+            await self.process_application_commands(interaction)
+            django.db.close_old_connections()
+        except Exception as e:
+            logger.error("Interaction Failed {e}", stack_info=True)
 
     async def on_message(self, message):
         if message.author.bot:
