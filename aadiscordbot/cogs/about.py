@@ -54,8 +54,11 @@ class About(commands.Cog):
         embed.add_field(
             name="Number of Servers:", value=len(self.bot.guilds), inline=True
         )
+        members = 0
+        for g in self.bot.guilds:
+            members += g.member_count
         embed.add_field(name="Unwilling Monitorees:",
-                        value=len(self.bot.users), inline=True)
+                        value=members, inline=True)
         embed.add_field(
             name="Auth Link", value="[{}]({})".format(url[0], url[0]), inline=False
         )

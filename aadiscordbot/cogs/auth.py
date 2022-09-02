@@ -64,7 +64,7 @@ class Auth(commands.Cog):
         embed.add_field(
             name="Auth Link", value="[{}]({})".format(url, url), inline=False
         )
-
+        """
         embed.add_field(
             name="Number of Servers:", value=len(self.bot.guilds), inline=True
         )
@@ -73,6 +73,7 @@ class Auth(commands.Cog):
         embed.add_field(
             name="Version", value="{}@{}".format(__version__, __branch__), inline=False
         )
+        """
         embed.set_footer(
             text="Lovingly developed for Init.™ by AaronRin and ArielKable")
 
