@@ -46,6 +46,9 @@ class Welcome(commands.Cog):
                         guild_name = member.guild.name,
                         auth_url = get_site_url(),)
                     await channel.send(message_formatted)
+                
+                except IndexError as e:
+                    logger.error('No Welcome Message configured for Discordbot Welcome cog')
                 except Exception as e:
                     logger.error(e)
                 
@@ -85,6 +88,8 @@ class Goodbye(commands.Cog):
                         guild_name = member.guild.name,
                         auth_url = get_site_url(),)
                     await channel.send(message_formatted)
+                except IndexError as e:
+                    logger.error('No Welcome Message configured for Discordbot Goodbye cog')    
                 except Exception as e:
                     logger.error(e)
                 
