@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Servers, Channels, ReactionRoleBinding, ReactionRoleMessage, AuthBotConfiguration
+from .models import Servers, Channels, ReactionRoleBinding, ReactionRoleMessage, AuthBotConfiguration, WelcomeMessage, GoodbyeMessage
 
 from allianceauth.services.hooks import get_extension_logger
 
@@ -63,3 +63,13 @@ class ChannelsAdmin(admin.ModelAdmin):
         except:
             b = ob.emoji_text
         return b
+
+
+@admin.register(WelcomeMessage)
+class WelcomeMessageAdmin(admin.ModelAdmin):
+    list_display = ('id', )
+
+
+@admin.register(GoodbyeMessage)
+class GoodbyeMessageAdmin(admin.ModelAdmin):
+    list_display = ('id', )
