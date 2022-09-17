@@ -1,7 +1,7 @@
 """
 "Welcome" cog for discordbot - https://github.com/pvyParts/allianceauth-discordbot
 """
-
+import asyncio
 from asyncio import events
 from datetime import datetime
 from unicodedata import name
@@ -34,12 +34,13 @@ class Welcome(commands.Cog):
         channel = member.guild.system_channel
         if channel is not None:
             try:
+                await asyncio.sleep(1) # Give AA a chance to save the UID for a joiner.
                 authenticated = DiscordUser.objects.get(uid=member.id).user.has_perm("discord.access_discord")
             except Exception:
                 authenticated = False
             if authenticated:
                 try:
-                    message = WelcomeMessage.objects.filter(authenticated = True).order_by('?')[0].message
+                    message = WelcomeMessage.objects.filter(authenticated = True).order_by('?').first().message
                     message_formatted = message.format(
                         user_mention = member.mention,
                         guild_name = member.guild.name,
@@ -53,7 +54,7 @@ class Welcome(commands.Cog):
                 
             else:
                 try:
-                    message = WelcomeMessage.objects.filter(unauthenticated = True).order_by('?')[0].message
+                    message = WelcomeMessage.objects.filter(unauthenticated = True).order_by('?').first().message
                     message_formatted = message.format(
                         user_mention = member.mention,
                         guild_name = member.guild.name,
@@ -75,13 +76,14 @@ class Goodbye(commands.Cog):
         channel = member.guild.system_channel
         if channel is not None:
             try:
+                await asyncio.sleep(1) # Give AA a chance to save the UID for a joiner.
                 authenticated = DiscordUser.objects.get(uid=member.id).user.has_perm("discord.access_discord")
             except Exception:
                 authenticated = False
             if authenticated:
                 # Authenticated
                 try:
-                    message = GoodbyeMessage.objects.filter(authenticated = True).order_by('?')[0].message
+                    message = GoodbyeMessage.objects.filter(authenticated = True).order_by('?').first().message
                     message_formatted = message.format(
                         user_mention = member.mention,
                         guild_name = member.guild.name,
@@ -95,7 +97,7 @@ class Goodbye(commands.Cog):
             else:
                 # Un-Authenticated
                 try:
-                    message = GoodbyeMessage.objects.filter(unauthenticated = True).order_by('?')[0].message
+                    message = GoodbyeMessage.objects.filter(unauthenticated = True).order_by('?').first().message
                     message_formatted = message.format(
                         user_mention = member.mention,
                         guild_name = member.guild.name,
