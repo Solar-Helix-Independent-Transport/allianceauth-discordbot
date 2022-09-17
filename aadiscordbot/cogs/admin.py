@@ -1,15 +1,18 @@
 import logging
 
 import pendulum
+from discord import (
+    AutocompleteContext, CategoryChannel, Embed, Role, TextChannel, option,
+)
+from discord.commands import SlashCommandGroup
+from discord.ext import commands
+
+from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
+
 from allianceauth.eveonline.models import EveCharacter
 from allianceauth.eveonline.tasks import update_character
 from allianceauth.services.modules.discord.models import DiscordUser
-from discord import (AutocompleteContext, CategoryChannel, Embed, Role,
-                     TextChannel, option)
-from discord.commands import SlashCommandGroup
-from discord.ext import commands
-from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist
 
 from .. import app_settings
 

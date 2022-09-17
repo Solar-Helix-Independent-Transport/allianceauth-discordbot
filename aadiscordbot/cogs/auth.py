@@ -4,6 +4,7 @@ import logging
 from discord.colour import Color
 from discord.embeds import Embed
 from discord.ext import commands
+
 from django.conf import settings
 
 from aadiscordbot import __branch__, __version__

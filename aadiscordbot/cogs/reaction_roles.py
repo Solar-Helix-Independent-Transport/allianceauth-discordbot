@@ -1,9 +1,10 @@
 import logging
 
-from allianceauth.services.modules.discord.models import DiscordUser
 from discord import reaction
 from discord.ext import commands
 from discord.utils import get
+
+from allianceauth.services.modules.discord.models import DiscordUser
 
 from aadiscordbot.cogs.utils.decorators import sender_has_perm
 

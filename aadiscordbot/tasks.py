@@ -1,9 +1,10 @@
 import logging
 
-import django
-import django.db
 from celery import shared_task
 from discord import Embed
+
+import django
+import django.db
 from django.conf import settings
 from django.contrib.auth.models import User
 

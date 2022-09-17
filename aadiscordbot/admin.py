@@ -1,9 +1,11 @@
-from allianceauth.services.hooks import get_extension_logger
 from django.contrib import admin
 
-from .models import (AuthBotConfiguration, Channels, GoodbyeMessage,
-                     ReactionRoleBinding, ReactionRoleMessage, Servers,
-                     WelcomeMessage)
+from allianceauth.services.hooks import get_extension_logger
+
+from .models import (
+    AuthBotConfiguration, Channels, GoodbyeMessage, ReactionRoleBinding,
+    ReactionRoleMessage, Servers, WelcomeMessage,
+)
 
 logger = get_extension_logger(__name__)
 

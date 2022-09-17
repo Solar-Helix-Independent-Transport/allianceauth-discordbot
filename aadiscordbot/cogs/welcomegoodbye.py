@@ -7,11 +7,13 @@ from asyncio import events
 from datetime import datetime
 from unicodedata import name
 
-from allianceauth.services.modules.discord.models import DiscordUser
 from discord.colour import Color
 from discord.embeds import Embed
 from discord.ext import commands
+
 from django.conf import settings
+
+from allianceauth.services.modules.discord.models import DiscordUser
 
 from aadiscordbot.app_settings import get_admins, get_site_url
 from aadiscordbot.cogs.utils.decorators import has_perm

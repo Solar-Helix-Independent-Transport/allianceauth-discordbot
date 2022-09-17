@@ -2,11 +2,13 @@
 import logging
 import re
 
-from allianceauth.services.modules.discord.models import DiscordUser
 from discord.colour import Color
 from discord.embeds import Embed
 from discord.ext import commands
+
 from django.conf import settings
+
+from allianceauth.services.modules.discord.models import DiscordUser
 
 # AA Contexts
 from aadiscordbot.app_settings import get_site_url

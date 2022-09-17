@@ -9,22 +9,25 @@ from typing import Dict
 import aiohttp
 import aioredis
 import discord
-import django
-import django.db
 import pendulum
-from allianceauth import hooks
 from celery.utils.time import rate
 from discord.ext import commands, tasks
-from django.conf import settings
-from django.utils import timezone
 from kombu import Connection, Consumer, Queue
 from kombu.utils.limits import TokenBucket
 
+import django
+import django.db
+from django.conf import settings
+from django.utils import timezone
+
+from allianceauth import hooks
+
 import aadiscordbot
 from aadiscordbot import app_settings
-from aadiscordbot.app_settings import (DISCORD_BOT_ACCESS_DENIED_REACT,
-                                       DISCORD_BOT_MESSAGE_INTENT,
-                                       DISCORD_BOT_PREFIX)
+from aadiscordbot.app_settings import (
+    DISCORD_BOT_ACCESS_DENIED_REACT, DISCORD_BOT_MESSAGE_INTENT,
+    DISCORD_BOT_PREFIX,
+)
 
 from . import bot_tasks
 from .cogs.utils import context
