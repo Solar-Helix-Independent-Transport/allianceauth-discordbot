@@ -40,7 +40,7 @@ class Auth(commands.Cog):
         url = get_site_url()
 
         embed.add_field(
-            name="Auth Link", value="[{}]({})".format(url, url), inline=False
+            name="Auth Link", value=f"[{url}]({url})", inline=False
         )
 
         return await ctx.send(embed=embed)
@@ -62,7 +62,7 @@ class Auth(commands.Cog):
         url = get_site_url()
 
         embed.add_field(
-            name="Auth Link", value="[{}]({})".format(url, url), inline=False
+            name="Auth Link", value=f"[{url}]({url})", inline=False
         )
         """
         embed.add_field(

@@ -65,7 +65,7 @@ class Members(commands.Cog):
                             zk3 += alt[5]
 
                 embed.colour = Color.blue()
-                embed.description = "**{0}** is linked to **{1} [{2}]** (State: {3})".format(
+                embed.description = "**{}** is linked to **{} [{}]** (State: {})".format(
                     char,
                     main,
                     main.corporation_ticker,
@@ -77,11 +77,11 @@ class Members(commands.Cog):
                 for idx, names in enumerate([alt_list[i:i + 6] for i in range(0, len(alt_list), 6)]):
                     if idx < 6:
                         embed.add_field(
-                            name="Linked Characters {}".format(idx+1), value=", ".join(names), inline=False
+                            name=f"Linked Characters {idx+1}", value=", ".join(names), inline=False
                         )
                     else:
                         embed.add_field(
-                            name="Linked Characters {} **( Discord Limited There are More )**".format(idx), value=", ".join(names), inline=False
+                            name=f"Linked Characters {idx} **( Discord Limited There are More )**", value=", ".join(names), inline=False
                         )
                         break
 
@@ -111,10 +111,10 @@ class Members(commands.Cog):
                 embed = Embed(title="Character Lookup")
                 embed.colour = Color.blue()
 
-                embed.description = "**{0}** is Unlinked searching for any characters linked to known users".format(
+                embed.description = "**{}** is Unlinked searching for any characters linked to known users".format(
                     char,
                 )
-                user_names = ["{}".format(user.username) for user in users]
+                user_names = [f"{user.username}" for user in users]
                 if len(user_names) == 0:
                     user_names = "No User Links found"
                 else:
@@ -132,11 +132,11 @@ class Members(commands.Cog):
                 for idx, names in enumerate([alt_list[i:i + 6] for i in range(0, len(alt_list), 6)]):
                     if idx < 6:
                         embed.add_field(
-                            name="Found Characters {}".format(idx+1), value=", ".join(names), inline=False
+                            name=f"Found Characters {idx+1}", value=", ".join(names), inline=False
                         )
                     else:
                         embed.add_field(
-                            name="Found Characters {} **( Discord Limited There are More )**".format(idx), value=", ".join(names), inline=False
+                            name=f"Found Characters {idx} **( Discord Limited There are More )**", value=", ".join(names), inline=False
                         )
                         break
 

@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth.models import Group
 from allianceauth.services.modules.discord.models import DiscordUser
+from django.utils.translation import gettext_lazy as _
 
 
 class DiscordBot(models.Model):
@@ -27,7 +28,7 @@ class Servers(models.Model):
         verbose_name_plural = 'Servers'
 
     def __str__(self):
-        return '{}'.format(self.name)
+        return f'{self.name}'
 
 
 class Channels(models.Model):
@@ -38,7 +39,7 @@ class Channels(models.Model):
     name = models.CharField(max_length=100)
 
     def __str__(self):
-        return '"{}" On "{}"'.format(self.name, self.server.name)
+        return f'"{self.name}" On "{self.server.name}"'
 
     class Meta:
         verbose_name = 'Channel'
@@ -55,7 +56,7 @@ class ReactionRoleMessage(models.Model):
         default=False, help_text="Can Non Authed/public discord members gain groups from this Reaction Roles Message")
 
     def __str__(self):
-        return '{}'.format(self.name)
+        return f'{self.name}'
 
     class Meta:
         permissions = (
@@ -77,7 +78,7 @@ class ReactionRoleBinding(models.Model):
             b = eval(self.emoji_text).decode('utf-8')
         except:
             b = self.emoji_text
-        return '{}: {} ({})'.format(self.message.name, b, self.group)
+        return f'{self.message.name}: {b} ({self.group})'
 
 
 class AuthBotConfiguration(models.Model):
@@ -94,3 +95,43 @@ class AuthBotConfiguration(models.Model):
                 'Only one Settings Model can there be at a time! No Sith Lords there are here!')
         self.pk = self.id = 1  # If this happens to be deleted and recreated, force it to be 1
         return super().save(*args, **kwargs)
+
+# class WelcomeGoodbyeBinding(models.Model):
+#     welcome_channel = models.ForeignKey("app.Model", verbose_name=_(""), on_delete=models.CASCADE)
+#     goodbye_channel = models.ForeignKey("app.Model", verbose_name=_(""), on_delete=models.CASCADE)
+
+#     def __str__(self):
+#         return "Welcome and Goodbye Message Configuration"
+
+#     def save(self, *args, **kwargs):
+#         if not self.pk and AuthBotConfiguration.objects.exists():
+#             # Force a single object
+#             raise ValidationError(
+#                 'Only one Settings Model can there be at a time! No Sith Lords there are here!')
+#         self.pk = self.id = 1  # If this happens to be deleted and recreated, force it to be 1
+#         return super().save(*args, **kwargs)
+# We can use discord guild.system_channel
+
+
+class WelcomeMessage(models.Model):
+    message = models.TextField(_("Welcome Message"))
+    authenticated = models.BooleanField(_("Valid for Authenticated Users"))
+    unauthenticated = models.BooleanField(
+        _("Valid for Un-Authenticated Users"))
+
+    class Meta:
+        default_permissions = ()
+        verbose_name = 'Welcome Message'
+        verbose_name_plural = 'Welcome Messages'
+
+
+class GoodbyeMessage(models.Model):
+    message = models.TextField(_("Goodbye Message"))
+    authenticated = models.BooleanField(_("Valid for Authenticated Users"))
+    unauthenticated = models.BooleanField(
+        _("Valid for Un-Authenticated Users"))
+
+    class Meta:
+        default_permissions = ()
+        verbose_name = 'Goodbye Message'
+        verbose_name_plural = 'Goodbye Messages'

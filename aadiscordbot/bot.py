@@ -63,7 +63,7 @@ class PendingQueue:
         next_task = next(
             (x for x in self.data if x[0] < timezone.now()), False)
         if next_task:
-            del(self.data[self.data.index(next_task)])
+            del (self.data[self.data.index(next_task)])
         return next_task
 
     def outstanding(self):
@@ -179,7 +179,7 @@ class AuthBot(commands.Bot):
                     self.cog_names_failed.append(cog)
 
     def on_queue_message(self, body, message):
-        logger.debug('RECEIVED MESSAGE: {0!r}'.format(body))
+        logger.debug(f'RECEIVED MESSAGE: {body!r}')
         try:
             task_headers = message.headers
             eta = task_headers.get("eta", False)
@@ -344,7 +344,7 @@ class AuthBot(commands.Bot):
             return await ctx.send(error)
         elif isinstance(error, commands.BotMissingPermissions):
             await ctx.send(
-                "Sorry, I don't have the required permissions to do that here:\n{0}".format(
+                "Sorry, I don't have the required permissions to do that here:\n{}".format(
                     error.missing_perms)
             )
         elif isinstance(error, commands.MissingPermissions):

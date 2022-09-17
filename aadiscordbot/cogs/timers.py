@@ -46,7 +46,7 @@ class Timers(commands.Cog):
         else:
             embed.colour = Color.white()
         try:
-            embed.set_footer(text="Added By {0}".format(
+            embed.set_footer(text="Added By {}".format(
                 next_timer.eve_character.character_name))
         except Exception as e:
             logger.error(e)
@@ -58,7 +58,7 @@ class Timers(commands.Cog):
         )
         embed.add_field(
             name="Location:",
-            value="{0} - {1}".format(next_timer.system, next_timer.planet_moon)
+            value=f"{next_timer.system} - {next_timer.planet_moon}"
         )
         embed.add_field(
             name="Eve Time:",

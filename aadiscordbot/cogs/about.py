@@ -60,10 +60,10 @@ class About(commands.Cog):
         embed.add_field(name="Unwilling Monitorees:",
                         value=members, inline=True)
         embed.add_field(
-            name="Auth Link", value="[{}]({})".format(url[0], url[0]), inline=False
+            name="Auth Link", value=f"[{url[0]}]({url[0]})", inline=False
         )
         embed.add_field(
-            name="Version", value="{}@{}".format(__version__, __branch__), inline=False
+            name="Version", value=f"{__version__}@{__branch__}", inline=False
         )
 
         # embed.add_field(
