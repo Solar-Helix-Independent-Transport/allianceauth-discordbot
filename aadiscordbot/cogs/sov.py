@@ -215,7 +215,7 @@ class Sov(commands.Cog):
                         hits.append(s)
 
         if len(names) == 0:
-            await ctx.respond(":sad: Nothing found for '{}'".format(name_search))
+            await ctx.respond(f":sad: Nothing found for '{name_search}'")
             return True
 
         names_alli = {}
@@ -341,7 +341,7 @@ class Sov(commands.Cog):
                     hits.append(s)
 
         if len(names) == 0:
-            await ctx.respond(":sad: Nothing found for '{}'".format(name_search))
+            await ctx.respond(f":sad: Nothing found for '{name_search}'")
             return True
 
         names_alli = {}

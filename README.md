@@ -33,6 +33,9 @@ AA-Discordbot for [Alliance Auth](https://gitlab.com/allianceauth/allianceauth).
     * price - Check an item price on Jita and Amarr market
   * Easter Eggs,
     * !happybirthday [text] - Wishes the text a happy birthday, works with user mentions
+  * WelcomeGoodbye
+    * Welcome - Responds to user join events with predefined messages.
+    * Goodbye - Responds to user leave events with predefined messages.
   * Admin
     * Slash commands to help with setting up a discord server when you are not admin or owner.
     * accessed via `/admin [command]`
@@ -184,6 +187,23 @@ The bot is able to run a reaction roles system that is compatible with auth and 
   * Adds zkill Monthly/Yearly stats to !lookup
 * [timezones](https://github.com/ppfeufer/aa-timezones)
   * Updates the `time` command to have all timezones configured in auth.
+
+## Welcome Messaages
+`
+With the WelcomeGoodbye Cog activated, Discordbot will grab a random message from the Welcome or Goodbye Message Model and send it to the Guild System channel
+
+These can be configured in admin under `/admin/aadiscordbot/welcomemessage/` and `/admin/aadiscordbot/goodbyemessage/`
+
+The messages support some string formatting
+
+* `{user_mention} - A Discord @ Mention
+* `{guild_name} - The name of the Discord Server
+* `{auth_url} - A link to Auth
+```
+Welcome {user_mention} to {guild_name}, I hope you enjoy your stay.
+
+You can Authenticate for more access {auth_url}
+```
 
 ## Using AA-Discordbot from my project
 
