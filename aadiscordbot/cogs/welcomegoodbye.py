@@ -34,7 +34,7 @@ class Welcome(commands.Cog):
         channel = member.guild.system_channel
         if channel is not None:
             try:
-                authenticated = DiscordUser.objects.get(uid=member.id).user.has_perm("discord.can_access_discord")
+                authenticated = DiscordUser.objects.get(uid=member.id).user.has_perm("discord.access_discord")
             except:
                 authenticated = False
 
@@ -76,7 +76,7 @@ class Goodbye(commands.Cog):
         channel = member.guild.system_channel
         if channel is not None:
             try:
-                authenticated = DiscordUser.objects.get(uid=member.id).user.has_perm("discord.can_access_discord")
+                authenticated = DiscordUser.objects.get(uid=member.id).user.has_perm("discord.access_discord")
             except:
                 authenticated = False
             if authenticated:
