@@ -37,7 +37,6 @@ class Welcome(commands.Cog):
                 authenticated = DiscordUser.objects.get(uid=member.id).user.has_perm("discord.access_discord")
             except:
                 authenticated = False
-
             if authenticated:
                 try:
                     message = WelcomeMessage.objects.filter(authenticated = True).order_by('?')[0].message
@@ -54,7 +53,7 @@ class Welcome(commands.Cog):
                 
             else:
                 try:
-                    message = WelcomeMessage.objects.filter(authenticated = False).order_by('?')[0].message
+                    message = WelcomeMessage.objects.filter(unauthenticated = True).order_by('?')[0].message
                     message_formatted = message.format(
                         user_mention = member.mention,
                         guild_name = member.guild.name,
@@ -96,7 +95,7 @@ class Goodbye(commands.Cog):
             else:
                 # Un-Authenticated
                 try:
-                    message = GoodbyeMessage.objects.filter(authenticated = False).order_by('?')[0].message
+                    message = GoodbyeMessage.objects.filter(unauthenticated = True).order_by('?')[0].message
                     message_formatted = message.format(
                         user_mention = member.mention,
                         guild_name = member.guild.name,
