@@ -13,10 +13,13 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='GoodbyeMessage',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
                 ('message', models.TextField(verbose_name='Goodbye Message')),
-                ('authenticated', models.BooleanField(verbose_name='Valid for Authenticated Users')),
-                ('unauthenticated', models.BooleanField(verbose_name='Valid for Un-Authenticated Users')),
+                ('authenticated', models.BooleanField(
+                    verbose_name='Valid for Authenticated Users')),
+                ('unauthenticated', models.BooleanField(
+                    verbose_name='Valid for Un-Authenticated Users')),
             ],
             options={
                 'verbose_name': 'Goodbye Message',
@@ -27,10 +30,13 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='WelcomeMessage',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='ID')),
                 ('message', models.TextField(verbose_name='Welcome Message')),
-                ('authenticated', models.BooleanField(verbose_name='Valid for Authenticated Users')),
-                ('unauthenticated', models.BooleanField(verbose_name='Valid for Un-Authenticated Users')),
+                ('authenticated', models.BooleanField(
+                    verbose_name='Valid for Authenticated Users')),
+                ('unauthenticated', models.BooleanField(
+                    verbose_name='Valid for Un-Authenticated Users')),
             ],
             options={
                 'verbose_name': 'Welcome Message',

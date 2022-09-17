@@ -1,7 +1,8 @@
-from inspect import getgeneratorlocals
-from django.conf import settings
-from django.apps import apps
 import re
+from inspect import getgeneratorlocals
+
+from django.apps import apps
+from django.conf import settings
 
 
 def get_site_url():  # regex sso url

@@ -1,15 +1,17 @@
 # Cog Stuff
-from aadiscordbot import __version__, __branch__
-from discord.ext import commands
-from discord.embeds import Embed
-from discord.colour import Color
-from ..app_settings import mumble_active, discord_active
-# AA Contexts
-from aadiscordbot.app_settings import get_site_url, get_admins
+import logging
 
+from discord.colour import Color
+from discord.embeds import Embed
+from discord.ext import commands
 from django.conf import settings
 
-import logging
+from aadiscordbot import __branch__, __version__
+# AA Contexts
+from aadiscordbot.app_settings import get_admins, get_site_url
+
+from ..app_settings import discord_active, mumble_active
+
 logger = logging.getLogger(__name__)
 
 

@@ -1,11 +1,13 @@
+import logging
+
 from allianceauth.services.modules.discord.models import DiscordUser
-from ..models import ReactionRoleBinding, ReactionRoleMessage
-from aadiscordbot.cogs.utils.decorators import sender_has_perm
 from discord import reaction
 from discord.ext import commands
 from discord.utils import get
 
-import logging
+from aadiscordbot.cogs.utils.decorators import sender_has_perm
+
+from ..models import ReactionRoleBinding, ReactionRoleMessage
 
 logger = logging.getLogger(__name__)
 

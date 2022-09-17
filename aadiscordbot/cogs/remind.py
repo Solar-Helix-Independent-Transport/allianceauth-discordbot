@@ -1,12 +1,12 @@
 # Cog Stuff
-from discord.ext import commands
-from discord.embeds import Embed
-from discord.colour import Color
-
 import asyncio
+import logging
 from datetime import datetime
 
-import logging
+from discord.colour import Color
+from discord.embeds import Embed
+from discord.ext import commands
+
 logger = logging.getLogger(__name__)
 
 

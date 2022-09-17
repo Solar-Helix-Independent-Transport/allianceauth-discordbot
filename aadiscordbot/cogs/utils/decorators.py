@@ -1,10 +1,12 @@
-from allianceauth.services.modules.discord.models import DiscordUser
-from aadiscordbot.app_settings import DISCORD_BOT_ADMIN_USER
-from discord.ext import commands
 import functools
+import logging
 import os
 
-import logging
+from allianceauth.services.modules.discord.models import DiscordUser
+from discord.ext import commands
+
+from aadiscordbot.app_settings import DISCORD_BOT_ADMIN_USER
+
 logger = logging.getLogger(__name__)
 
 

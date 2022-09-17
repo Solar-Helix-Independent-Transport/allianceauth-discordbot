@@ -1,34 +1,33 @@
-from datetime import datetime
 import logging
 import sys
 import time
 import traceback
+from datetime import datetime
+from socket import timeout
 from typing import Dict
-from aadiscordbot import app_settings
+
 import aiohttp
 import aioredis
-import pendulum
-
-from .cogs.utils import context
-from . import bot_tasks
-from aadiscordbot.app_settings import DISCORD_BOT_ACCESS_DENIED_REACT, DISCORD_BOT_MESSAGE_INTENT, DISCORD_BOT_PREFIX
-
 import discord
-from discord.ext import commands, tasks
-
 import django
+import django.db
+import pendulum
+from allianceauth import hooks
+from celery.utils.time import rate
+from discord.ext import commands, tasks
 from django.conf import settings
 from django.utils import timezone
-import django.db
-
-from allianceauth import hooks
-from kombu import Connection, Queue, Consumer
-from celery.utils.time import rate
+from kombu import Connection, Consumer, Queue
 from kombu.utils.limits import TokenBucket
-from socket import timeout
 
 import aadiscordbot
+from aadiscordbot import app_settings
+from aadiscordbot.app_settings import (DISCORD_BOT_ACCESS_DENIED_REACT,
+                                       DISCORD_BOT_MESSAGE_INTENT,
+                                       DISCORD_BOT_PREFIX)
 
+from . import bot_tasks
+from .cogs.utils import context
 
 description = """
 AuthBot is watching...

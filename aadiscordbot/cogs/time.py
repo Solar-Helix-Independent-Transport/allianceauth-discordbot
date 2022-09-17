@@ -2,14 +2,13 @@
 "Time" cog for discordbot - https://github.com/pvyParts/allianceauth-discordbot
 """
 
+import logging
 from datetime import datetime
 
-from discord.ext import commands
-from discord.embeds import Embed
 from discord.colour import Color
+from discord.embeds import Embed
+from discord.ext import commands
 from django.conf import settings
-
-import logging
 
 logger = logging.getLogger(__name__)
 

@@ -2,15 +2,14 @@
 Market Price Checks
 """
 
-import requests
+import logging
 
+import requests
+from discord.colour import Color
+from discord.embeds import Embed
 # Cog Stuff
 from discord.ext import commands
-from discord.embeds import Embed
-from discord.colour import Color
 
-
-import logging
 logger = logging.getLogger(__name__)
 
 

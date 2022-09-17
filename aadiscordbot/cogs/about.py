@@ -1,20 +1,19 @@
 # Cog Stuff
-import discord
-from discord.ext import commands
-from discord.embeds import Embed
-from discord.colour import Color
-from discord.utils import get
-
-# AA Contexts
-from django.conf import settings
-from aadiscordbot.cogs.utils.decorators import sender_is_admin
-from aadiscordbot import app_settings, __version__, __branch__
-
-import pendulum
-import re
-
 import hashlib
 import logging
+import re
+
+import discord
+import pendulum
+from discord.colour import Color
+from discord.embeds import Embed
+from discord.ext import commands
+from discord.utils import get
+# AA Contexts
+from django.conf import settings
+
+from aadiscordbot import __branch__, __version__, app_settings
+from aadiscordbot.cogs.utils.decorators import sender_is_admin
 
 logger = logging.getLogger(__name__)
 

@@ -1,23 +1,25 @@
 # Cog Stuff
+import datetime
+import logging
 from typing import Optional
-from discord.ext import commands
-from discord.embeds import Embed
-from discord.colour import Color
-# AA Contexts
-from django.conf import settings
+
+import pendulum
 from allianceauth.eveonline.models import EveCharacter
 from allianceauth.services.modules.discord.models import DiscordUser
-
-from aadiscordbot.cogs.utils.decorators import message_in_channels, sender_has_perm
-from aadiscordbot import app_settings, providers
-from discord.commands import SlashCommandGroup
 from discord import Option
-import datetime
+from discord.colour import Color
+from discord.commands import SlashCommandGroup
+from discord.embeds import Embed
+from discord.ext import commands
+# AA Contexts
+from django.conf import settings
 from django.utils import timezone
 from esi.models import Token
 
-import pendulum
-import logging
+from aadiscordbot import app_settings, providers
+from aadiscordbot.cogs.utils.decorators import (message_in_channels,
+                                                sender_has_perm)
+
 logger = logging.getLogger(__name__)
 
 

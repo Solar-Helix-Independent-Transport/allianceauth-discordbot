@@ -1,18 +1,19 @@
 # Cog Stuff
-from aadiscordbot.cogs.utils.decorators import message_in_channels
-from discord.ext import commands
-from discord.embeds import Embed
-from discord.colour import Color
-# AA Contexts
-from django.utils import timezone
-from django.conf import settings
-from allianceauth.timerboard.models import Timer
-from aadiscordbot.app_settings import timerboard_active
-
 import datetime
+import logging
 
 import pendulum
-import logging
+from allianceauth.timerboard.models import Timer
+from discord.colour import Color
+from discord.embeds import Embed
+from discord.ext import commands
+from django.conf import settings
+# AA Contexts
+from django.utils import timezone
+
+from aadiscordbot.app_settings import timerboard_active
+from aadiscordbot.cogs.utils.decorators import message_in_channels
+
 logger = logging.getLogger(__name__)
 
 

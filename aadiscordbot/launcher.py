@@ -1,9 +1,9 @@
 #!/usr/bin/env python
-import os
-import sys
 import asyncio
 import contextlib
 import logging
+import os
+import sys
 
 from .bot import AuthBot
 

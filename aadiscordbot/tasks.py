@@ -2,10 +2,10 @@ import logging
 
 import django
 import django.db
-from django.conf import settings
-from django.contrib.auth.models import User
 from celery import shared_task
 from discord import Embed
+from django.conf import settings
+from django.contrib.auth.models import User
 
 logger = logging.getLogger(__name__)
 

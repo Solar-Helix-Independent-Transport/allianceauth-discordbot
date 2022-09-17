@@ -1,5 +1,7 @@
 import os
+
 from setuptools import find_packages, setup
+
 import aadiscordbot
 
 with open(os.path.join(os.path.dirname(__file__), 'README.md')) as readme:

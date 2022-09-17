@@ -1,15 +1,17 @@
 # Cog Stuff
-from aadiscordbot.cogs.utils.decorators import sender_is_admin
-from discord.ext import commands
-from discord.embeds import Embed
-from discord.colour import Color
-from ..app_settings import mumble_active, discord_active
 import django.core.exceptions
-# AA Contexts
-from aadiscordbot.app_settings import get_site_url, DISCORD_BOT_ADMIN_USER
-from django.contrib.auth.models import User
 from allianceauth.authentication.models import State
 from allianceauth.eveonline.models import EveAllianceInfo, EveCorporationInfo
+from discord.colour import Color
+from discord.embeds import Embed
+from discord.ext import commands
+from django.contrib.auth.models import User
+
+# AA Contexts
+from aadiscordbot.app_settings import DISCORD_BOT_ADMIN_USER, get_site_url
+from aadiscordbot.cogs.utils.decorators import sender_is_admin
+
+from ..app_settings import discord_active, mumble_active
 
 if discord_active:
     from allianceauth.services.modules.discord.models import DiscordUser
@@ -18,6 +20,7 @@ if mumble_active:
     from allianceauth.services.modules.mumble.auth_hooks import MumbleUser
 
 import logging
+
 logger = logging.getLogger(__name__)
 
 
