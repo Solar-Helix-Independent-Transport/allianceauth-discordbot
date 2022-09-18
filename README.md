@@ -96,7 +96,7 @@ LOGGING['loggers']['aadiscordbot'] = {'handlers': ['bot_log_file'],'level': 'DEB
 ```
 * Optional Settings
  ```python
-# configure the bots in-built cogs.
+# Change the bots default Cogs, add or remove if required.
 DISCORD_BOT_COGS = ["aadiscordbot.cogs.about", # about the bot
                      "aadiscordbot.cogs.admin", # Discord server admin helpers
                      "aadiscordbot.cogs.members", # Member lookup commands
@@ -106,7 +106,11 @@ DISCORD_BOT_COGS = ["aadiscordbot.cogs.about", # about the bot
                      "aadiscordbot.cogs.time", # whats the time Mr Eve Server
                      "aadiscordbot.cogs.eastereggs", # some "fun" commands from ariel...
                      "aadiscordbot.cogs.remind", # very Basic in memory reminder tool
-                     "aadiscordbot.cogs.reaction_roles" # auth group integrated reaction roles
+                     "aadiscordbot.cogs.reaction_roles", # auth group integrated reaction roles
+                     "aadiscordbot.cogs.services", # service activation data
+                     "aadiscordbot.cogs.price_check", # Price Checks
+                     "aadiscordbot.cogs.eightball", # 8ball should i install this cog
+                     "aadiscordbot.cogs.welcomegoodbye", # Customizable user join/leave messages
                     ]
 
 # configure the optional rate limited
