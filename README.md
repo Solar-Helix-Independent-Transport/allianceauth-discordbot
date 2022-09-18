@@ -51,6 +51,8 @@ AA-Discordbot for [Alliance Auth](https://gitlab.com/allianceauth/allianceauth).
 
 ## Installation
 
+* Ensure you have installed and configured the Alliance Auth Discord Service, https://allianceauth.readthedocs.io/en/latest/features/services/discord.html
+
 * Update your [Discord Developer Application](https://discord.com/developers/applications) to include the Privileged Intents that we call. Please enable all intents.
 
 ![screenshot](https://i.imgur.com/A1yA24P.png)
