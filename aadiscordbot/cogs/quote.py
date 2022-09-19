@@ -1,17 +1,11 @@
-# Cog Stuff
 import logging
-from datetime import time
 
-import discord
-from discord import message
-from discord.colour import Color
 from discord.embeds import Embed
 from discord.ext import commands
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 
-# AA Contexts
 from aadiscordbot.models import Channels, QuoteMessage, Servers
 
 logger = logging.getLogger(__name__)

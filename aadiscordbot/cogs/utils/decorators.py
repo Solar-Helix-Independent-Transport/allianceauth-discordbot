@@ -39,6 +39,7 @@ def sender_has_perm(perm: str):
 
     return commands.check(predicate)
 
+
 def has_all_perms(id, perms: list):
     if id in get_admins():
         return True
@@ -93,6 +94,7 @@ def is_admin(id):
     else:
         raise commands.CheckFailure("You are not an Administrator")
 
+
 def sender_is_admin():
     """
     Permission Decorator: is the User configured as AuthBotConfiguration.objects.get(pk=1).admin_users
@@ -114,12 +116,14 @@ def message_in_channels(channels: list):
         return in_channels(ctx.message.channel.id, channels)
     return commands.check(predicate)
 
+
 def is_authenticated(id):
     try:
         DiscordUser.objects.get(uid=id)
         return True
     except ObjectDoesNotExist:
         raise NotAuthenticated
+
 
 def sender_is_authenticated():
     """

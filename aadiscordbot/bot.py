@@ -5,7 +5,6 @@ import traceback
 from datetime import datetime
 from socket import timeout
 from typing import Dict
-from aadiscordbot.cogs.utils.exceptions import NotAuthenticated
 
 import aiohttp
 import aioredis
@@ -30,6 +29,7 @@ from aadiscordbot.app_settings import (
     DISCORD_BOT_ACCESS_DENIED_REACT, DISCORD_BOT_MESSAGE_INTENT,
     DISCORD_BOT_PREFIX,
 )
+from aadiscordbot.cogs.utils.exceptions import NotAuthenticated
 
 from . import bot_tasks
 from .cogs.utils import context
@@ -362,13 +362,13 @@ class AuthBot(commands.Bot):
         elif isinstance(error, commands.CheckFailure):
             await ctx.send(error)
 
-    async def on_application_command_error(self, context: ApplicationContext, exception: DiscordException) -> None: 
+    async def on_application_command_error(self, context: ApplicationContext, exception: DiscordException) -> None:
         if isinstance(exception, commands.CheckFailure):
-            await context.send_response(exception, ephemeral = True)
+            await context.send_response(exception, ephemeral=True)
         elif isinstance(exception, commands.MissingPermissions):
-            await context.send_response(exception, ephemeral = True)
+            await context.send_response(exception, ephemeral=True)
         elif isinstance(exception, NotAuthenticated):
-            await context.send_response(exception, ephemeral = True)
+            await context.send_response(exception, ephemeral=True)
 
     def run(self):
         # self.load_extension("aadiscordbot.slash.admin")

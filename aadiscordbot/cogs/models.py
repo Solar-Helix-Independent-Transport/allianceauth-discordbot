@@ -1,5 +1,6 @@
 import logging
 from unicodedata import name
+
 from discord.commands import SlashCommandGroup
 from discord.ext import commands
 
@@ -24,18 +25,17 @@ class Models(commands.Cog):
     admin_commands = SlashCommandGroup("models", "Django Model Population", guild_ids=[
                                        int(settings.DISCORD_GUILD_ID)])
 
-
     @admin_commands.command(name="populate", guild_ids=[int(settings.DISCORD_GUILD_ID)])
     @sender_is_admin()
     async def populate_models(self, ctx):
         """
         Populates Django Models for every Channel in the Guild
         """
-        await ctx.respond(f"Populating Models, this might take a while on large servers", ephemeral = True)
+        await ctx.respond(f"Populating Models, this might take a while on large servers", ephemeral=True)
         try:
             Servers.objects.update_or_create(
-                server = ctx.guild.id,
-                name = ctx.guild.name,
+                server=ctx.guild.id,
+                name=ctx.guild.name,
             )
             server = Servers.objects.get(id=ctx.guild.id)
         except Exception as e:
@@ -44,34 +44,33 @@ class Models(commands.Cog):
         for channel in ctx.guild.channels:
             try:
                 Channels.objects.update_or_create(
-                    channel = channel.id,
-                    name = channel.name,
-                    server = server
-                    )
+                    channel=channel.id,
+                    name=channel.name,
+                    server=server
+                )
             except Exception as e:
                 logger.error(e)
 
-        return await ctx.respond(f"Django Models Populated for {ctx.guild.name}", ephemeral = True)
+        return await ctx.respond(f"Django Models Populated for {ctx.guild.name}", ephemeral=True)
 
     @commands.Cog.listener("on_guild_channel_delete")
     async def on_guild_channel_delete(self, channel):
-        try: 
-            Channels.objects.get(channel=channel.id).update(deleted = True)
+        try:
+            Channels.objects.get(channel=channel.id).update(deleted=True)
         except ObjectDoesNotExist:
             #this is fine
             pass
         except Exception as e:
             logger.error(e)
 
-
     @commands.Cog.listener("on_guild_channel_create")
     async def on_guild_channel_create(self, channel):
-        try: 
+        try:
             Channels.objects.create(
                 channel=channel.id,
                 name=channel.name,
                 server=Servers.objects.get(channel.guild.id)
-                )
+            )
         except Exception as e:
             logger.error(e)
 
@@ -82,10 +81,10 @@ class Models(commands.Cog):
         else:
             try:
                 Channels.objects.update_or_create(
-                    channel = after_channel,
-                    name = after_channel.name,
+                    channel=after_channel,
+                    name=after_channel.name,
                     server=Servers.objects.get(after_channel.guild.id)
-                    )
+                )
             except Exception as e:
                 logger.error(e)
 
@@ -96,9 +95,9 @@ class Models(commands.Cog):
         else:
             try:
                 Channels.objects.update_or_create(
-                    server = after_guild.id,
-                    name = after_guild.name
-                    )
+                    server=after_guild.id,
+                    name=after_guild.name
+                )
             except Exception as e:
                 logger.error(e)
 

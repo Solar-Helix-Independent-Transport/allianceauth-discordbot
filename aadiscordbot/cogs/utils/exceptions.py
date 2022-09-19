@@ -1,6 +1,9 @@
 from typing import Any, List
-from aadiscordbot.app_settings import get_site_url
+
 from discord.ext.commands.errors import CheckFailure
+
+from aadiscordbot.app_settings import get_site_url
+
 
 class NotAuthenticated(CheckFailure):
     """

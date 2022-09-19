@@ -1,6 +1,3 @@
-# Cog Stuff
-from discord.colour import Color
-from discord.embeds import Embed
 from discord.ext import commands
 
 import django.core.exceptions
@@ -9,8 +6,6 @@ from django.contrib.auth.models import User
 from allianceauth.authentication.models import State
 from allianceauth.eveonline.models import EveAllianceInfo, EveCorporationInfo
 
-# AA Contexts
-from aadiscordbot.app_settings import DISCORD_BOT_ADMIN_USER, get_site_url
 from aadiscordbot.cogs.utils.decorators import sender_is_admin
 
 from ..app_settings import discord_active, mumble_active

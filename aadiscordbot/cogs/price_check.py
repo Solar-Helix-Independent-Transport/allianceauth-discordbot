@@ -7,7 +7,6 @@ import logging
 import requests
 from discord.colour import Color
 from discord.embeds import Embed
-# Cog Stuff
 from discord.ext import commands
 
 logger = logging.getLogger(__name__)
