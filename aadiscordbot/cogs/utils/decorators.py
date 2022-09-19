@@ -1,12 +1,14 @@
-import functools
 import logging
 import os
 
 from discord.ext import commands
 
+from django.core.exceptions import ObjectDoesNotExist
+
 from allianceauth.services.modules.discord.models import DiscordUser
 
 from aadiscordbot.app_settings import get_admins
+from aadiscordbot.cogs.utils.exceptions import NotAuthenticated
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +27,7 @@ def has_perm(id, perm: str):
             raise commands.MissingPermissions([perm])
     except Exception as e:
         logger.error(e)
-        raise commands.CheckFailure("Not an Authenticated User")
+        raise NotAuthenticated
 
 
 def sender_has_perm(perm: str):
@@ -48,7 +50,7 @@ def has_all_perms(id, perms: list):
             raise commands.MissingPermissions(perms)
     except Exception as e:
         logger.error(e)
-        raise commands.CheckFailure("Not an Authenticated User")
+        raise NotAuthenticated
 
 
 def sender_has_all_perms(perms: list):
@@ -71,7 +73,7 @@ def has_any_perm(id, perms: list):
                 return True
         except Exception as e:
             logger.error(e)
-            raise commands.CheckFailure("Not an Authenticated User")
+            raise NotAuthenticated
     raise commands.MissingPermissions(["One of the following: "] + perms)
 
 
@@ -110,4 +112,19 @@ def in_channels(channel, channels):
 def message_in_channels(channels: list):
     def predicate(ctx):
         return in_channels(ctx.message.channel.id, channels)
+    return commands.check(predicate)
+
+def is_authenticated(id):
+    try:
+        DiscordUser.objects.get(uid=id)
+        return True
+    except ObjectDoesNotExist:
+        raise NotAuthenticated
+
+def sender_is_authenticated():
+    """
+    Permission Decorator: Is the user Authenticated
+    """
+    def predicate(ctx):
+        return is_authenticated(ctx.user.id)
     return commands.check(predicate)
