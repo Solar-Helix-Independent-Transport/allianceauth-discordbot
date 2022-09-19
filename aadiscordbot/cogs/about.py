@@ -1,17 +1,16 @@
-
 import logging
 import re
 
 from discord.colour import Color
+from discord.commands import SlashCommandGroup
 from discord.embeds import Embed
 from discord.ext import commands
 from discord.utils import get
-from discord.commands import SlashCommandGroup
 
 from django.conf import settings
 
-from aadiscordbot import __branch__, __version__, app_settings
-from aadiscordbot.cogs.utils.decorators import sender_is_admin
+from aadiscordbot import __branch__, __version__
+from aadiscordbot.app_settings import get_site_url
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +23,6 @@ class About(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-        
     about_commands = SlashCommandGroup("about", "All about the Bot and Auth", guild_ids=[
                                        int(settings.DISCORD_GUILD_ID)])
 
@@ -42,11 +40,6 @@ class About(commands.Cog):
         embed.description = "This is a multi-de-functional discord bot tailored specifically for Alliance Auth Shenanigans."
         regex = r"^(.+)\/d.+"
 
-        matches = re.finditer(
-            regex, settings.DISCORD_CALLBACK_URL, re.MULTILINE)
-
-        for m in matches:
-            url = m.groups()
         embed.set_footer(
             text="Lovingly developed for Init.™ by AaronRin and ArielKable")
 
@@ -59,13 +52,14 @@ class About(commands.Cog):
         embed.add_field(name="Unwilling Monitorees:",
                         value=members, inline=True)
         embed.add_field(
-            name="Auth Link", value=f"[{url[0]}]({url[0]})", inline=False
+            name="Auth Link", value=f"[{get_site_url()}]({get_site_url()})", inline=False
         )
         embed.add_field(
             name="Version", value=f"{__version__}@{__branch__}", inline=False
         )
 
         return await ctx.respond(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(About(bot))
