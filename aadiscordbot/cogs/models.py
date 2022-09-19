@@ -1,17 +1,14 @@
 import logging
 from unicodedata import name
-from aadiscordbot.models import Channels, Servers
-
-from discord.colour import Color
 from discord.commands import SlashCommandGroup
-from discord.embeds import Embed
 from discord.ext import commands
-from django.core.exceptions import ObjectDoesNotExist
+
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 
 from aadiscordbot import __branch__, __version__
-from aadiscordbot.app_settings import get_site_url
 from aadiscordbot.cogs.utils.decorators import sender_is_admin
+from aadiscordbot.models import Channels, Servers
 
 logger = logging.getLogger(__name__)
 
@@ -28,13 +25,12 @@ class Models(commands.Cog):
                                        int(settings.DISCORD_GUILD_ID)])
 
 
-    @commands.slash_command(name='auth', guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    @admin_commands.command(name="populate", guild_ids=[int(settings.DISCORD_GUILD_ID)])
     @sender_is_admin()
-    async def populate_channel_models(self, ctx):
+    async def populate_models(self, ctx):
         """
         Populates Django Models for every Channel in the Guild
         """
-
         try:
             Servers.objects.update_or_create(
                 server = ctx.guild.id,
@@ -54,7 +50,7 @@ class Models(commands.Cog):
             except Exception as e:
                 logger.error(e)
 
-        return await ctx.reply(f"Django Models Populated for {ctx.guild.name}")
+        return await ctx.send_response(f"Django Models Populated for {ctx.guild.name}")
 
     @commands.Cog.listener("on_guild_channel_delete")
     async def on_guild_channel_delete(self, channel):
