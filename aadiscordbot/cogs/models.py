@@ -31,6 +31,7 @@ class Models(commands.Cog):
         """
         Populates Django Models for every Channel in the Guild
         """
+        await ctx.respond(f"Populating Models, this might take a while on large servers", ephemeral = True)
         try:
             Servers.objects.update_or_create(
                 server = ctx.guild.id,
@@ -50,7 +51,7 @@ class Models(commands.Cog):
             except Exception as e:
                 logger.error(e)
 
-        return await ctx.send_response(f"Django Models Populated for {ctx.guild.name}")
+        return await ctx.respond(f"Django Models Populated for {ctx.guild.name}", ephemeral = True)
 
     @commands.Cog.listener("on_guild_channel_delete")
     async def on_guild_channel_delete(self, channel):
