@@ -11,6 +11,7 @@ import aioredis
 import discord
 import pendulum
 from celery.utils.time import rate
+from discord import ApplicationContext, DiscordException
 from discord.ext import commands, tasks
 from kombu import Connection, Consumer, Queue
 from kombu.utils.limits import TokenBucket
@@ -347,7 +348,7 @@ class AuthBot(commands.Bot):
         elif isinstance(error, commands.BotMissingPermissions):
             await ctx.send(
                 "Sorry, I don't have the required permissions to do that here:\n{}".format(
-                    error.missing_perms)
+                    error.missing_permissions)
             )
         elif isinstance(error, commands.MissingPermissions):
             await ctx.message.add_reaction(chr(DISCORD_BOT_ACCESS_DENIED_REACT))
@@ -357,6 +358,14 @@ class AuthBot(commands.Bot):
             await ctx.send(error)
         elif isinstance(error, commands.CommandOnCooldown):
             await ctx.message.add_reaction(chr(0x274C))
+        elif isinstance(error, commands.CheckFailure):
+            await ctx.send(error)
+
+    async def on_application_command_error(self, context: ApplicationContext, exception: DiscordException) -> None: 
+        if isinstance(exception, commands.CheckFailure):
+            await context.send_response(exception, ephemeral = True)
+        elif isinstance(exception, commands.MissingPermissions):
+            await context.send_response(exception, ephemeral = True)
 
     def run(self):
         # self.load_extension("aadiscordbot.slash.admin")
