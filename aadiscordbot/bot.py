@@ -5,6 +5,7 @@ import traceback
 from datetime import datetime
 from socket import timeout
 from typing import Dict
+from aadiscordbot.cogs.utils.exceptions import NotAuthenticated
 
 import aiohttp
 import aioredis
@@ -365,6 +366,8 @@ class AuthBot(commands.Bot):
         if isinstance(exception, commands.CheckFailure):
             await context.send_response(exception, ephemeral = True)
         elif isinstance(exception, commands.MissingPermissions):
+            await context.send_response(exception, ephemeral = True)
+        elif isinstance(exception, NotAuthenticated):
             await context.send_response(exception, ephemeral = True)
 
     def run(self):
