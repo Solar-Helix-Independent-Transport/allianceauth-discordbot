@@ -1,16 +1,13 @@
-# Cog Stuff
-import hashlib
+
 import logging
 import re
 
-import discord
-import pendulum
 from discord.colour import Color
 from discord.embeds import Embed
 from discord.ext import commands
 from discord.utils import get
+from discord.commands import SlashCommandGroup
 
-# AA Contexts
 from django.conf import settings
 
 from aadiscordbot import __branch__, __version__, app_settings
@@ -27,13 +24,15 @@ class About(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(pass_context=True)
-    async def about(self, ctx):
+        
+    about_commands = SlashCommandGroup("about", "All about the Bot and Auth", guild_ids=[
+                                       int(settings.DISCORD_GUILD_ID)])
+
+    @about_commands.command(name="discordbot", description="About the Discord Bot", guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    async def discordbot(self, ctx):
         """
         All about the bot
         """
-        await ctx.trigger_typing()
-
         embed = Embed(title="AuthBot: The Authening")
         embed.set_thumbnail(
             url="https://cdn.discordapp.com/icons/516758158748811264/ae3991584b0f800b181c936cfc707880.webp?size=128"
@@ -66,12 +65,7 @@ class About(commands.Cog):
             name="Version", value=f"{__version__}@{__branch__}", inline=False
         )
 
-        # embed.add_field(
-        #     name="Creator", value="<@318309023478972417>", inline=False
-        # )
-
-        return await ctx.send(embed=embed)
-
+        return await ctx.respond(embed=embed)
 
 def setup(bot):
     bot.add_cog(About(bot))
