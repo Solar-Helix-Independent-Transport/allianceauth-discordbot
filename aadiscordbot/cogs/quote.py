@@ -1,19 +1,19 @@
-
 # Cog Stuff
-from datetime import time
-from discord import message
-import discord
-from discord.ext import commands
-from discord.embeds import Embed
-from discord.colour import Color
-from django.conf import settings
-# AA Contexts
-from aadiscordbot.models import Servers, Channels, QuoteMessage
-
-
 import logging
+from datetime import time
 
+import discord
+from discord import message
+from discord.colour import Color
+from discord.embeds import Embed
+from discord.ext import commands
+
+from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
+
+# AA Contexts
+from aadiscordbot.models import Channels, QuoteMessage, Servers
+
 logger = logging.getLogger(__name__)
 
 
@@ -37,7 +37,8 @@ class Quote(commands.Cog):
         if ctx.message.reference is not None:
             if ctx.message.reference.cached_message is None:
                 # Fetching the message
-                channel = self.bot.get_channel(ctx.message.reference.channel_id)
+                channel = self.bot.get_channel(
+                    ctx.message.reference.channel_id)
                 quoted_message = await channel.fetch_message(ctx.message.reference.message_id)
             else:
                 quoted_message = ctx.message.reference.cached_message
@@ -93,7 +94,6 @@ class Quote(commands.Cog):
         except:
             discord_message = None
 
-
         embed = Embed(title=f"{quote.author_nick}")
         if discord_user is not None:
             embed.set_thumbnail(
@@ -101,7 +101,8 @@ class Quote(commands.Cog):
             )
             embed.add_field(name="User", value=discord_user.mention)
         embed.description = quote.content
-        embed.add_field(name="Time", value=f"<t:{int(quote.datetime.timestamp())}>")
+        embed.add_field(
+            name="Time", value=f"<t:{int(quote.datetime.timestamp())}>")
         embed.add_field(name="Channel", value=discord_channel_text)
         if discord_message is not None:
             embed.add_field(name="Link", value=discord_message.jump_url)
@@ -119,14 +120,16 @@ class Quote(commands.Cog):
         await ctx.channel.trigger_typing()
         await ctx.message.add_reaction(chr(0x231B))
 
-        quotes = QuoteMessage.objects.filter(reference__isnull=False).values("reference", "author_nick")
+        quotes = QuoteMessage.objects.filter(
+            reference__isnull=False).values("reference", "author_nick")
 
         embed = Embed(title="Quote List")
-        
-        for quote in quotes:
-            embed.add_field(name=quote["reference"], value=quote["author_nick"])
 
-        await ctx.message.clear_reaction(chr(0x231B))   
+        for quote in quotes:
+            embed.add_field(name=quote["reference"],
+                            value=quote["author_nick"])
+
+        await ctx.message.clear_reaction(chr(0x231B))
         return await ctx.send(embed=embed)
 
 
