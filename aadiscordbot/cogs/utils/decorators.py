@@ -6,17 +6,16 @@ from discord.ext import commands
 
 from allianceauth.services.modules.discord.models import DiscordUser
 
-from aadiscordbot.app_settings import DISCORD_BOT_ADMIN_USER
+from aadiscordbot.app_settings import get_admins
 
 logger = logging.getLogger(__name__)
-
 
 # i dont want to do this, but the below object get wont work without it, investigate.
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
 
 def has_perm(id, perm: str):
-    if id in DISCORD_BOT_ADMIN_USER:
+    if id in get_admins():
         return True
     try:
         has_perm = DiscordUser.objects.get(uid=id).user.has_perm(perm)
@@ -40,7 +39,7 @@ def sender_has_perm(perm: str):
 
 
 def has_all_perms(id, perms: list):
-    if id in DISCORD_BOT_ADMIN_USER:
+    if id in get_admins():
         return True
     try:
         has_perm = DiscordUser.objects.get(uid=id).user.has_perms(perms)
@@ -64,14 +63,12 @@ def sender_has_all_perms(perms: list):
 
 
 def has_any_perm(id, perms: list):
-    if id in DISCORD_BOT_ADMIN_USER:
+    if id in get_admins():
         return True
     for perm in perms:
         try:
             has_perm = DiscordUser.objects.get(uid=id).user.has_perm(perm)
             if has_perm:
-                return True
-            if id in DISCORD_BOT_ADMIN_USER:
                 return True
         except Exception as e:
             logger.error(e)
@@ -90,13 +87,16 @@ def sender_has_any_perm(perms: list):
 
 
 def is_admin(id):
-    if id in DISCORD_BOT_ADMIN_USER:
+    if id in get_admins():
         return True
     else:
         raise commands.MissingPermissions(["Not an Admin"])
 
 
 def sender_is_admin():
+    """
+    Permission Decorator: is the User configured as AuthBotConfiguration.objects.get(pk=1).admin_users
+    """
     def predicate(ctx):
         return is_admin(ctx.message.author.id)
     return commands.check(predicate)

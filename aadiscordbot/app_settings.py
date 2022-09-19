@@ -70,6 +70,7 @@ DISCORD_BOT_COGS = getattr(settings, 'DISCORD_BOT_COGS', ["aadiscordbot.cogs.abo
 DISCORD_BOT_ACCESS_DENIED_REACT = getattr(
     settings, 'DISCORD_BOT_ACCESS_DENIED_REACT', 0x1F44E)
 
+# Deprecated. use Decorators or get_admins()
 DISCORD_BOT_ADMIN_USER = getattr(settings, 'DISCORD_BOT_ADMIN_USER', [])
 
 ADMIN_DISCORD_BOT_CHANNELS = getattr(
