@@ -38,6 +38,7 @@ class Channels(models.Model):
     server = models.ForeignKey(Servers, on_delete=models.CASCADE)
     channel = models.BigIntegerField(primary_key=True)
     name = models.CharField(max_length=100)
+    deleted = models.BooleanField(_("Deleted"), default=False)
 
     def __str__(self):
         return f'"{self.name}" On "{self.server.name}"'
