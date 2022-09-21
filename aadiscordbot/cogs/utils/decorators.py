@@ -35,7 +35,10 @@ def sender_has_perm(perm: str):
     Permission Decorator: Does the user have x Django Permission
     """
     def predicate(ctx):
-        return has_perm(ctx.user.id, perm)
+        if hasattr(ctx, "user"):
+            return has_perm(ctx.user.id, perm)
+        else:
+            return has_perm(ctx.author.id, perm)  # !Commands
 
     return commands.check(predicate)
 
@@ -59,7 +62,10 @@ def sender_has_all_perms(perms: list):
     Permission Decorator: Does the user have x and y Django Permission
     """
     def predicate(ctx):
-        return has_all_perms(ctx.user.id, perms)
+        if hasattr(ctx, "user"):
+            return has_all_perms(ctx.user.id, perms)
+        else:
+            return has_all_perms(ctx.author.id, perms)  # !Commands
 
     return commands.check(predicate)
 
@@ -83,7 +89,10 @@ def sender_has_any_perm(perms: list):
     Permission Decorator: Does the user have x or y Django Permission
     """
     def predicate(ctx):
-        return has_any_perm(ctx.user.id, perms)
+        if hasattr(ctx, "user"):
+            return has_any_perm(ctx.user.id, perms)
+        else:
+            return has_any_perm(ctx.author.id, perms)  # !Commands
 
     return commands.check(predicate)
 
@@ -100,7 +109,10 @@ def sender_is_admin():
     Permission Decorator: is the User configured as AuthBotConfiguration.objects.get(pk=1).admin_users
     """
     def predicate(ctx):
-        return is_admin(ctx.user.id)
+        if hasattr(ctx, "user"):
+            return is_admin(ctx.user.id)
+        else:
+            return is_admin(ctx.author.id)  # !Commands
     return commands.check(predicate)
 
 
