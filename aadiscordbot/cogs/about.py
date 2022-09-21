@@ -1,11 +1,9 @@
 import logging
-import re
 
 from discord.colour import Color
 from discord.commands import SlashCommandGroup
 from discord.embeds import Embed
 from discord.ext import commands
-from discord.utils import get
 
 from django.conf import settings
 
