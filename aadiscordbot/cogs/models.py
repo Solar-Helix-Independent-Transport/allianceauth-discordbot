@@ -22,10 +22,10 @@ class Models(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    admin_commands = SlashCommandGroup("models", "Django Model Population", guild_ids=[
+    model_commands = SlashCommandGroup("models", "Django Model Population", guild_ids=[
                                        int(settings.DISCORD_GUILD_ID)])
 
-    @admin_commands.command(name="populate", guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    @model_commands.command(name="populate", guild_ids=[int(settings.DISCORD_GUILD_ID)])
     @sender_is_admin()
     async def populate_models(self, ctx):
         """
@@ -35,18 +35,19 @@ class Models(commands.Cog):
         try:
             Servers.objects.update_or_create(
                 server=ctx.guild.id,
-                name=ctx.guild.name,
+                defaults={"name": ctx.guild.name}
             )
-            server = Servers.objects.get(id=ctx.guild.id)
         except Exception as e:
             logger.error(e)
-
+        server = Servers.objects.get(server=ctx.guild.id)
         for channel in ctx.guild.channels:
             try:
                 Channels.objects.update_or_create(
                     channel=channel.id,
-                    name=channel.name,
-                    server=server
+                    defaults={
+                        "name": channel.name,
+                        "server": server
+                    }
                 )
             except Exception as e:
                 logger.error(e)
@@ -56,7 +57,9 @@ class Models(commands.Cog):
     @commands.Cog.listener("on_guild_channel_delete")
     async def on_guild_channel_delete(self, channel):
         try:
-            Channels.objects.get(channel=channel.id).update(deleted=True)
+            deleted_channel = Channels.objects.get(channel=channel.id)
+            deleted_channel.deleted = True
+            deleted_channel.save()
         except ObjectDoesNotExist:
             #this is fine
             pass
@@ -69,7 +72,7 @@ class Models(commands.Cog):
             Channels.objects.create(
                 channel=channel.id,
                 name=channel.name,
-                server=Servers.objects.get(channel.guild.id)
+                server=Servers.objects.get(server=channel.guild.id)
             )
         except Exception as e:
             logger.error(e)
@@ -81,9 +84,8 @@ class Models(commands.Cog):
         else:
             try:
                 Channels.objects.update_or_create(
-                    channel=after_channel,
-                    name=after_channel.name,
-                    server=Servers.objects.get(after_channel.guild.id)
+                    channel=after_channel.id,
+                    defaults={"name": after_channel.name}
                 )
             except Exception as e:
                 logger.error(e)
@@ -94,9 +96,9 @@ class Models(commands.Cog):
             pass
         else:
             try:
-                Channels.objects.update_or_create(
+                Servers.objects.update_or_create(
                     server=after_guild.id,
-                    name=after_guild.name
+                    defaults={"name": after_guild.name}
                 )
             except Exception as e:
                 logger.error(e)
