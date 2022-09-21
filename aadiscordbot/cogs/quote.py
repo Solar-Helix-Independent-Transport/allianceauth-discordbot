@@ -1,11 +1,15 @@
 import logging
 
+from discord import AllowedMentions, Interaction, NotFound
+from discord.commands import SlashCommandGroup
 from discord.embeds import Embed
 from discord.ext import commands
+from discord.ui import InputText, Modal
 
 from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist
+from django.db import IntegrityError
 
+from aadiscordbot.cogs.utils.decorators import sender_has_perm
 from aadiscordbot.models import Channels, QuoteMessage, Servers
 
 logger = logging.getLogger(__name__)
@@ -19,112 +23,119 @@ class Quote(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(pass_context=True)
-    async def savequote(self, ctx, quote_ref):
+    quote_commands = SlashCommandGroup("quote", "Save and Recall Quotes (memes)", guild_ids=[
+                                       int(settings.DISCORD_GUILD_ID)])
+
+    class QuoteReference(Modal):
+        def __init__(self):
+            super().__init__(title="Save Quote")
+
+            self.quote_reference = None
+
+            self.add_item(
+                InputText(
+                    label="Reference",
+                    placeholder="A reference to recall this Quote later, must be unique"
+                )
+            )
+
+        async def callback(self, interaction: Interaction):
+            self.quote_reference = self.children[0].value
+            await interaction.response.send_message(f"Attempting to save Quote with reference: {self.quote_reference}", ephemeral=True)
+            self.stop()
+
+    @commands.message_command(name="Save Quote", description="Save this message as a Quote", guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    @sender_has_perm("aadiscordbot.quote_save")
+    async def savequote(self, ctx, message):
         """
         Save a discord message to a Django model for reference later
         """
-        logger.debug("Quote Cog: !savequote received")
-        await ctx.channel.trigger_typing()
-        await ctx.message.add_reaction(chr(0x231B))
+        ask_for_reference_text = Quote.QuoteReference()
+        await ctx.send_modal(ask_for_reference_text)
+        await ask_for_reference_text.wait()
 
-        if ctx.message.reference is not None:
-            if ctx.message.reference.cached_message is None:
-                # Fetching the message
-                channel = self.bot.get_channel(
-                    ctx.message.reference.channel_id)
-                quoted_message = await channel.fetch_message(ctx.message.reference.message_id)
-            else:
-                quoted_message = ctx.message.reference.cached_message
+        if message.author.nick is None:
+            nickname_excepted = message.author.name
         else:
-            return await ctx.reply("Please reply to the message you wish to Quote")
-
-        if quoted_message.author.nick is None:
-            nickname_excepted = quoted_message.author.name
-        else:
-            nickname_excepted = quoted_message.author.nick
-
-        QuoteMessage.objects.create(
-            server_id=quoted_message.guild.id,
-            channel_id=quoted_message.channel.id,
-            message=quoted_message.id,
-            content=quoted_message.content,
-            datetime=quoted_message.created_at,
-            author=quoted_message.author.id,
-            author_nick=(nickname_excepted),
-            reference=quote_ref
-        )
-
-        await ctx.message.clear_reaction(chr(0x231B))
-
-    @commands.command(pass_context=True)
-    async def quote(self, ctx, quote_ref):
-        """
-        Recall a discord message from Django model
-        """
-        logger.debug("Quote Cog: !quote received")
-
-        await ctx.channel.trigger_typing()
-        await ctx.message.add_reaction(chr(0x231B))
+            nickname_excepted = message.author.nick
 
         try:
-            quote = QuoteMessage.objects.get(reference=quote_ref)
-        except ObjectDoesNotExist:
-            return await ctx.reply("Quote not found")
-
-        try:
-            discord_user = ctx.bot.get_user(quote.author)
-        except:
-            discord_user = None
-
-        try:
-            discord_channel = await ctx.bot.fetch_channel(quote.channel)
-            discord_channel_text = discord_channel.mention
-        except:
-            discord_channel_text = quote.channel.name
-
-        try:
-            discord_message = await ctx.fetch_message(quote.message)
-        except:
-            discord_message = None
-
-        embed = Embed(title=f"{quote.author_nick}")
-        if discord_user is not None:
-            embed.set_thumbnail(
-                url=discord_user.avatar_url_as(size=32)
+            QuoteMessage.objects.update_or_create(
+                server_id=message.guild.id,
+                channel_id=message.channel.id,
+                message=message.id,
+                content=message.content,
+                datetime=message.created_at,
+                author=message.author.id,
+                author_nick=(nickname_excepted),
+                reference=ask_for_reference_text._children[0].value
             )
-            embed.add_field(name="User", value=discord_user.mention)
-        embed.description = quote.content
-        embed.add_field(
-            name="Time", value=f"<t:{int(quote.datetime.timestamp())}>")
-        embed.add_field(name="Channel", value=discord_channel_text)
-        if discord_message is not None:
-            embed.add_field(name="Link", value=discord_message.jump_url)
+            return await message.reply(f"Saved Quote as {ask_for_reference_text._children[0].value}", allowed_mentions=AllowedMentions(replied_user=False))
+        except IntegrityError:
+            return await ctx.respond(f"Reference is not Unique, Please try again", ephemeral=True)
+        except Exception as e:
+            return await ctx.respond(e)
 
-        await ctx.message.clear_reaction(chr(0x231B))
-        return await ctx.send(embed=embed)
+    @quote_commands.command(name="recall", description="Save this message as a Quote", guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    @sender_has_perm("aadiscordbot.quote_recall")
+    async def quote_recall(self, ctx, reference: str):
+        quote = QuoteMessage.objects.get(reference=reference)
+        try:
+            await ctx.respond(
+                embed=await reconstruct_message(
+                    self,
+                    ctx,
+                    message_id=quote.message
+                )
+            )
+        except Exception as e:
+            logger.error(e)
 
-    @commands.command(pass_context=True)
-    async def listquotes(self, ctx):
-        """
-        Recall a list of valid quotes
-        """
-        logger.debug("Quote Cog: !listquotes received")
-
-        await ctx.channel.trigger_typing()
-        await ctx.message.add_reaction(chr(0x231B))
-
-        quotes = QuoteMessage.objects.filter(
-            reference__isnull=False).values("reference", "author_nick")
-
-        embed = Embed(title="Quote List")
-
+    @commands.user_command(name="View Quotes", description="View a users saved Quotes", guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    async def recall_user_quotes(self, ctx, user):
+        try:
+            quotes = QuoteMessage.objects.filter(author=user.id)
+        except Exception as e:
+            logger.error(e)
+        embed = Embed(title=user.name)
         for quote in quotes:
-            embed.add_field(name=quote["reference"],
-                            value=quote["author_nick"])
+            embed.add_field(
+                name=quote.reference,
+                value=quote.content,
+            )
 
-        await ctx.message.clear_reaction(chr(0x231B))
-        return await ctx.send(embed=embed)
+        return await ctx.respond(embed=embed, ephemeral=True)
+
+
+async def reconstruct_message(self, ctx, message_id) -> Embed:
+    quote = QuoteMessage.objects.get(message=message_id)
+
+    discord_user = ctx.guild.get_member(quote.author)
+    if discord_user is None:
+        ctx.guild.fetch_member(quote.author)
+
+    discord_channel = ctx.guild.get_channel(quote.channel_id)
+    if discord_channel is None:
+        try:
+            discord_channel = ctx.guild.fetch_channel(quote.channel_id)
+            discord_channel_text = discord_channel.mention
+        except Exception:
+            discord_channel_text = quote.channel.name
+    else:
+        discord_channel_text = discord_channel.mention
+
+    discord_message = await discord_channel.fetch_message(message_id)
+
+    embed = Embed(title=quote.reference)
+    if discord_user is not str:
+        embed.set_author(name=discord_user.nick,
+                         icon_url=discord_user.avatar.url)
+    embed.description = f"> {quote.content}\n\n{discord_channel_text}"
+    embed.timestamp = quote.datetime
+    if discord_message is not None:
+        embed.url = discord_message.jump_url
+
+    return embed
 
 
 def setup(bot):
