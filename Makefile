@@ -6,9 +6,8 @@ help:
 	@echo "  dev        install all deps for dev environment"
 	@echo "  clean      remove all old packages"
 	@echo "  test       run tests"
+	@echo "  package    build the python package"
 	@echo "  deploy     Configure the PyPi config file in CI"
-	@echo "  packagejs  Build the React Project"
-	@echo "  packagepy  Build the PyPi package"
 
 clean:
 	rm -rf dist/*
