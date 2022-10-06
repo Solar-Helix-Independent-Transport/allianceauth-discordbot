@@ -27,11 +27,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: shogo82148/actions-setup-redis@v1
-        with:
-          redis-version: "latest"
+      #- uses: shogo82148/actions-setup-redis@v1
+      #  with:
+      #    redis-version: "latest"
 
-      - run: redis-cli ping
+      #- run: redis-cli ping
 
       - uses: actions/setup-python@v2
         with:
@@ -40,17 +40,17 @@ jobs:
       - name: install dependencies
         run: make dev
 
-      - name: Run Tests
-        run: make test
+      #- name: Run Tests
+      #  run: make test
 
-      - name: Upload test coverage
-        if: ${{ !env.ACT }}
-        uses: actions/upload-artifact@v2.2.4
-        with:
-          # Artifact name
-          name: Python${{ matrix.python-version }} Test Coverage
-          # A file, directory or wildcard pattern that describes what to upload
-          path: htmlcov/
+      #- name: Upload test coverage
+      #  if: ${{ !env.ACT }}
+      #  uses: actions/upload-artifact@v2.2.4
+      #  with:
+      #    # Artifact name
+      #    name: Python${{ matrix.python-version }} Test Coverage
+      #    # A file, directory or wildcard pattern that describes what to upload
+      #    path: htmlcov/
 
       - name: Build Projects
         run: make package
