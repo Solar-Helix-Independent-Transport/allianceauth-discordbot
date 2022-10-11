@@ -8,6 +8,7 @@ from discord.commands import SlashCommandGroup
 from discord.ext import commands
 
 from django.conf import settings
+from django.contrib.auth.models import Group
 from django.core.exceptions import ObjectDoesNotExist
 
 from allianceauth.eveonline.models import EveCharacter
@@ -133,19 +134,29 @@ class Admin(commands.Cog):
     @admin_commands.command(name='empty_roles', guild_ids=[int(settings.DISCORD_GUILD_ID)])
     async def empty_roles(self, ctx):
         """
-        dump all roles with no members.
+        Dump all roles with no members.
         """
         if ctx.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
             return await ctx.respond(f"You do not have permission to use this command", ephemeral=True)
 
         await ctx.defer()
 
+        embed = Embed(title="Server Role Status")
+        embed.add_field(name="Total Roles", value=len(ctx.guild.roles))
         empties = []
+        no_auth_group = []
         for role_model in ctx.guild.roles:
             if len(role_model.members) == 0:
                 empties.append(role_model.name)
+            else:
+                if not Group.objects.filter(name=role_model.name):
+                    no_auth_group.append(role_model.name)
+        embed.add_field(name="Empty Groups",
+                        value="\n".join(empties), inline=False)
+        embed.add_field(name="Groups with no Auth Group",
+                        value="\n".join(no_auth_group), inline=False)
 
-        await ctx.respond("\n".join(empties))
+        await ctx.respond(embed=embed)
 
     @admin_commands.command(name='clear_empty_roles', guild_ids=[int(settings.DISCORD_GUILD_ID)])
     async def clear_empty_roles(self, ctx):
