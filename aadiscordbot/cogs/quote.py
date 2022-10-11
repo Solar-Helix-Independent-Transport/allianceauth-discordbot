@@ -76,7 +76,7 @@ class Quote(commands.Cog):
         except Exception as e:
             return await ctx.respond(e)
 
-    @quote_commands.command(name="recall", description="Save this message as a Quote", guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    @quote_commands.command(name="recall", description="Recall a Quote from its reference", guild_ids=[int(settings.DISCORD_GUILD_ID)])
     @sender_has_perm("aadiscordbot.quote_recall")
     async def quote_recall(self, ctx, reference: str):
         quote = QuoteMessage.objects.get(reference=reference)
