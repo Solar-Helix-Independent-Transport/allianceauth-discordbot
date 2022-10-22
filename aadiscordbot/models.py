@@ -38,6 +38,7 @@ class Channels(models.Model):
     server = models.ForeignKey(Servers, on_delete=models.CASCADE)
     channel = models.BigIntegerField(primary_key=True)
     name = models.CharField(max_length=100)
+    deleted = models.BooleanField(_("Deleted"), default=False)
 
     def __str__(self):
         return f'"{self.name}" On "{self.server.name}"'
@@ -97,22 +98,6 @@ class AuthBotConfiguration(models.Model):
         self.pk = self.id = 1  # If this happens to be deleted and recreated, force it to be 1
         return super().save(*args, **kwargs)
 
-# class WelcomeGoodbyeBinding(models.Model):
-#     welcome_channel = models.ForeignKey("app.Model", verbose_name=_(""), on_delete=models.CASCADE)
-#     goodbye_channel = models.ForeignKey("app.Model", verbose_name=_(""), on_delete=models.CASCADE)
-
-#     def __str__(self):
-#         return "Welcome and Goodbye Message Configuration"
-
-#     def save(self, *args, **kwargs):
-#         if not self.pk and AuthBotConfiguration.objects.exists():
-#             # Force a single object
-#             raise ValidationError(
-#                 'Only one Settings Model can there be at a time! No Sith Lords there are here!')
-#         self.pk = self.id = 1  # If this happens to be deleted and recreated, force it to be 1
-#         return super().save(*args, **kwargs)
-# We can use discord guild.system_channel
-
 
 class WelcomeMessage(models.Model):
     message = models.TextField(_("Welcome Message"))
@@ -136,3 +121,24 @@ class GoodbyeMessage(models.Model):
         default_permissions = ()
         verbose_name = 'Goodbye Message'
         verbose_name_plural = 'Goodbye Messages'
+
+
+class QuoteMessage(models.Model):
+    """A saved discord message, Used by the Quote cog"""
+    server = models.ForeignKey(Servers, on_delete=models.CASCADE)
+    channel = models.ForeignKey(Channels, on_delete=models.CASCADE)
+    message = models.BigIntegerField(primary_key=True)
+    content = models.CharField(max_length=1000)
+    datetime = models.DateTimeField(blank=True, null=True)
+    author = models.PositiveBigIntegerField()
+    author_nick = models.CharField(max_length=50, blank=True, null=True)
+    reference = models.CharField(
+        max_length=100, help_text="Nickname for this quote")
+
+    class Meta:
+        default_permissions = ()
+        verbose_name = 'Goodbye Message'
+        verbose_name_plural = 'Goodbye Messages'
+        permissions = (
+            ('quote_save', 'Can save quotes'),
+        )

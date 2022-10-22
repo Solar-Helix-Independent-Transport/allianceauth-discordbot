@@ -99,21 +99,24 @@ LOGGING['loggers']['aadiscordbot'] = {'handlers': ['bot_log_file'],'level': 'DEB
 * Optional Settings
  ```python
 # Change the bots default Cogs, add or remove if required.
-DISCORD_BOT_COGS = ["aadiscordbot.cogs.about", # about the bot
-                     "aadiscordbot.cogs.admin", # Discord server admin helpers
-                     "aadiscordbot.cogs.members", # Member lookup commands
-                     "aadiscordbot.cogs.timers", # timer board integration
-                     "aadiscordbot.cogs.auth", # return auth url
-                     "aadiscordbot.cogs.sov", # some sov helpers
-                     "aadiscordbot.cogs.time", # whats the time Mr Eve Server
-                     "aadiscordbot.cogs.eastereggs", # some "fun" commands from ariel...
-                     "aadiscordbot.cogs.remind", # very Basic in memory reminder tool
-                     "aadiscordbot.cogs.reaction_roles", # auth group integrated reaction roles
-                     "aadiscordbot.cogs.services", # service activation data
-                     "aadiscordbot.cogs.price_check", # Price Checks
-                     "aadiscordbot.cogs.eightball", # 8ball should i install this cog
-                     "aadiscordbot.cogs.welcomegoodbye", # Customizable user join/leave messages
-                    ]
+DISCORD_BOT_COGS = [
+  "aadiscordbot.cogs.about", # about the bot
+  "aadiscordbot.cogs.admin", # Discord server admin helpers
+  "aadiscordbot.cogs.members", # Member lookup commands
+  "aadiscordbot.cogs.timers", # timer board integration
+  "aadiscordbot.cogs.auth", # return auth url
+  "aadiscordbot.cogs.sov", # some sov helpers
+  "aadiscordbot.cogs.time", # whats the time Mr Eve Server
+  "aadiscordbot.cogs.eastereggs", # some "fun" commands from ariel...
+  "aadiscordbot.cogs.remind", # very Basic in memory reminder tool
+  "aadiscordbot.cogs.reaction_roles", # auth group integrated reaction roles
+  "aadiscordbot.cogs.services", # service activation data
+  "aadiscordbot.cogs.price_check", # Price Checks
+  "aadiscordbot.cogs.eightball", # 8ball should i install this cog
+  "aadiscordbot.cogs.welcomegoodbye", # Customizable user join/leave messages
+  "aadiscordbot.cogs.models", # Populate and Maintain Django Models for Channels and Servers
+  "aadiscordbot.cogs.quote", # Save and recall messages
+  ]
 
 # configure the optional rate limited
 # this is a bot_task function and how many / time period

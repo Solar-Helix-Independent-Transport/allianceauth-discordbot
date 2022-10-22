@@ -1,4 +1,3 @@
-# Cog Stuff
 import logging
 
 from discord import AutocompleteContext
@@ -7,7 +6,6 @@ from discord.commands import option
 from discord.embeds import Embed
 from discord.ext import commands
 
-# AA Contexts
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
@@ -16,7 +14,6 @@ from allianceauth.eveonline.evelinks import evewho
 from allianceauth.eveonline.models import EveCharacter
 
 from aadiscordbot.app_settings import aastatistics_active
-# AA-Discordbot
 from aadiscordbot.cogs.utils.decorators import (
     has_any_perm, in_channels, message_in_channels, sender_has_any_perm,
 )

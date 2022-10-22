@@ -1,17 +1,9 @@
-# Cog Stuff
 import logging
-import re
 
-from discord.colour import Color
-from discord.embeds import Embed
+from discord import User
 from discord.ext import commands
 
 from django.conf import settings
-
-from allianceauth.services.modules.discord.models import DiscordUser
-
-# AA Contexts
-from aadiscordbot.app_settings import get_site_url
 
 logger = logging.getLogger(__name__)
 
@@ -27,24 +19,15 @@ class EasterEggs(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(pass_context=True, hidden=True)
-    async def happybirthday(self, ctx):
+    @commands.slash_command(name='happybirthday', guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    async def happybirthday(self, ctx,  user: User):
         """
         Takes one Discord User as an argument, Wishes this user a happy birthday
         If no user is passed, responds to the context user
         "Useful" to verify the bot is alive and functioning
         """
         await ctx.trigger_typing()
-
-        birthday_user = ctx.message.content[15:]
-
-        if birthday_user == "":
-            birthday_user = ctx.message.author.mention
-        else:
-            pass
-
-        payload = f"Happy Birthday {birthday_user}"
-        return await ctx.send(payload)
+        return await ctx.respond(f"Happy Birthday {user.mention}")
 
 
 def setup(bot):

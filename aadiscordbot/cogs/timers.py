@@ -1,4 +1,3 @@
-# Cog Stuff
 import datetime
 import logging
 
@@ -8,7 +7,6 @@ from discord.embeds import Embed
 from discord.ext import commands
 
 from django.conf import settings
-# AA Contexts
 from django.utils import timezone
 
 from allianceauth.timerboard.models import Timer
