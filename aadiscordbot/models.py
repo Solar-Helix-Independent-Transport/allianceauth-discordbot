@@ -137,8 +137,8 @@ class QuoteMessage(models.Model):
 
     class Meta:
         default_permissions = ()
-        verbose_name = 'Goodbye Message'
-        verbose_name_plural = 'Goodbye Messages'
+        verbose_name = 'Quote Message'
+        verbose_name_plural = 'Quote Messages'
         permissions = (
             ('quote_save', 'Can save quotes'),
         )
