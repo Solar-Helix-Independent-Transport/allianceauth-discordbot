@@ -171,7 +171,7 @@ priority=999
 
 Go to admin and configure your admin users in the bot config model.
 
-Enable groups/states/users to utilize the lookup command by adding permissions under **corputils | corp stats | **
+> Enable groups/states/users to utilize the lookup command by adding permissions under **corputils | corp stats |**
 ```ini
 corputils.view_alliance_corpstats 
 ```
