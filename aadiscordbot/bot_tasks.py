@@ -1,9 +1,11 @@
+import importlib
 import logging
 import warnings
 from datetime import timedelta
 
 from discord import Embed
 from discord.ext import tasks
+from discord.ui import View
 
 import django
 from django.utils import timezone
@@ -38,13 +40,21 @@ async def run_tasks(bot):
     django.db.close_old_connections()
 
 
-async def send_channel_message_by_discord_id(bot, channel_id, message, embed=False):
+async def send_channel_message_by_discord_id(bot, channel_id, message, embed=False, view_class=False, view_args=[], view_kwargs={}):
     logger.debug(f"Sending Channel Message to Discord ID {channel_id}")
+    e = None
+    v = None
     if embed:
         e = Embed.from_dict(embed)
-        await bot.get_channel(channel_id).send(message, embed=e)
-    else:
-        await bot.get_channel(channel_id).send(message)
+
+    if view_class:
+        m = ".".join(view_class.split(".")[:-1])
+        c = view_class.split(".")[-1]
+        my_module = importlib.import_module(m)
+        Viewclass = getattr(my_module, c)
+        v = Viewclass(*view_args, **view_kwargs)
+
+    await bot.get_channel(channel_id).send(message, embed=e, view=v)
 
 
 async def send_channel_message(bot, channel_id, message, embed=False):
