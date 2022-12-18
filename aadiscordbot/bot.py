@@ -369,6 +369,9 @@ class AuthBot(commands.Bot):
             await context.send_response(exception, ephemeral=True)
         elif isinstance(exception, NotAuthenticated):
             await context.send_response(exception, ephemeral=True)
+        else:  # Catch everything, and close out the interactions gracefully.
+            logger.error(f"Unknown Error {exception}", exc_info=True)
+            await context.respond("Something Went Wrong, Please try again Later.", ephemeral=True)
 
     def run(self):
         # self.load_extension("aadiscordbot.slash.admin")
