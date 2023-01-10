@@ -12,5 +12,5 @@ class NotAuthenticated(CheckFailure):
 
     def __init__(self, *args: Any) -> None:
 
-        message = f"You must be an Authenticated user to run this command {get_site_url}"
+        message = f"You must be an Authenticated user to run this command {get_site_url()}"
         super().__init__(message, *args)

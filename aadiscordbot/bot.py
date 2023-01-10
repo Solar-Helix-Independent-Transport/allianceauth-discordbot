@@ -361,6 +361,9 @@ class AuthBot(commands.Bot):
             await ctx.message.add_reaction(chr(0x274C))
         elif isinstance(error, commands.CheckFailure):
             await ctx.send(error)
+        else:
+            logger.error(f"Unknown Error {error}", exc_info=True)
+            await ctx.send("Something Went Wrong, Please try again Later.",)
 
     async def on_application_command_error(self, context: ApplicationContext, exception: DiscordException) -> None:
         if isinstance(exception, commands.CheckFailure):

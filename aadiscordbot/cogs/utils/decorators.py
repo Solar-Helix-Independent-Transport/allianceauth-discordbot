@@ -20,12 +20,14 @@ def has_perm(id, perm: str):
     if id in get_admins():
         return True
     try:
-        has_perm = DiscordUser.objects.get(uid=id).user.has_perm(perm)
+        user = DiscordUser.objects.get(uid=id)
+        has_perm = user.user.has_perm(perm)
+
         if has_perm:
             return True
         else:
             raise commands.MissingPermissions([perm])
-    except Exception as e:
+    except DiscordUser.DoesNotExist as e:
         logger.error(e)
         raise NotAuthenticated
 
