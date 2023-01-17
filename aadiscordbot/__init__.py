@@ -1,5 +1,5 @@
 default_app_config = 'aadiscordbot.apps.AADiscordBotConfig'
 
-__version__ = '3.4.0b5'
+__version__ = '3.4.0b6'
 __title__ = "AA Discordbot"
 __branch__ = 'stable?'
