@@ -11,7 +11,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 
 from allianceauth.eveonline.evelinks import evewho
-from allianceauth.eveonline.models import EveCharacter
+from allianceauth.eveonline.models import EveCharacter, EveCorporationInfo
 
 from aadiscordbot.app_settings import aastatistics_active
 from aadiscordbot.cogs.utils.decorators import (
@@ -191,43 +191,63 @@ class Members(commands.Cog):
 
     def build_altcorp_embeds(self, input_name):
         chars = EveCharacter.objects.filter(corporation_name=input_name)
-        own_ids = [settings.DISCORD_BOT_MEMBER_ALLIANCES]
-        alts_in_corp = []
-        for c in chars:
-            if c.alliance_id not in own_ids:
-                alts_in_corp.append(c)
+        if chars.count():
+            corp_id = 0
+            own_ids = [settings.DISCORD_BOT_MEMBER_ALLIANCES]
+            alts_in_corp = []
+            knowns = 0
+            for c in chars:
+                corp_id = c.corporation_id
+                alliance = c.alliance_name
+                if c.alliance_id not in own_ids:
+                    alts_in_corp.append(c)
 
-        mains = {}
-        for a in alts_in_corp:
-            try:
-                main = a.character_ownership.user.profile.main_character
-                if main.character_id not in mains:
-                    mains[main.character_id] = [main, 0]
-                mains[main.character_id][1] += 1
-                alt_corp_id = a.corporation_id
-            except Exception as e:
-                logger.error(e)
-                pass
-        output = []
-        base_string = "[{}]({}) [ [{}]({}) ] has {} alt{}"
-        for k, m in mains.items():
-            output.append(
-                base_string.format(
-                    m[0],
-                    evewho.character_url(m[0].character_id),
-                    m[0].corporation_ticker,
-                    evewho.corporation_url(m[0].corporation_id),
-                    m[1],
-                    "s" if m[1] > 1 else ""
+            mains = {}
+            for a in alts_in_corp:
+                try:
+                    main = a.character_ownership.user.profile.main_character
+                    if main.character_id not in mains:
+                        mains[main.character_id] = [main, 0]
+                    mains[main.character_id][1] += 1
+                    knowns += 1
+                except Exception as e:
+                    # logger.error(e)
+                    pass
+            output = []
+            base_string = "[{}]({}) [ [{}]({}) ] has {} alt{}"
+            for k, m in mains.items():
+                output.append(
+                    base_string.format(
+                        m[0],
+                        evewho.character_url(m[0].character_id),
+                        m[0].corporation_ticker,
+                        evewho.corporation_url(m[0].corporation_id),
+                        m[1],
+                        "s" if m[1] > 1 else ""
+                    )
                 )
+            embeds = []
+
+            corp_info = EveCorporationInfo.provider.get_corporation(corp_id)
+
+            msg = f"**[ [{corp_info.ticker}]({evewho.corporation_url(corp_id)}) ]** has {corp_info.members} members:\n\n"\
+                f"```diff\n"\
+                f"+Known Members     : {knowns}\n"\
+                f"-Unknowns          : {corp_info.members-knowns}```"
+
+            _header = Embed(
+                title=input_name,
+                description=msg
             )
-        embeds = []
-        for strings in [output[i:i + 10] for i in range(0, len(output), 10)]:
-            embed = Embed(title=input_name)
-            embed.colour = Color.blue()
-            embed.description = "\n".join(strings)
-            embeds.append(embed)
-        return embeds
+
+            embeds.append(_header)
+
+            for strings in [output[i:i + 10] for i in range(0, len(output), 10)]:
+                embed = Embed(title=input_name)
+                embed.colour = Color.blue()
+                embed.description = "\n".join(strings)
+                embeds.append(embed)
+            return embeds
 
     @commands.slash_command(name='altcorp', guild_ids=[int(settings.DISCORD_GUILD_ID)])
     @option("corporation", description="Search for a Character!", autocomplete=search_corps_on_characters)
@@ -243,7 +263,7 @@ class Members(commands.Cog):
             await ctx.defer()
             embeds = self.build_altcorp_embeds(corporation)
             if len(embeds):
-                e = embeds.pop()
+                e = embeds.pop(0)
                 await ctx.respond(embed=e)
                 for e in embeds:
                     await ctx.send(embed=e)
