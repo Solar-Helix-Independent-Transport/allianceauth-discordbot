@@ -349,6 +349,25 @@ class Admin(commands.Cog):
         except ObjectDoesNotExist:
             return await ctx.respond(f"**{character}** is Unlinked unable to update characters")
 
+    @admin_commands.command(name='sync_commands', guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    @option("force", description="Force Sync Everything")
+    async def slash_sync(
+        self,
+        ctx,
+        force: bool
+    ):
+        """
+        Re-Sync the commands to discord.
+        """
+        if ctx.author.id not in app_settings.get_admins():
+            return await ctx.respond(f"You do not have permission to use this command", ephemeral=True)
+
+        await ctx.defer(ephemeral=True)
+
+        await self.bot.sync_commands(force=force)
+
+        return await ctx.respond(f"Sync Complete!", ephemeral=True)
+
 
 def setup(bot):
     bot.add_cog(Admin(bot))
