@@ -9,6 +9,7 @@ from discord.ext import commands
 from allianceauth.services.modules.discord.models import DiscordUser
 
 from aadiscordbot.models import GoodbyeMessage, WelcomeMessage
+from aadiscordbot.app_settings import get_site_url
 
 logger = logging.getLogger(__name__)
 
