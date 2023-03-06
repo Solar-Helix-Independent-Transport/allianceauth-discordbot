@@ -14,6 +14,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from allianceauth.eveonline.models import EveCharacter
 from allianceauth.eveonline.tasks import update_character
 from allianceauth.services.modules.discord.models import DiscordUser
+from allianceauth.services.modules.discord.tasks import (
+    update_groups, update_nickname,
+)
 
 from .. import app_settings
 
@@ -367,6 +370,24 @@ class Admin(commands.Cog):
         await self.bot.sync_commands(force=force)
 
         return await ctx.respond(f"Sync Complete!", ephemeral=True)
+
+    @commands.user_command(name="Group Sync", guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    async def group_sync_user_context(self, ctx, user):
+        # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+        if ctx.author.id not in app_settings.get_admins():
+            return await ctx.respond(f"You do not have permission to use this command", ephemeral=True)
+        auth_user = DiscordUser.objects.get(uid=user.id)
+        update_groups.delay(auth_user.user_id)
+        await ctx.respond(f"Requested Group Sync for {auth_user.user.profile.main_character}", ephemeral=True)
+
+    @commands.user_command(name="Nickname Sync", guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    async def nick_sync_user_context(self, ctx, user):
+        # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+        if ctx.author.id not in app_settings.get_admins():
+            return await ctx.respond(f"You do not have permission to use this command", ephemeral=True)
+        auth_user = DiscordUser.objects.get(uid=user.id)
+        update_nickname.delay(auth_user.user_id)
+        await ctx.respond(f"Requested Nickname Sync for {auth_user.user.profile.main_character}", ephemeral=True)
 
 
 def setup(bot):
