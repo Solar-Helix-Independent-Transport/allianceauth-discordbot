@@ -58,6 +58,43 @@ class About(commands.Cog):
 
         return await ctx.respond(embed=embed)
 
+    @about_commands.command(name="server", description="About this Discord Server", guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    async def server(self, ctx):
+        """
+        All about a server
+        """
+        embed = Embed(title=ctx.guild.name)
+
+        if ctx.guild.icon:
+            embed.set_thumbnail(
+                url=ctx.guild.icon.url
+            )
+        embed.color = Color.blue()
+        embed.description = "Alliance Auth Managed EvE Online Discord Server!"
+        if ctx.guild.description:
+            embed.description = ctx.guild.description
+        embed.set_footer(
+            text="AuthBot Lovingly developed for Init.™ by AaronRin and ArielKable")
+
+        members = ctx.guild.member_count
+        embed.add_field(name="Unwilling Monitorees:",
+                        value=members, inline=True)
+
+        channels = len(ctx.guild.channels)
+        cats = len(ctx.guild.categories)
+        embed.add_field(name="Channel Count:",
+                        value=channels-cats, inline=True)
+
+        roles = len(ctx.guild.roles)
+        embed.add_field(name="Role Count:",
+                        value=roles, inline=True)
+
+        embed.add_field(
+            name="Auth Link", value=f"[{get_site_url()}]({get_site_url()})", inline=False
+        )
+
+        return await ctx.respond(embed=embed)
+
 
 def setup(bot):
     bot.add_cog(About(bot))
