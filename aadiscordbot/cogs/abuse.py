@@ -55,8 +55,14 @@ class Abuse(commands.Cog):
         rand = randrange(0, len(replies)-1)
         if message.mention_everyone:
             return
-        if self.bot.user.mentioned_in(message):
-            await message.reply(replies[rand])
+        try:
+            if self.bot.user.mentioned_in(message):
+                if message.author.id == 318309023478972417:
+                    await message.reply("https://media.tenor.com/x8v1oNUOmg4AAAAC/rickroll-roll.gif")
+                else:
+                    await message.reply(replies[rand])
+        except:
+            pass
 
 
 def setup(bot):
