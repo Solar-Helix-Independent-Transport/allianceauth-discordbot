@@ -34,6 +34,9 @@ from aadiscordbot.cogs.utils.exceptions import NotAuthenticated
 from . import bot_tasks
 from .cogs.utils import context
 
+
+BROKER_URL = getattr(settings, "BROKER_URL", "redis://localhost:6379/0")
+
 description = """
 AuthBot is watching...
 """
@@ -149,9 +152,9 @@ class AuthBot(commands.Bot):
         print(f"Authbot Started with command prefix {DISCORD_BOT_PREFIX}")
 
         self.redis = None
-        self.redis = self.loop.run_until_complete(aioredis.create_pool(getattr(
-            settings, "BROKER_URL", "redis://localhost:6379/0"), minsize=5, maxsize=10))
-        print('redis pool started', self.redis)
+
+        self.redis = self.loop.run_until_complete(
+                aioredis.from_url(BROKER_URL, encoding="utf-8", decode_responses=True))
         self.client_id = client_id
         self.session = aiohttp.ClientSession(loop=self.loop)
 
@@ -160,9 +163,7 @@ class AuthBot(commands.Bot):
         self.rate_limits = RateLimiter()
         self.statistics = Statistics()
 
-        self.message_connection = Connection(
-            getattr(settings, "BROKER_URL", 'redis://localhost:6379/0'))
-
+        self.message_connection = Connection(BROKER_URL)
         queues = []
         for que in queue_keys:
             queues.append(Queue(que))
