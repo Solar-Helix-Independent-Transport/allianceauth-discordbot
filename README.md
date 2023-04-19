@@ -116,6 +116,7 @@ DISCORD_BOT_COGS = [
   "aadiscordbot.cogs.welcomegoodbye", # Customizable user join/leave messages
   "aadiscordbot.cogs.models", # Populate and Maintain Django Models for Channels and Servers
   "aadiscordbot.cogs.quote", # Save and recall messages
+  "aadiscordbot.cogs.prom_export", # Admin Level Logging cog
   ]
 
 # configure the optional rate limited
