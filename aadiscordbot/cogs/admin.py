@@ -354,7 +354,7 @@ class Admin(commands.Cog):
 
     @admin_commands.command(name='sync_commands', guild_ids=[int(settings.DISCORD_GUILD_ID)])
     @option("force", description="Force Sync Everything")
-    async def slash_sync(
+    async def sync_commands(
         self,
         ctx,
         force: bool
