@@ -335,16 +335,16 @@ class AuthBot(commands.Bot):
 
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.BadArgument):
-            print(error)
+            logger.error(error)
             await ctx.send(error)
         elif isinstance(error, commands.MissingRequiredArgument):
-            print(error)
+            logger.error(error)
             await ctx.send(error)
         elif isinstance(error, commands.NoPrivateMessage):
-            print(error)
+            logger.error(error)
             await ctx.send(error)
         elif isinstance(error, commands.CommandInvokeError):
-            print(error)
+            logger.error(error)
             return await ctx.send(error)
         elif isinstance(error, commands.BotMissingPermissions):
             await ctx.send(
@@ -355,7 +355,7 @@ class AuthBot(commands.Bot):
             await ctx.message.add_reaction(chr(DISCORD_BOT_ACCESS_DENIED_REACT))
             await ctx.message.reply("Sorry, you do not have permission to do that here.")
         elif isinstance(error, commands.NotOwner):
-            print(error)
+            logger.error(error)
             await ctx.send(error)
         elif isinstance(error, commands.CommandOnCooldown):
             await ctx.message.add_reaction(chr(0x274C))
@@ -373,7 +373,18 @@ class AuthBot(commands.Bot):
         elif isinstance(exception, NotAuthenticated):
             await context.send_response(exception, ephemeral=True)
         else:  # Catch everything, and close out the interactions gracefully.
-            logger.error(f"Unknown Error {exception}", exc_info=True)
+            logger.error(f"Unknown Error {exception}")
+            logger.error("\n".join(traceback.format_tb(
+                exception.original.__traceback__)))
+
+            if app_settings.DISCORD_BOT_SEND_FAILURE_MESSAGES and app_settings.DISCORD_BOT_FAILURE_MESSAGES_CHANNEL:
+                message = [f"Bot Command Failed <{exception}>", "\n```\n"]
+                message += traceback.format_tb(
+                    exception.original.__traceback__)
+                message.append("\n```")
+                from . import tasks
+                tasks.send_message(message="\n".join(message),
+                                   channel_id=app_settings.DISCORD_BOT_FAILURE_MESSAGES_CHANNEL)
             await context.respond("Something Went Wrong, Please try again Later.", ephemeral=True)
 
     def run(self):
