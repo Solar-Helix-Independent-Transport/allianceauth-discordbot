@@ -149,8 +149,8 @@ class AuthBot(commands.Bot):
         print(f"Authbot Started with command prefix {DISCORD_BOT_PREFIX}")
 
         self.redis = None
-        self.redis = self.loop.run_until_complete(aioredis.create_pool(getattr(
-            settings, "BROKER_URL", "redis://localhost:6379/0"), minsize=5, maxsize=10))
+        self.redis = self.loop.run_until_complete(aioredis.from_url(getattr(
+            settings, "BROKER_URL", "redis://localhost:6379/0"), encoding="utf-8", decode_responses=True))
         print('redis pool started', self.redis)
         self.client_id = client_id
         self.session = aiohttp.ClientSession(loop=self.loop)
