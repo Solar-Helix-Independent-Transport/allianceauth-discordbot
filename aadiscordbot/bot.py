@@ -378,7 +378,10 @@ class AuthBot(commands.Bot):
                 exception.original.__traceback__)))
 
             if app_settings.DISCORD_BOT_SEND_FAILURE_MESSAGES and app_settings.DISCORD_BOT_FAILURE_MESSAGES_CHANNEL:
-                message = [f"Bot Command Failed <{exception}>", "\n```\n"]
+                message = [f"`{context.command}` failed for `{context.author}`\n",
+                           f"**Exception:** ```{exception}```",
+                           f"\n**Interaction:** ```{context.interaction.data}```",
+                           f"\n**Trace:**```"]
                 message += traceback.format_tb(
                     exception.original.__traceback__)
                 message.append("\n```")
