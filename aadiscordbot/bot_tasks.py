@@ -5,6 +5,7 @@ from datetime import timedelta
 
 from discord import Embed
 from discord.ext import tasks
+from discord.ext.commands import Bot
 from discord.ui import View
 
 import django
@@ -14,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 @tasks.loop()
-async def run_tasks(bot):
+async def run_tasks(bot: Bot):
     django.db.close_old_connections()
 
     if len(bot.tasks) > 0:
@@ -33,7 +34,10 @@ async def run_tasks(bot):
             try:
                 await task(bot, *args, **kwargs)
                 bot.statistics.add_task(task.__name__)
+                bot.dispatch("authbot_task_completed", task.__name__)
             except Exception as e:
+                bot.dispatch("authbot_task_failed",
+                             task.__name__, args, kwargs, e)
                 logger.error(f"Failed to run task {task} {args} {kwargs} {e}")
     else:
         run_tasks.stop()

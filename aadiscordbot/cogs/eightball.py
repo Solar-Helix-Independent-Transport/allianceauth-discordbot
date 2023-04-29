@@ -2,7 +2,6 @@ import logging
 from random import randrange
 
 from discord.ext import commands
-from discord.utils import get
 
 from django.conf import settings
 

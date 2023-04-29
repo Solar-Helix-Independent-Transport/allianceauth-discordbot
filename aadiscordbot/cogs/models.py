@@ -1,5 +1,4 @@
 import logging
-from unicodedata import name
 
 from discord.commands import SlashCommandGroup
 from discord.ext import commands
