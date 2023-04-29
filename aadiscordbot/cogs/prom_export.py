@@ -31,8 +31,8 @@ class PromExporter(commands.Cog):
         bot_tasks_executed.labels(task=str(task), state="failed").inc()
         if DISCORD_BOT_SEND_FAILURE_MESSAGES:
             message = [f"Bot Task Failed <{error}>"]
-            message.append(f"ARGS: ```\n{json.dumps(args)}\n```")
-            message.append(f"KWARGS: ```\n{json.dumps(kwargs)}\n```")
+            message.append(f"ARGS: ```\n{json.dumps(args)[500]}\n```")
+            message.append(f"KWARGS: ```\n{json.dumps(kwargs)[500]}\n```")
             send_message(message="\n".join(message),
                          channel_id=DISCORD_BOT_FAILURE_MESSAGES_CHANNEL)
 
