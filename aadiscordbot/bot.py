@@ -7,7 +7,6 @@ from socket import timeout
 from typing import Dict
 
 import aiohttp
-import aioredis
 import discord
 import pendulum
 from celery.utils.time import rate
@@ -15,6 +14,7 @@ from discord import ApplicationContext, DiscordException
 from discord.ext import commands, tasks
 from kombu import Connection, Consumer, Queue
 from kombu.utils.limits import TokenBucket
+from redis import asyncio as aioredis
 
 import django
 import django.db
