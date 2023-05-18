@@ -8,6 +8,8 @@ import django.db
 from django.conf import settings
 from django.contrib.auth.models import User
 
+from allianceauth.services.modules.discord.models import DiscordUser
+
 logger = logging.getLogger(__name__)
 
 
@@ -85,3 +87,9 @@ def send_direct_message_by_user_id(user_pk, message_content, embed=False):
     # Queue a Private Message to a specific user
     raise Exception(
         f"This function should be called asynchronously. Failed to queue a message to User {user_pk}")
+
+
+@shared_task
+def pop_user_group_cache(user_pk):
+    raise Exception(
+        f"This function should be called asynchronously. Failed to queue...")

@@ -3,15 +3,18 @@ import logging
 import warnings
 from datetime import timedelta
 
-from discord import Embed
+from discord import Embed, Member
 from discord.ext import tasks
 from discord.ext.commands import Bot
 from discord.ui import View
 
 import django
+from django.conf import settings
 from django.utils import timezone
 
 logger = logging.getLogger(__name__)
+
+GUILD_ID = settings.DISCORD_GUILD_ID
 
 
 @tasks.loop()
@@ -103,3 +106,13 @@ async def send_direct_message_by_user_id(bot, user_pk, message, embed=False):
             await channel.send(message)
     else:
         logger.debug(f"No discord account on record for user_pk={user_pk}")
+
+
+async def pop_user_group_cache(bot, user_pk):
+    logger.debug(f"Refreshing user cache {user_pk}")
+    user = bot.get_guild(int(GUILD_ID)).get_member(user_pk)
+    r = user.roles[-1]
+    await user.remove_roles(r, "Cache Buster Remove")
+    await user.add_roles(r, "Cache Buster Add")
+    logger.info(
+        f"Removed and added '{r}' to {user} to try and bust the invalid cache")

@@ -79,8 +79,9 @@ class RateLimiter:
         self.rate_buckets = {}
 
     def bucket_for_task(self, task):
-        limit = rate(app_settings.DISCORD_BOT_TASK_RATE_LIMITS.get(task, None))
-        return TokenBucket(limit, capacity=1) if limit else None
+        limit = rate(
+            app_settings.DISCORD_BOT_TASK_RATE_LIMITS.get(task, "100/s"))
+        return TokenBucket(limit, capacity=1)
 
     def check_rate_limit(self, task):
         if task not in self.rate_buckets:
