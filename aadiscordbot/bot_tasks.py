@@ -113,7 +113,7 @@ async def pop_user_group_cache(bot, user_pk):
     logger.debug(f"Refreshing user cache {user_pk}")
     user = bot.get_guild(int(GUILD_ID)).get_member(user_pk)
     r = user.roles[-1]
-    await user.remove_roles(r, "Cache Buster Remove")
-    await user.add_roles(r, "Cache Buster Add")
+    await user.remove_roles(r)
+    await user.add_roles(r)
     logger.info(
         f"Removed and added '{r}' to {user} to try and bust the invalid cache")
