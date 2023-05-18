@@ -41,7 +41,8 @@ async def run_tasks(bot: Bot):
             except Exception as e:
                 bot.dispatch("authbot_task_failed",
                              task.__name__, args, kwargs, e)
-                logger.error(f"Failed to run task {task} {args} {kwargs} {e}")
+                logger.error(
+                    f"Failed to run task {task} {args} {kwargs} {e}", exc_info=True)
     else:
         run_tasks.stop()
     django.db.close_old_connections()
