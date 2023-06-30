@@ -61,14 +61,14 @@ class HelpView(ui.View):
         sup_channel = models.TicketGroups.get_solo().ticket_channel.channel
         ch = interaction.guild.get_channel(sup_channel)
         grp = discord.utils.get(interaction.guild.roles, name=select.values[0])
-        th = await ch.create_thread(name=f"Help {interaction.user}",
+        th = await ch.create_thread(name=f"{interaction.user.display_name} | {select.values[0]} | {timezone.now().strftime('%Y/%m/%d %H:%M')}",
                                     # message=f"Ping in here if your request is urgent <@{interaction.user.id}>, Someone from <#{grp.id}> will be here soon!",
                                     auto_archive_duration=10080,
                                     type=discord.ChannelType.private_thread,
                                     reason=None)
         msg = f"<@{interaction.user.id}> needs help!, Someone from <@&{grp.id}> will get in touch soon!"
         embd = Embed(title="Private Thread Guide",
-                     description="To add a person to this thread simply @ping them. This works with @groups as well to bulk add people to the channel. Use it wisely.\n\nThis is a beta bot feature if you experience issues please contact the server admins. :heart:")
+                     description="To add a person to this thread simply `@ping` them. This works with `@groups` as well to bulk add people to the channel. Use wisely, abuse will not be tolerated.\n\nThis is a beta feature if you experience issues please contact the admins. :heart:")
         await th.send(msg, embed=embd)
         await interaction.response.edit_message(content="Ping in the thread created for urgent help!", view=None)
 
