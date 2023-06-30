@@ -155,7 +155,7 @@ class Members(commands.Cog):
             return embed
 
     @commands.command(pass_context=True)
-    @sender_has_any_perm(['corputils.view_alliance_corpstats', 'corpstats.view_alliance_corpstats'])
+    @sender_has_any_perm(['corputils.view_alliance_corpstats', 'corpstats.view_alliance_corpstats', 'aadiscordbot.member_command_access'])
     @message_in_channels(settings.ADMIN_DISCORD_BOT_CHANNELS)
     async def lookup(self, ctx):
         """
@@ -178,8 +178,8 @@ class Members(commands.Cog):
     ):
         try:
             in_channels(ctx.channel.id, settings.ADMIN_DISCORD_BOT_CHANNELS)
-            has_any_perm(ctx.author.id, [
-                         'corputils.view_alliance_corpstats', 'corpstats.view_alliance_corpstats'])
+            has_any_perm(ctx.author.id, ['corputils.view_alliance_corpstats',
+                         'corpstats.view_alliance_corpstats', 'aadiscordbot.member_command_access'])
             await ctx.defer()
             return await ctx.respond(embed=self.get_lookup_embed(character))
         except commands.MissingPermissions as e:
@@ -258,8 +258,8 @@ class Members(commands.Cog):
     ):
         try:
             in_channels(ctx.channel.id, settings.ADMIN_DISCORD_BOT_CHANNELS)
-            has_any_perm(ctx.author.id, [
-                         'corputils.view_alliance_corpstats', 'corpstats.view_alliance_corpstats'])
+            has_any_perm(ctx.author.id, ['corputils.view_alliance_corpstats',
+                         'corpstats.view_alliance_corpstats', 'aadiscordbot.member_command_access'])
             await ctx.defer()
             embeds = self.build_altcorp_embeds(corporation)
             if len(embeds):
@@ -273,7 +273,7 @@ class Members(commands.Cog):
             return await ctx.respond(e.missing_permissions[0], ephemeral=True)
 
     @commands.command(pass_context=True)
-    @sender_has_any_perm(['corputils.view_alliance_corpstats', 'corpstats.view_alliance_corpstats'])
+    @sender_has_any_perm(['corputils.view_alliance_corpstats', 'corpstats.view_alliance_corpstats', 'aadiscordbot.member_command_access'])
     @message_in_channels(settings.ADMIN_DISCORD_BOT_CHANNELS)
     async def altcorp(self, ctx):
         """

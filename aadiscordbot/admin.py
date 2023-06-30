@@ -4,7 +4,7 @@ from allianceauth.services.hooks import get_extension_logger
 
 from .models import (
     AuthBotConfiguration, Channels, GoodbyeMessage, ReactionRoleBinding,
-    ReactionRoleMessage, Servers, WelcomeMessage,
+    ReactionRoleMessage, Servers, TicketGroups, WelcomeMessage,
 )
 
 logger = get_extension_logger(__name__)
@@ -76,3 +76,8 @@ class WelcomeMessageAdmin(admin.ModelAdmin):
 @admin.register(GoodbyeMessage)
 class GoodbyeMessageAdmin(admin.ModelAdmin):
     list_display = ('id', )
+
+
+@admin.register(TicketGroups)
+class TicketGroupAdmin(admin.ModelAdmin):
+    filter_horizontal = ['groups']

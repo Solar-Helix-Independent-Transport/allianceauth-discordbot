@@ -1,3 +1,5 @@
+from solo.models import SingletonModel
+
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
@@ -14,7 +16,8 @@ class DiscordBot(models.Model):
         managed = False
         default_permissions = ()
         permissions = (
-            ('basic_access', 'Can access this app'),
+            ('basic_access', 'Can access this app.'),
+            ('member_command_access', 'can access the member commands.')
         )
 
 
@@ -142,3 +145,18 @@ class QuoteMessage(models.Model):
         permissions = (
             ('quote_save', 'Can save quotes'),
         )
+
+
+class TicketGroups(SingletonModel):
+    groups = models.ManyToManyField(
+        Group, blank=True, help_text="Pingable groups for ticketing")
+    ticket_channel = models.ForeignKey(
+        Channels, on_delete=models.SET_NULL, null=True, default=None)
+
+    class Meta:
+        default_permissions = ()
+        verbose_name = 'Ticket Cog Configuration'
+        verbose_name_plural = 'Ticket Cog Configuration'
+
+    def __str__(self):
+        return "Ticket Cog Configuration"
