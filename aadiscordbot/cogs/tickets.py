@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_groups():
-    groups = models.TicketGroups.get_solo().groups.all()
+    groups = models.TicketGroups.get_solo().groups.all().order_by('name')
     out = []
     for g in groups:
         out.append(
@@ -96,7 +96,7 @@ class HelpCog(commands.Cog):
         return await ctx.respond(view=HelpView())
 
     @command(name='close_ticket', guild_ids=[int(settings.DISCORD_GUILD_ID)])
-    async def slash_halp(
+    async def slash_close(
         self,
         ctx,
     ):
