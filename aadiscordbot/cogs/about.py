@@ -50,7 +50,7 @@ class About(commands.Cog):
         embed.add_field(name="Unwilling Monitorees:",
                         value=members, inline=True)
         embed.add_field(
-            name="Auth Link", value=f"[{get_site_url()}]({get_site_url()})", inline=False
+            name="Auth Link", value=get_site_url(), inline=False
         )
         embed.add_field(
             name="Version", value=f"{__version__}@{__branch__}", inline=False
@@ -90,7 +90,7 @@ class About(commands.Cog):
                         value=roles, inline=True)
 
         embed.add_field(
-            name="Auth Link", value=f"[{get_site_url()}]({get_site_url()})", inline=False
+            name="Auth Link", value=get_site_url(), inline=False
         )
 
         return await ctx.respond(embed=embed)
