@@ -3,7 +3,7 @@ import logging
 from typing import Optional
 
 import discord
-from discord import Embed, command, ui
+from discord import ChannelType, Embed, command, ui
 from discord.ext import commands
 
 # AA Contexts
@@ -61,7 +61,7 @@ class HelpView(ui.View):
         sup_channel = models.TicketGroups.get_solo().ticket_channel.channel
         ch = interaction.guild.get_channel(sup_channel)
         grp = discord.utils.get(interaction.guild.roles, name=select.values[0])
-        th = await ch.create_thread(name=f"{interaction.user.display_name} | {select.values[0]} | {timezone.now().strftime('%Y/%m/%d %H:%M')}",
+        th = await ch.create_thread(name=f"{interaction.user.display_name} | {select.values[0]} | {timezone.now().strftime('%Y-%m-%d %H:%M')}",
                                     # message=f"Ping in here if your request is urgent <@{interaction.user.id}>, Someone from <#{grp.id}> will be here soon!",
                                     auto_archive_duration=10080,
                                     type=discord.ChannelType.private_thread,
@@ -90,10 +90,27 @@ class HelpCog(commands.Cog):
         ctx,
     ):
         """
-            Halp me authbot i dont know who to ping!
+            Help me authbot i dont know who to ping!
         """
         await ctx.defer(ephemeral=True)
         return await ctx.respond(view=HelpView())
+
+    @command(name='close_ticket', guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    async def slash_halp(
+        self,
+        ctx,
+    ):
+        """
+            Mark help thread as completed and archive it!
+        """
+        ch = ctx.channel
+        if ch.type != ChannelType.private_thread:
+            return await ctx.respond("Not a private thread!", ephemeral=True)
+        await ctx.defer()
+        embd = Embed(title="Thread Marked Complete",
+                     description=f"{ctx.user.display_name} has marked this thread as completed. To reopen simply start chatting again.")
+        await ctx.respond(embed=embd)
+        return await ch.archive()
 
 
 def setup(bot):
