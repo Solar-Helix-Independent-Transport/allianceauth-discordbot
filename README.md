@@ -63,11 +63,11 @@ AA-Discordbot for [Alliance Auth](https://gitlab.com/allianceauth/allianceauth).
 pip install allianceauth-discordbot
 ```
 
-* Add `'aadiscordbot',` to your INSTALLED_APPS list in local.py.
+* Add `'aadiscordbot',` and  `'solo',` to your INSTALLED_APPS list in local.py.
 
 * Add the below lines to your `local.py` settings file, Changing the contexts to yours.
 
- ```python
+```python
 ## Settings for Allianceauth-Discordbot
 # Admin Commands
 ADMIN_DISCORD_BOT_CHANNELS = [111, 222, 333]
@@ -176,7 +176,7 @@ Go to admin and configure your admin users in the bot config model.
 
 > Enable groups/states/users to utilize the lookup command by adding permissions under **corputils | corp stats |**
 ```ini
-corputils.view_alliance_corpstats 
+corputils.view_alliance_corpstats
 ```
 
 ## Reaction Roles
