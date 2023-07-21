@@ -9,6 +9,10 @@ from discord.colour import Color
 from discord.embeds import Embed
 from discord.ext import commands
 
+from ..app_settings import (
+    PRICE_CHECK_HOSTNAME
+)
+
 logger = logging.getLogger(__name__)
 
 
@@ -106,7 +110,7 @@ class PriceCheck(commands.Cog):
                 )
 
                 market_data = requests.post(
-                    "https://evepraisal.com/appraisal/structured.json",
+                    "https://" + PRICE_CHECK_HOSTNAME + "/appraisal/structured.json",
                     json={
                         "market_name": market["api_key"],
                         "items": [{"name": item_name}],

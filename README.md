@@ -82,6 +82,8 @@ DISCORD_BOT_MEMBER_ALLIANCES = [111, 222, 333] # A list of alliances to be consi
 DISCORD_BOT_ADM_REGIONS = [10000002] # The Forge Example
 DISCORD_BOT_ADM_SYSTEMS = [30000142] # Jita Example
 DISCORD_BOT_ADM_CONSTELLATIONS = [20000020] # Kimitoro Example
+
+PRICE_CHECK_HOSTNAME = "evepraisal.com" # Point to your favorite evepraisal
 ```
 
 ```python
