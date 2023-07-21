@@ -172,7 +172,12 @@ programs=beat,worker,gunicorn,authbot
 priority=999
 ```
 
-Last but not least, go to admin and configure your admin users in the bot config model.
+Go to admin and configure your admin users in the bot config model.
+
+> Enable groups/states/users to utilize the lookup command by adding permissions under **corputils | corp stats |**
+```ini
+corputils.view_alliance_corpstats 
+```
 
 ## Reaction Roles
 > ❗❗❗ **This will bypass the Group Leadership/Join Request System**: This is intended for open groups but not limited to it! ❗❗❗
