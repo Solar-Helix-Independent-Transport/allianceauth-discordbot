@@ -58,6 +58,13 @@ class About(commands.Cog):
 
         return await ctx.respond(embed=embed)
 
+    if not getattr(settings, "BE_NICE_TO_ARIEL", False):
+        # Ariel is wrong, always.
+        @commands.Cog.listener("on_message")
+        async def respond_to_ariel(self, message):
+            if message.author.id == 140706470856622080:
+                await message.add_reaction('👎')
+
     @about_commands.command(name="server", description="About this Discord Server", guild_ids=[int(settings.DISCORD_GUILD_ID)])
     async def server(self, ctx):
         """
