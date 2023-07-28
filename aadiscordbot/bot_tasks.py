@@ -77,12 +77,13 @@ async def send_direct_message_by_discord_id(bot, discord_user_id, message, embed
     logger.debug(f"Sending DM to Discord ID {discord_user_id}")
 
     user_object = await bot.fetch_user(discord_user_id)
-    await user_object.create_dm()
-    if embed:
-        e = Embed.from_dict(embed)
-        await user_object.send(message, embed=e)
-    else:
-        await user_object.send(message)
+    if user_object.can_send():
+        await user_object.create_dm()
+        if embed:
+            e = Embed.from_dict(embed)
+            await user_object.send(message, embed=e)
+        else:
+            await user_object.send(message)
 
 
 async def send_direct_message(bot, discord_user_id, message, embed=False):
@@ -101,12 +102,13 @@ async def send_direct_message_by_user_id(bot, user_pk, message, embed=False):
     if hasattr(user, "discord"):
         discord_user_id = user.discord.uid
         user_object = await bot.fetch_user(discord_user_id)
-        await user_object.create_dm()
-        if embed:
-            e = Embed.from_dict(embed)
-            await user_object.send(message, embed=e)
-        else:
-            await user_object.send(message)
+        if user_object.can_send():
+            await user_object.create_dm()
+            if embed:
+                e = Embed.from_dict(embed)
+                await user_object.send(message, embed=e)
+            else:
+                await user_object.send(message)
     else:
         logger.debug(f"No discord account on record for user_pk={user_pk}")
 
