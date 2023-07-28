@@ -84,6 +84,9 @@ async def send_direct_message_by_discord_id(bot, discord_user_id, message, embed
             await user_object.send(message, embed=e)
         else:
             await user_object.send(message)
+    else:
+        logger.error(
+            f"Unable to DM discord_user_id={discord_user_id} {user_object}")
 
 
 async def send_direct_message(bot, discord_user_id, message, embed=False):
@@ -109,6 +112,9 @@ async def send_direct_message_by_user_id(bot, user_pk, message, embed=False):
                 await user_object.send(message, embed=e)
             else:
                 await user_object.send(message)
+        else:
+            logger.error(f"Unable to DM user_pk={user_pk} {user_object}")
+
     else:
         logger.debug(f"No discord account on record for user_pk={user_pk}")
 
