@@ -55,7 +55,7 @@ def send_message(message="", channel_id: int = None, user_id: int = None, user: 
 
 
 @shared_task
-def send_channel_message_by_discord_id(channel_id, message_content, embed=None, view_class: str = None, view_args: list = [], view_kwargs: dict = {}):
+def send_channel_message_by_discord_id(channel_id, message_content, embed=None, view_class: str = None, view_args: list = [], view_kwargs: dict = {}, file: (bytes, str) = None, files=None):
     # Queue a message to a Discord Channel
     raise Exception(
         f"This function should be called asynchronously. Failed to queue a message to Channel {channel_id}")

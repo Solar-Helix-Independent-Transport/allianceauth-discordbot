@@ -1,9 +1,10 @@
 import importlib
+import io
 import logging
 import warnings
 from datetime import timedelta
 
-from discord import Embed, Member
+from discord import Embed, File, Member
 from discord.ext import tasks
 from discord.ext.commands import Bot
 from discord.ui import View
@@ -48,12 +49,25 @@ async def run_tasks(bot: Bot):
     django.db.close_old_connections()
 
 
-async def send_channel_message_by_discord_id(bot, channel_id, message, embed=False, view_class=False, view_args=[], view_kwargs={}):
+async def send_channel_message_by_discord_id(bot, channel_id, message, embed=None, view_class=None, view_args=[], view_kwargs={}, file=None, files=None):
+
     logger.debug(f"Sending Channel Message to Discord ID {channel_id}")
+
     e = None
     v = None
+    f = None
+    fls = None
+
     if embed:
         e = Embed.from_dict(embed)
+
+    if file:
+        f = File(io.BytesIO(file[0]), file[1])
+
+    if files:
+        fls = []
+        for _f in files:
+            fls.append(File(io.BytesIO(_f[0]), _f[1]))
 
     if view_class:
         m = ".".join(view_class.split(".")[:-1])
@@ -62,7 +76,7 @@ async def send_channel_message_by_discord_id(bot, channel_id, message, embed=Fal
         Viewclass = getattr(my_module, c)
         v = Viewclass(*view_args, **view_kwargs)
 
-    await bot.get_channel(channel_id).send(message, embed=e, view=v)
+    await bot.get_channel(channel_id).send(message, embed=e, view=v, file=f, files=fls)
 
 
 async def send_channel_message(bot, channel_id, message, embed=False):
