@@ -116,14 +116,20 @@ class HelpCog(commands.Cog):
     async def reverse_halp(self, ctx, message: Message):
         sup_channel = models.TicketGroups.get_solo().ticket_channel.channel
         ch = message.guild.get_channel(sup_channel)
+        files = []
+        for a in message.attachments:
+            files.append(a.proxy_url)
+        _f = "\n".join(files)
+
         th = await ch.create_thread(name=f"{message.author.display_name} | {message.id} | {timezone.now().strftime('%Y-%m-%d %H:%M')}",
                                     #message=f"Ping in here if your request is urgent!",
                                     auto_archive_duration=10080,
                                     type=discord.ChannelType.private_thread,
                                     reason=None)
-        msg = f"hi, <@{message.author.id}>, <@{ctx.author.id}> wants clarification on this message\n\n```{message.content}```"
+        msg = f"hi, <@{message.author.id}>, <@{ctx.author.id}> wants clarification on this message\n\n```{message.content}```\n\n{message.jump_url}\n{_f}"
         embd = Embed(title="Private Thread Guide",
                      description="To add a person to this thread simply `@ping` them. This works with `@groups` as well to bulk add people to the channel. Use wisely, abuse will not be tolerated.")
+
         await th.send(msg, embed=embd)
 
 
