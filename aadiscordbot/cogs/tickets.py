@@ -3,7 +3,7 @@ import logging
 from typing import Optional
 
 import discord
-from discord import ChannelType, Embed, command, ui
+from discord import ChannelType, Embed, Message, command, ui
 from discord.ext import commands
 
 # AA Contexts
@@ -111,6 +111,20 @@ class HelpCog(commands.Cog):
                      description=f"{ctx.user.display_name} has marked this thread as completed. To reopen simply start chatting again.")
         await ctx.respond(embed=embd)
         return await ch.archive()
+
+    @commands.message_command(name="Create Help Ticket", guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    async def reverse_halp(self, ctx, message: Message):
+        sup_channel = models.TicketGroups.get_solo().ticket_channel.channel
+        ch = message.guild.get_channel(sup_channel)
+        th = await ch.create_thread(name=f"{message.author.display_name} | {message.id} | {timezone.now().strftime('%Y-%m-%d %H:%M')}",
+                                    #message=f"Ping in here if your request is urgent!",
+                                    auto_archive_duration=10080,
+                                    type=discord.ChannelType.private_thread,
+                                    reason=None)
+        msg = f"hi, <@{message.author.id}>, <@{ctx.author.id}> wants clarification on this message\n\n```{message.content}```"
+        embd = Embed(title="Private Thread Guide",
+                     description="To add a person to this thread simply `@ping` them. This works with `@groups` as well to bulk add people to the channel. Use wisely, abuse will not be tolerated.")
+        await th.send(msg, embed=embd)
 
 
 def setup(bot):
