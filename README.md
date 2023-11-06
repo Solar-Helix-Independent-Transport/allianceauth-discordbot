@@ -27,6 +27,8 @@ AA-Discordbot for [Alliance Auth](https://gitlab.com/allianceauth/allianceauth).
     * !time or /time - Returns the current EVE Time.
   * Timers
     * !timer - Returns the next Structure timer from allianceauth.timerboard.
+  * Ticket
+    * /help and Message context command to create private support threads
   * PriceCheck:
     * amarr - Check an item price on Amarr market
     * jita -  Check an item price on Jita market
