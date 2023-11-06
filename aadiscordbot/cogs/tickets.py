@@ -50,7 +50,7 @@ class TicketDropdown(discord.ui.Select):
         embd = Embed(title="Private Thread Guide",
                      description="To add a person to this thread simply `@ping` them. This works with `@groups` as well to bulk add people to the channel. Use wisely, abuse will not be tolerated.\n\nThis is a beta feature if you experience issues please contact the admins. :heart:")
         await th.send(msg, embed=embd)
-        await interaction.response.edit_message(content="Ping in the thread created for urgent help!", view=None)
+        await interaction.response.send_message(content="Ping in the thread created for urgent help!", view=None, ephemeral=True)
 
 
 class HelpView(ui.View):
