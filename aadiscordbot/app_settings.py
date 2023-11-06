@@ -52,25 +52,26 @@ def discord_active():
 
 DISCORD_BOT_PREFIX = getattr(settings, 'DISCORD_BOT_PREFIX', '!')
 
-DISCORD_BOT_COGS = getattr(settings, 'DISCORD_BOT_COGS', [
-    "aadiscordbot.cogs.about",
-    "aadiscordbot.cogs.admin",
-    "aadiscordbot.cogs.members",
-    "aadiscordbot.cogs.timers",
-    "aadiscordbot.cogs.auth",
-    "aadiscordbot.cogs.sov",
-    "aadiscordbot.cogs.time",
-    "aadiscordbot.cogs.eastereggs",
-    "aadiscordbot.cogs.remind",
-    "aadiscordbot.cogs.reaction_roles",
-    "aadiscordbot.cogs.services",
-    "aadiscordbot.cogs.price_check",
-    "aadiscordbot.cogs.eightball",
-    "aadiscordbot.cogs.welcomegoodbye",
-    "aadiscordbot.cogs.models",
-    "aadiscordbot.cogs.quote",
-]
-)
+DISCORD_BOT_COGS = getattr(settings, 'DISCORD_BOT_COGS',
+                           [
+                               "aadiscordbot.cogs.about",
+                               "aadiscordbot.cogs.admin",
+                               "aadiscordbot.cogs.members",
+                               "aadiscordbot.cogs.timers",
+                               "aadiscordbot.cogs.auth",
+                               "aadiscordbot.cogs.sov",
+                               "aadiscordbot.cogs.time",
+                               "aadiscordbot.cogs.eastereggs",
+                               "aadiscordbot.cogs.remind",
+                               "aadiscordbot.cogs.reaction_roles",
+                               "aadiscordbot.cogs.services",
+                               "aadiscordbot.cogs.price_check",
+                               "aadiscordbot.cogs.eightball",
+                               "aadiscordbot.cogs.welcomegoodbye",
+                               "aadiscordbot.cogs.models",
+                               "aadiscordbot.cogs.quote",
+                           ]
+                           )
 
 DISCORD_BOT_ACCESS_DENIED_REACT = getattr(
     settings, 'DISCORD_BOT_ACCESS_DENIED_REACT', 0x1F44E)

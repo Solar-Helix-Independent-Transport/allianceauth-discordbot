@@ -98,40 +98,6 @@ LOGGING['handlers']['bot_log_file']= {
         }
 LOGGING['loggers']['aadiscordbot'] = {'handlers': ['bot_log_file'],'level': 'DEBUG'}
 ```
-* Optional Settings
- ```python
-# Change the bots default Cogs, add or remove if required.
-DISCORD_BOT_COGS = [
-  "aadiscordbot.cogs.about", # about the bot
-  "aadiscordbot.cogs.admin", # Discord server admin helpers
-  "aadiscordbot.cogs.members", # Member lookup commands
-  "aadiscordbot.cogs.timers", # timer board integration
-  "aadiscordbot.cogs.auth", # return auth url
-  "aadiscordbot.cogs.sov", # some sov helpers
-  "aadiscordbot.cogs.time", # whats the time Mr Eve Server
-  "aadiscordbot.cogs.eastereggs", # some "fun" commands from ariel...
-  "aadiscordbot.cogs.remind", # very Basic in memory reminder tool
-  "aadiscordbot.cogs.reaction_roles", # auth group integrated reaction roles
-  "aadiscordbot.cogs.services", # service activation data
-  "aadiscordbot.cogs.price_check", # Price Checks
-  "aadiscordbot.cogs.eightball", # 8ball should i install this cog
-  "aadiscordbot.cogs.welcomegoodbye", # Customizable user join/leave messages
-  "aadiscordbot.cogs.models", # Populate and Maintain Django Models for Channels and Servers
-  "aadiscordbot.cogs.quote", # Save and recall messages
-  "aadiscordbot.cogs.prom_export", # Admin Level Logging cog
-  ]
-
-# configure the optional rate limited
-# this is a bot_task function and how many / time period
-# 100/s equates to 100 per second max
-# 10/m equates to 10 per minute or 1 every 6 seconds max
-# 60/h equates to 60 per hour or one per minute max
-DISCORD_BOT_TASK_RATE_LIMITS = {
-        "send_channel_message_by_discord_id": "100/s",
-        "send_direct_message_by_discord_id": "1/s",
-        "send_direct_message_by_user_id": "1/s"
-        }
-```
 
 * Add the below lines to `myauth/celery.py` somewhere above the `app.autodiscover_tasks...` line
 
@@ -174,9 +140,51 @@ priority=999
 
 Go to admin and configure your admin users in the bot config model.
 
+
 > Enable groups/states/users to utilize the lookup command by adding permissions under **corputils | corp stats |**
 ```ini
 corputils.view_alliance_corpstats
+```
+
+## Optional Settings
+### Built in Cogs
+ ```python
+# Change the bots default Cogs, add or remove if you want to use any of the extra cogs.
+
+DISCORD_BOT_COGS = [
+  "aadiscordbot.cogs.about", # about the bot
+  "aadiscordbot.cogs.admin", # Discord server admin helpers
+  "aadiscordbot.cogs.members", # Member lookup commands
+  "aadiscordbot.cogs.timers", # timer board integration
+  "aadiscordbot.cogs.auth", # return auth url
+  "aadiscordbot.cogs.sov", # some sov helpers
+  "aadiscordbot.cogs.time", # whats the time Mr Eve Server
+  "aadiscordbot.cogs.eastereggs", # some "fun" commands from ariel...
+  "aadiscordbot.cogs.remind", # very Basic in memory reminder tool
+  "aadiscordbot.cogs.reaction_roles", # auth group integrated reaction roles
+  "aadiscordbot.cogs.services", # service activation data
+  "aadiscordbot.cogs.price_check", # Price Checks
+  "aadiscordbot.cogs.eightball", # 8ball should i install this cog
+  "aadiscordbot.cogs.welcomegoodbye", # Customizable user join/leave messages
+  "aadiscordbot.cogs.models", # Populate and Maintain Django Models for Channels and Servers
+  "aadiscordbot.cogs.quote", # Save and recall messages
+  "aadiscordbot.cogs.prom_export", # Admin Level Logging cog
+  "aadiscordbot.cogs.tickets", # Private thread ticket system with pingable groups.
+  ]
+```
+
+### Additional Rate Limiting
+```python
+# configure the optional rate limited
+# this is a bot_task function and how many / time period
+# 100/s equates to 100 per second max
+# 10/m equates to 10 per minute or 1 every 6 seconds max
+# 60/h equates to 60 per hour or one per minute max
+DISCORD_BOT_TASK_RATE_LIMITS = {
+        "send_channel_message_by_discord_id": "100/s",
+        "send_direct_message_by_discord_id": "1/s",
+        "send_direct_message_by_user_id": "1/s"
+        }
 ```
 
 ## Reaction Roles
@@ -187,7 +195,7 @@ The bot is able to run a reaction roles system that is compatible with auth and 
  - If a member is not found in auth and the reaction role message has the public flag set it will assign roles to anyone who reacts
 
 ### How To Reaction Role!
- 1. Setup the inital Message you wish to use buy using the command !rr
+ 1. Setup the inital Message you wish to use buy using the command `!rr`
    - *Optional* Edit the name and settings of this message in `Admin > Discord Bot > Reaction Role Messages`
  2. React to the message with the reactions you wish to use.
  3. The bot will counter react to the reactions when it creates the binding in auth.
@@ -221,6 +229,21 @@ Welcome {user_mention} to {guild_name}, I hope you enjoy your stay.
 
 You can Authenticate for more access {auth_url}
 ```
+
+## Private Thread Ticket System
+
+> ❗❗❗ **While this is fully functional, this is still in early stages of development, Please report any issues you find!** ❗❗❗
+
+With the `aadiscordbot.cogs.tickets` Cog activated, users wll be able to issue the `/help` command to pick a group to get help from.
+
+The groups available for selection are configurable in the site admin under
+`Discord Bot > Ticket Cog Configuration`
+
+You also need to choose a channel to create the threads in from the site admin `Discord Bot > Ticket Cog Configuration`:
+  - Anyone who can use the `/help` command must have View and Send Message permissions on this channel otherwise they will not be able to see the tickets authbot creates for them
+  - Authbot must have the permissions to create private threads in this channel
+  - Authbot must have the permissions to send messages to this channel
+
 
 ## Using AA-Discordbot from my project
 
