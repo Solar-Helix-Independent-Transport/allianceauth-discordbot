@@ -27,42 +27,22 @@ def get_groups():
     return out
 
 
-class HelpView(ui.View):
+class TicketDropdown(discord.ui.Select):
     """
-        View for picking a group to assign a help thread too
+        Group Dropdown for discord message to summon a private help channel.
     """
 
-    embed_text = None
-    message_text = ""
-    created = None
+    def __init__(self):
+        super().__init__(
+            placeholder="Who do you need help from?",
+            options=get_groups(),
+        )
 
-    def __init__(self,
-                 *items: discord.ui.Item,
-                 timeout: Optional[float] = 60*60,  # 24h from last click
-                 embed: Optional[Embed] = None,
-                 message: Optional[str] = None,
-                 bot=None
-                 ):
-        if embed:
-            if isinstance(embed, dict):
-                self.embed_text = Embed.from_dict(embed)
-            elif isinstance(embed, Embed):
-                self.embed_text = embed
-        if message:
-            self.message_text = message
-        self.bot = bot
-        self.created = timezone.now()
-
-        super().__init__(*items, timeout=timeout)
-
-    # a custom_id must be set
-    @discord.ui.select(placeholder="Who do you need help from?", options=get_groups())
-    async def select_callback(self, select, interaction):
+    async def callback(self, interaction: discord.Interaction):
         sup_channel = models.TicketGroups.get_solo().ticket_channel.channel
         ch = interaction.guild.get_channel(sup_channel)
-        grp = discord.utils.get(interaction.guild.roles, name=select.values[0])
-        th = await ch.create_thread(name=f"{interaction.user.display_name} | {select.values[0]} | {timezone.now().strftime('%Y-%m-%d %H:%M')}",
-                                    # message=f"Ping in here if your request is urgent <@{interaction.user.id}>, Someone from <#{grp.id}> will be here soon!",
+        grp = discord.utils.get(interaction.guild.roles, name=self.values[0])
+        th = await ch.create_thread(name=f"{interaction.user.display_name} | {self.values[0]} | {timezone.now().strftime('%Y-%m-%d %H:%M')}",
                                     auto_archive_duration=10080,
                                     type=discord.ChannelType.private_thread,
                                     reason=None)
@@ -72,13 +52,19 @@ class HelpView(ui.View):
         await th.send(msg, embed=embd)
         await interaction.response.edit_message(content="Ping in the thread created for urgent help!", view=None)
 
-    async def on_timeout(self) -> None:
-        await super().on_timeout()
+
+class HelpView(ui.View):
+    """
+        View for picking a group to assign a help thread too
+    """
+
+    def __init__(self):
+        super().__init__(TicketDropdown())
 
 
 class HelpCog(commands.Cog):
     """
-        Compliance Related thingies
+        Help Ticket Cog Things
     """
 
     def __init__(self, bot):
