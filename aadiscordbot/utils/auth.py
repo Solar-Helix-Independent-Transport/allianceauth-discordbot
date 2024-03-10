@@ -8,14 +8,23 @@ from allianceauth.services.modules.discord.models import DiscordUser
 
 logger = logging.getLogger(__name__)
 
+DMV_ACTIVE = False
+
+try:
+    from aadiscordmultiverse.models import (
+        DiscordManagedServer, MultiDiscordUser,
+    )
+except ImportError:
+    logger.debug("DMV not installed")
+    DMV_ACTIVE = False
+
 
 def check_for_dmv_user(user: User, guild: Guild):
     """
         Return `True` if a discord user is authenticated to
         the DMV service module `False` Otherwise
     """
-    try:
-        from aadiscordmultiverse.models import MultiDiscordUser
+    if DMV_ACTIVE:
         try:
             MultiDiscordUser.objects.get(
                 guild_id=guild.id,
@@ -24,9 +33,8 @@ def check_for_dmv_user(user: User, guild: Guild):
             return True
         except MultiDiscordUser.DoesNotExist:
             return False
-    except ImportError:
-        logger.debug("DMV not installed")
-    return False
+    else:
+        return False
 
 
 def check_for_core_user(user: User):
@@ -52,19 +60,26 @@ def guild_is_dmv_module(guild_id):
     """
         Check if the guild_id matches the any of the DMV servers
     """
+    guild = get_dmv_guild(guild_id)
+    if guild:
+        return True
+    else:
+        return False
 
-    try:
-        from aadiscordmultiverse.models import DiscordManagedServer
+
+def get_dmv_guild(guild_id):
+    """
+        Return DMV Guild model if DMV installed and
+    """
+    if DMV_ACTIVE:
         try:
-            DiscordManagedServer.objects.get(
+            return DiscordManagedServer.objects.get(
                 guild_id=guild_id,
             )
-            return True
         except DiscordManagedServer.DoesNotExist:
-            return False
-    except ImportError:
-        logger.debug("DMV not installed")
-    return False
+            return None
+    else:
+        return None
 
 
 def user_is_authenticated(user: User, guild: Guild):
