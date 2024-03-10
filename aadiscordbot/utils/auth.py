@@ -1,3 +1,14 @@
+"""
+    Utils for translating between auth and py-cord users
+
+    Current Supported Auth service modules:
+    - allianceauth.services.modules.discord
+      - https://gitlab.com/allianceauth/allianceauth/
+    - aadiscordmultiverse
+      - https://github.com/Solar-Helix-Independent-Transport/allianceauth-discord-multiverse
+
+"""
+
 import logging
 
 from discord import Guild, User
@@ -19,22 +30,36 @@ except ImportError:
     DMV_ACTIVE = False
 
 
+def get_dmv_discord_user(user_id, guild_id):
+    if DMV_ACTIVE:
+        try:
+            return MultiDiscordUser.objects.get(
+                guild_id=guild_id,
+                uid=user_id
+            )
+        except MultiDiscordUser.DoesNotExist:
+            return None
+    else:
+        return None
+
+
 def check_for_dmv_user(user: User, guild: Guild):
     """
         Return `True` if a discord user is authenticated to
         the DMV service module `False` Otherwise
     """
-    if DMV_ACTIVE:
-        try:
-            MultiDiscordUser.objects.get(
-                guild_id=guild.id,
-                uid=user.id
-            )
-            return True
-        except MultiDiscordUser.DoesNotExist:
-            return False
+    user = get_dmv_discord_user(user.id, guild.id)
+    if user:
+        return True
     else:
         return False
+
+
+def get_auth_discord_user(user_id):
+    try:
+        return DiscordUser.objects.get(uid=user_id)
+    except DiscordUser.DoesNotExist:
+        return None
 
 
 def check_for_core_user(user: User):
@@ -42,10 +67,10 @@ def check_for_core_user(user: User):
         Return `True` if a discord user is authenticated to
         the core auth service module `False` Otherwise
     """
-    try:
-        DiscordUser.objects.get(uid=user.id)
+    user = get_auth_discord_user(user.id)
+    if user:
         return True
-    except DiscordUser.DoesNotExist:
+    else:
         return False
 
 
@@ -88,17 +113,29 @@ def user_is_authenticated(user: User, guild: Guild):
         any service module `False` Otherwise
 
         Checks these services depending on the guild_id
-          - allianceauth.services.modules.discord
-          - aadiscordmultiverse
     """
     if guild_is_core_module(guild.id):
-        logger.debug("Core Auth discord service user")
         return check_for_core_user(user)
 
     elif guild_is_dmv_module(guild.id):
-        logger.debug("Maybe a DMV managed server discord service user")
         return check_for_dmv_user(user, guild)
 
     else:
-        logger.debug("Unknown User/Server/Configuration")
         return False
+
+
+def get_auth_user(user: User, guild: Guild):
+    """
+        Get auth user from any service module
+    """
+    discord_user = None
+    if guild_is_core_module(guild.id):
+        discord_user = get_auth_discord_user(user.id)
+
+    elif guild_is_dmv_module(guild.id):
+        discord_user = get_dmv_discord_user(user.id, guild.id)
+
+    if discord_user:
+        return discord_user.user
+    else:
+        return None
