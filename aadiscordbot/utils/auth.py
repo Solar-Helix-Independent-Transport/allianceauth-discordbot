@@ -55,7 +55,7 @@ def check_for_dmv_user(user: User, guild: Guild):
         return False
 
 
-def get_auth_discord_user(user_id):
+def get_core_discord_user(user_id):
     try:
         return DiscordUser.objects.get(uid=user_id)
     except DiscordUser.DoesNotExist:
@@ -67,7 +67,7 @@ def check_for_core_user(user: User):
         Return `True` if a discord user is authenticated to
         the core auth service module `False` Otherwise
     """
-    user = get_auth_discord_user(user.id)
+    user = get_core_discord_user(user.id)
     if user:
         return True
     else:
@@ -130,7 +130,7 @@ def get_auth_user(user: User, guild: Guild):
     """
     discord_user = None
     if guild_is_core_module(guild.id):
-        discord_user = get_auth_discord_user(user.id)
+        discord_user = get_core_discord_user(user.id)
 
     elif guild_is_dmv_module(guild.id):
         discord_user = get_dmv_discord_user(user.id, guild.id)
