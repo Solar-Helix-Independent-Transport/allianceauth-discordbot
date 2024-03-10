@@ -70,12 +70,12 @@ class ChannelsAdmin(admin.ModelAdmin):
 
 @admin.register(WelcomeMessage)
 class WelcomeMessageAdmin(admin.ModelAdmin):
-    list_display = ('id', )
+    list_display = ('guild_id', 'id', "authenticated", "unauthenticated")
 
 
 @admin.register(GoodbyeMessage)
 class GoodbyeMessageAdmin(admin.ModelAdmin):
-    list_display = ('id', )
+    list_display = ('guild_id', 'id', "authenticated", "unauthenticated")
 
 
 @admin.register(TicketGroups)

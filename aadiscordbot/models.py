@@ -107,6 +107,7 @@ class WelcomeMessage(models.Model):
     authenticated = models.BooleanField(_("Valid for Authenticated Users"))
     unauthenticated = models.BooleanField(
         _("Valid for Un-Authenticated Users"))
+    guild_id = models.BigIntegerField(default=settings.DISCORD_GUILD_ID)
 
     class Meta:
         default_permissions = ()

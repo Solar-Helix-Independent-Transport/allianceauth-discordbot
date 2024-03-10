@@ -8,8 +8,8 @@ from discord.ext import commands
 
 from allianceauth.services.modules.discord.models import DiscordUser
 
-from aadiscordbot.models import GoodbyeMessage, WelcomeMessage
 from aadiscordbot.app_settings import get_site_url
+from aadiscordbot.models import GoodbyeMessage, WelcomeMessage
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +36,9 @@ class Welcome(commands.Cog):
             if authenticated:
                 try:
                     message = WelcomeMessage.objects.filter(
-                        authenticated=True).order_by('?').first().message
+                        authenticated=True,
+                        guild_id=member.guild.id
+                    ).order_by('?').first().message
                     message_formatted = message.format(
                         user_mention=member.mention,
                         guild_name=member.guild.name,
@@ -52,7 +54,9 @@ class Welcome(commands.Cog):
             else:
                 try:
                     message = WelcomeMessage.objects.filter(
-                        unauthenticated=True).order_by('?').first().message
+                        unauthenticated=True,
+                        guild_id=member.guild.id
+                    ).order_by('?').first().message
                     message_formatted = message.format(
                         user_mention=member.mention,
                         guild_name=member.guild.name,
@@ -85,7 +89,9 @@ class Goodbye(commands.Cog):
                 # Authenticated
                 try:
                     message = GoodbyeMessage.objects.filter(
-                        authenticated=True).order_by('?').first().message
+                        authenticated=True,
+                        guild_id=member.guild.id
+                    ).order_by('?').first().message
                     message_formatted = message.format(
                         user_mention=member.mention,
                         guild_name=member.guild.name,
@@ -101,7 +107,9 @@ class Goodbye(commands.Cog):
                 # Un-Authenticated
                 try:
                     message = GoodbyeMessage.objects.filter(
-                        unauthenticated=True).order_by('?').first().message
+                        unauthenticated=True,
+                        guild_id=member.guild.id
+                    ).order_by('?').first().message
                     message_formatted = message.format(
                         user_mention=member.mention,
                         guild_name=member.guild.name,
