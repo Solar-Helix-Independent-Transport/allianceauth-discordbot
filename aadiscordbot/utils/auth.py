@@ -25,9 +25,9 @@ try:
     from aadiscordmultiverse.models import (
         DiscordManagedServer, MultiDiscordUser,
     )
+    DMV_ACTIVE = True
 except ImportError:
     logger.debug("DMV not installed")
-    DMV_ACTIVE = False
 
 
 def get_dmv_discord_user(user_id, guild_id):

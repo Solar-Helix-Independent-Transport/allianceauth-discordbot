@@ -4,12 +4,12 @@
 import asyncio
 import logging
 
+import discord
 from discord.ext import commands
-
-from allianceauth.services.modules.discord.models import DiscordUser
 
 from aadiscordbot.app_settings import get_site_url
 from aadiscordbot.models import GoodbyeMessage, WelcomeMessage
+from aadiscordbot.utils.auth import user_is_authenticated
 
 logger = logging.getLogger(__name__)
 
@@ -23,14 +23,13 @@ class Welcome(commands.Cog):
         self.bot = bot
 
     @commands.Cog.listener("on_member_join")
-    async def on_member_join(self, member):
+    async def on_member_join(self, member: discord.Member):
         channel = member.guild.system_channel
         if channel is not None:
             try:
                 # Give AA a chance to save the UID for a joiner.
-                await asyncio.sleep(1)
-                authenticated = DiscordUser.objects.get(
-                    uid=member.id).user.has_perm("discord.access_discord")
+                await asyncio.sleep(3)
+                authenticated = user_is_authenticated(member, member.guild)
             except Exception:
                 authenticated = False
             if authenticated:
@@ -44,13 +43,11 @@ class Welcome(commands.Cog):
                         guild_name=member.guild.name,
                         auth_url=get_site_url(),)
                     await channel.send(message_formatted)
-
-                except IndexError as e:
+                except IndexError:
                     logger.error(
                         'No Welcome Message configured for Discordbot Welcome cog')
                 except Exception as e:
                     logger.error(e)
-
             else:
                 try:
                     message = WelcomeMessage.objects.filter(
@@ -62,6 +59,9 @@ class Welcome(commands.Cog):
                         guild_name=member.guild.name,
                         auth_url=get_site_url(),)
                     await channel.send(message_formatted)
+                except IndexError:
+                    logger.error(
+                        'No Welcome Message configured for Discordbot Welcome cog')
                 except Exception as e:
                     logger.error(e)
 
@@ -75,14 +75,12 @@ class Goodbye(commands.Cog):
         self.bot = bot
 
     @commands.Cog.listener("on_member_remove")
-    async def on_member_remove(self, member):
+    async def on_member_remove(self, member: discord.Member):
         channel = member.guild.system_channel
         if channel is not None:
             try:
                 # Give AA a chance to save the UID for a joiner.
-                await asyncio.sleep(1)
-                authenticated = DiscordUser.objects.get(
-                    uid=member.id).user.has_perm("discord.access_discord")
+                authenticated = user_is_authenticated(member, member.guild)
             except Exception:
                 authenticated = False
             if authenticated:
@@ -97,9 +95,9 @@ class Goodbye(commands.Cog):
                         guild_name=member.guild.name,
                         auth_url=get_site_url(),)
                     await channel.send(message_formatted)
-                except IndexError as e:
+                except IndexError:
                     logger.error(
-                        'No Welcome Message configured for Discordbot Goodbye cog')
+                        'No Leave Message configured for Discordbot Goodbye cog')
                 except Exception as e:
                     logger.error(e)
 
@@ -115,6 +113,9 @@ class Goodbye(commands.Cog):
                         guild_name=member.guild.name,
                         auth_url=get_site_url(),)
                     await channel.send(message_formatted)
+                except IndexError:
+                    logger.error(
+                        'No Leave Message configured for Discordbot Goodbye cog')
                 except Exception as e:
                     logger.error(e)
 
