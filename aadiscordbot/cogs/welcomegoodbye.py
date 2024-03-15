@@ -24,6 +24,9 @@ class Welcome(commands.Cog):
 
     @commands.Cog.listener("on_member_join")
     async def on_member_join(self, member: discord.Member):
+        logger.info(
+            f"{member} joined {member.guild.name}"
+        )
         channel = member.guild.system_channel
         if channel is not None:
             try:
@@ -76,6 +79,9 @@ class Goodbye(commands.Cog):
 
     @commands.Cog.listener("on_member_remove")
     async def on_member_remove(self, member: discord.Member):
+        logger.info(
+            f"{member} joined {member.guild.name}"
+        )
         channel = member.guild.system_channel
         if channel is not None:
             try:
