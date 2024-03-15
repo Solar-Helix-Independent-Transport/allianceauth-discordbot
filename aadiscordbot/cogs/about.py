@@ -21,10 +21,9 @@ class About(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    about_commands = SlashCommandGroup("about", "All about the Bot and Auth", guild_ids=[
-                                       int(settings.DISCORD_GUILD_ID)])
+    about_commands = SlashCommandGroup("about", "All about the Bot and Auth")
 
-    @about_commands.command(name="discordbot", description="About the Discord Bot", guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    @about_commands.command(name="discordbot", description="About the Discord Bot")
     async def discordbot(self, ctx):
         """
         All about the bot
@@ -36,64 +35,70 @@ class About(commands.Cog):
         embed.colour = Color.blue()
 
         embed.description = "This is a multi-de-functional discord bot tailored specifically for Alliance Auth Shenanigans."
-        regex = r"^(.+)\/d.+"
 
         embed.set_footer(
             text="Lovingly developed for Init.™ by AaronRin and ArielKable")
 
-        embed.add_field(
-            name="Number of Servers:", value=len(self.bot.guilds), inline=True
-        )
-        members = 0
-        for g in self.bot.guilds:
-            members += g.member_count
-        embed.add_field(name="Unwilling Monitorees:",
-                        value=members, inline=True)
-        embed.add_field(
-            name="Auth Link", value=get_site_url(), inline=False
-        )
+        if not ctx.guild:
+            embed.add_field(
+                name="Number of Servers:", value=len(self.bot.guilds), inline=True
+            )
+            members = 0
+            for g in self.bot.guilds:
+                members += g.member_count
+            embed.add_field(name="Unwilling Monitorees:",
+                            value=members, inline=True)
+            embed.add_field(
+                name="Auth Link", value=get_site_url(), inline=False
+            )
+
         embed.add_field(
             name="Version", value=f"{__version__}@{__branch__}", inline=False
         )
 
         return await ctx.respond(embed=embed)
 
-    @about_commands.command(name="server", description="About this Discord Server", guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    @about_commands.command(name="server", description="About this Discord Server")
     async def server(self, ctx):
         """
         All about a server
         """
-        embed = Embed(title=ctx.guild.name)
+        if ctx.guild:
+            embed = Embed(title=ctx.guild.name)
 
-        if ctx.guild.icon:
-            embed.set_thumbnail(
-                url=ctx.guild.icon.url
+            if ctx.guild.icon:
+                embed.set_thumbnail(
+                    url=ctx.guild.icon.url
+                )
+            embed.color = Color.blue()
+            embed.description = "Alliance Auth Managed EvE Online Discord Server!"
+            if ctx.guild.description:
+                embed.description = ctx.guild.description
+            embed.set_footer(
+                text="AuthBot Lovingly developed for Init.™ by AaronRin and ArielKable")
+
+            members = ctx.guild.member_count
+            embed.add_field(name="Unwilling Monitorees:",
+                            value=members, inline=True)
+
+            channels = len(ctx.guild.channels)
+            cats = len(ctx.guild.categories)
+            embed.add_field(name="Channel Count:",
+                            value=channels-cats, inline=True)
+
+            roles = len(ctx.guild.roles)
+            embed.add_field(name="Role Count:",
+                            value=roles, inline=True)
+
+            embed.add_field(
+                name="Auth Link", value=get_site_url(), inline=False
             )
-        embed.color = Color.blue()
-        embed.description = "Alliance Auth Managed EvE Online Discord Server!"
-        if ctx.guild.description:
-            embed.description = ctx.guild.description
-        embed.set_footer(
-            text="AuthBot Lovingly developed for Init.™ by AaronRin and ArielKable")
 
-        members = ctx.guild.member_count
-        embed.add_field(name="Unwilling Monitorees:",
-                        value=members, inline=True)
-
-        channels = len(ctx.guild.channels)
-        cats = len(ctx.guild.categories)
-        embed.add_field(name="Channel Count:",
-                        value=channels-cats, inline=True)
-
-        roles = len(ctx.guild.roles)
-        embed.add_field(name="Role Count:",
-                        value=roles, inline=True)
-
-        embed.add_field(
-            name="Auth Link", value=get_site_url(), inline=False
-        )
-
-        return await ctx.respond(embed=embed)
+            return await ctx.respond(embed=embed)
+        else:
+            return await ctx.respond(
+                "Sorry, this command cannot be used in DMs."
+            )
 
 
 def setup(bot):
