@@ -23,7 +23,8 @@ class Auth(commands.Cog):
     async def auth(self, ctx):
         """
         Returns a link to the AllianceAuth Install
-        Used by many other Bots and is a common command that users will attempt to run.
+        Used by many other Bots and is a common command that
+        users will attempt to run.
         """
         await ctx.trigger_typing()
 
@@ -47,7 +48,8 @@ class Auth(commands.Cog):
     async def auth_slash(self, ctx):
         """
         Returns a link to the AllianceAuth Install
-        Used by many other Bots and is a common command that users will attempt to run.
+        Used by many other Bots and is a common command that
+        users will attempt to run.
         """
         if ctx.guild:
             embed = Embed(title="AllianceAuth")
