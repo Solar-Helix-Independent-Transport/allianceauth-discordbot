@@ -19,7 +19,7 @@ class EasterEggs(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.slash_command(name='happybirthday', guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    @commands.slash_command(name='happybirthday')
     async def happybirthday(self, ctx,  user: User):
         """
         Takes one Discord User as an argument, Wishes this user a happy birthday
