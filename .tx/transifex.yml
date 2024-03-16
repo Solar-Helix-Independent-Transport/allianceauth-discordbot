@@ -1,9 +1,9 @@
 filters:
   - filter_type: file
     file_format: PO
-    source_file: discordbot/locale/en/LC_MESSAGES/django.po
+    source_file: aadiscordbot/locale/en/LC_MESSAGES/django.po
     source_language: en
-    translation_files_expression: discordbot/locale/<lang>/LC_MESSAGES/django.po
+    translation_files_expression: aadiscordbot/locale/<lang>/LC_MESSAGES/django.po
 
 settings:
   language_mapping:
