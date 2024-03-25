@@ -3,10 +3,6 @@ from random import randrange
 
 from discord.ext import commands
 
-from django.conf import settings
-
-from aadiscordbot import __branch__, __version__
-
 logger = logging.getLogger(__name__)
 
 

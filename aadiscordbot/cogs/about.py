@@ -5,8 +5,6 @@ from discord.commands import SlashCommandGroup
 from discord.embeds import Embed
 from discord.ext import commands
 
-from django.conf import settings
-
 from aadiscordbot import __branch__, __version__
 from aadiscordbot.app_settings import get_site_url
 

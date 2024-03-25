@@ -3,8 +3,6 @@ import logging
 from discord import User
 from discord.ext import commands
 
-from django.conf import settings
-
 logger = logging.getLogger(__name__)
 
 
