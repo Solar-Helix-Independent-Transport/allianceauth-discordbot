@@ -122,7 +122,7 @@ DISCORD_BOT_FAILURE_MESSAGES_CHANNEL = getattr(
 PRICE_CHECK_HOSTNAME = getattr(
     settings, 'PRICE_CHECK_HOSTNAME', "evepraisal.com")
 
-// List of ints to sync commands
+# List of ints to sync commands
 DISCORD_GUILD_IDS = getattr(settings, 'DISCORD_GUILD_IDS', [])
 
 DISCORD_GUILD_ID = getattr(settings, 'DISCORD_GUILD_ID', None)
