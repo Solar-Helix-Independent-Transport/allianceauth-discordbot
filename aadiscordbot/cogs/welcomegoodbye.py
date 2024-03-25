@@ -9,7 +9,7 @@ from discord.ext import commands
 
 from aadiscordbot.app_settings import get_site_url
 from aadiscordbot.models import GoodbyeMessage, WelcomeMessage
-from aadiscordbot.utils.auth import user_is_authenticated
+from aadiscordbot.utils.auth import is_user_authenticated
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +32,7 @@ class Welcome(commands.Cog):
             try:
                 # Give AA a chance to save the UID for a joiner.
                 await asyncio.sleep(3)
-                authenticated = user_is_authenticated(member, member.guild)
+                authenticated = is_user_authenticated(member, member.guild)
             except Exception:
                 authenticated = False
             if authenticated:
@@ -86,7 +86,7 @@ class Goodbye(commands.Cog):
         if channel is not None:
             try:
                 # Give AA a chance to save the UID for a joiner.
-                authenticated = user_is_authenticated(member, member.guild)
+                authenticated = is_user_authenticated(member, member.guild)
             except Exception:
                 authenticated = False
             if authenticated:

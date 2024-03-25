@@ -60,7 +60,7 @@ class RecruitMe(commands.Cog):
         name="Create Recruitment Thread",
         guild_ids=app_settings.get_all_servers()
     )
-    async def reverse_recruit_msg(
+    async def reverse_recruit_msg_context(
         self,
         ctx,
         message
@@ -74,7 +74,7 @@ class RecruitMe(commands.Cog):
         name="Recruit Member",
         guild_ids=app_settings.get_all_servers()
     )
-    async def reverse_recruit_user(
+    async def reverse_recruit_user_context(
         self, ctx, user
     ):
         """

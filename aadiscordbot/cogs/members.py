@@ -15,7 +15,7 @@ from allianceauth.eveonline.models import EveCharacter, EveCorporationInfo
 
 from aadiscordbot.app_settings import aastatistics_active
 from aadiscordbot.cogs.utils.decorators import (
-    guild_is_managed, has_any_perm, in_channels, message_in_channels,
+    has_any_perm, in_channels, is_guild_managed, message_in_channels,
     sender_has_any_perm,
 )
 
@@ -156,7 +156,7 @@ class Members(commands.Cog):
             return embed
 
     @commands.command(pass_context=True)
-    @guild_is_managed()
+    @is_guild_managed()
     @sender_has_any_perm(['corputils.view_alliance_corpstats', 'corpstats.view_alliance_corpstats', 'aadiscordbot.member_command_access'])
     @message_in_channels(settings.ADMIN_DISCORD_BOT_CHANNELS)
     async def lookup(self, ctx):
@@ -172,7 +172,7 @@ class Members(commands.Cog):
         return list(EveCharacter.objects.filter(character_name__icontains=ctx.value).values_list('character_name', flat=True)[:10])
 
     @commands.slash_command(name='lookup')
-    @guild_is_managed()
+    @is_guild_managed()
     @sender_has_any_perm(['corputils.view_alliance_corpstats', 'corpstats.view_alliance_corpstats', 'aadiscordbot.member_command_access'])
     @message_in_channels(settings.ADMIN_DISCORD_BOT_CHANNELS)
     @option("character", description="Search for a Character!", autocomplete=search_characters)
@@ -249,7 +249,7 @@ class Members(commands.Cog):
             return embeds
 
     @commands.slash_command(name='altcorp')
-    @guild_is_managed()
+    @is_guild_managed()
     @sender_has_any_perm(['aadiscordbot.member_command_access'])
     @message_in_channels(settings.ADMIN_DISCORD_BOT_CHANNELS)
     @option("corporation", description="Search for a Character!", autocomplete=search_corps_on_characters)
@@ -269,7 +269,7 @@ class Members(commands.Cog):
             await ctx.respond("No Members Found!")
 
     @commands.command(pass_context=True)
-    @guild_is_managed()
+    @is_guild_managed()
     @sender_has_any_perm(['aadiscordbot.member_command_access'])
     @message_in_channels(settings.ADMIN_DISCORD_BOT_CHANNELS)
     async def altcorp(self, ctx):
