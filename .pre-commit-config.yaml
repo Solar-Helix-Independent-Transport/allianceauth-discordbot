@@ -95,3 +95,21 @@ repos:
     rev: v1.5.0
     hooks:
       - id: yesqa
+  # Infrastructure
+  - repo: https://github.com/tox-dev/pyproject-fmt
+    rev: 1.7.0
+    hooks:
+      - id: pyproject-fmt
+        name: pyproject.toml formatter
+        description: "Format the pyproject.toml file."
+        args:
+          - --indent=4
+        additional_dependencies:
+          - tox==4.14.2 # https://github.com/tox-dev/tox/releases/latest
+
+  - repo: https://github.com/abravalheri/validate-pyproject
+    rev: v0.16
+    hooks:
+      - id: validate-pyproject
+        name: Validate pyproject.toml
+        description: "Validate the pyproject.toml file."
