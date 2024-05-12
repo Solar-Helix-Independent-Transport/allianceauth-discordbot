@@ -4,15 +4,37 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "allianceauth-discordbot"
-authors = [{name = "AaronKable", email = "aaronkable@gmail.com"}]
+dynamic = ["version", "description" ]
 readme = "README.md"
 license = {file = "LICENSE"}
-classifiers = [
-    "Framework :: Django",
-    "License :: OSI Approved :: MIT License",
-
+requires-python = ">=3.8"
+authors = [
+    { name = "AaronKable", email = "aaronkable@gmail.com"}
 ]
-dynamic = ["version", "description"]
+keywords = [
+    "allianceauth",
+    "eveonline",
+]
+classifiers = [
+    "Environment :: Web Environment",
+    "Framework :: Celery",
+    "Framework :: Django",
+    "Framework :: Django :: 4.0",
+    "Framework :: Django :: 4.2",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content"
+]
 dependencies = [
     "allianceauth>=3.0.0,<5.0.0",
     "py-cord>2.0.0,<3.0.0",
@@ -20,9 +42,6 @@ dependencies = [
     "redis>=4.2.0,<5.0.0",
     "django-solo>=2.1.0,<3.0.0"
 ]
-
-[tool.flit.module]
-name = "aadiscordbot"
 
 [project.urls]
 Home = "https://github.com/Solar-Helix-Independent-Transport/allianceauth-discordbot"
