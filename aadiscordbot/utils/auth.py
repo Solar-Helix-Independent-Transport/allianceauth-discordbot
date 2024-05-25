@@ -22,6 +22,8 @@ logger = logging.getLogger(__name__)
 
 DMV_ACTIVE = dmv_active()
 DISCORD_ACTIVE = discord_active()
+
+
 try:
     if DISCORD_ACTIVE:
         # this needs to be imported safely incase only DMV installed
