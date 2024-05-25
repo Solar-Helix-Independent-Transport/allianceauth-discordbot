@@ -50,10 +50,9 @@ AA-Discordbot for [Alliance Auth](https://gitlab.com/allianceauth/allianceauth).
     * get_webhooks - returns any webhooks setup in this current channel, or creates one for you and returns that
     * uptime - how long the bot has been up for
 
-
 ## Installation
 
-* Ensure you have installed and configured the Alliance Auth Discord Service, https://allianceauth.readthedocs.io/en/latest/features/services/discord.html
+* Ensure you have installed and configured the Alliance Auth Discord Service, <https://allianceauth.readthedocs.io/en/latest/features/services/discord.html>
 
 * Update your [Discord Developer Application](https://discord.com/developers/applications) to include the Privileged Intents that we call. Please enable all intents.
 
@@ -118,6 +117,42 @@ app.conf.task_routes = {'aadiscordbot.tasks.*': {'queue': 'aadiscordbot'}}
 wget https://raw.githubusercontent.com/pvyParts/allianceauth-discordbot/master/bot_conf.py
 ```
 
+## Running Discordbot with Docker
+
+Update base image to have bot_conf.py mapped
+
+```dockerfile
+x-allianceauth-base:
+
+# image: ${AA_DOCKER_TAG?err}
+
+  &allianceauth-base
+  build:
+    context: .
+    dockerfile: custom.dockerfile
+    args:
+      AA_DOCKER_TAG: ${AA_DOCKER_TAG?err}
+  restart: always
+  env_file:
+    - ./.env
+  volumes:
+...
+    - ./conf/bot_conf.py:/home/allianceauth/myauth/bot_conf.py
+...
+```
+
+Add a service to run the Discordbot
+
+```dockerfile
+  allianceauth_discordbot:
+    container_name: allianceauth_discordbot
+    <<: [ *allianceauth-base ]
+    restart: on-failure:1
+    entrypoint: [ "python", "/home/allianceauth/myauth/bot_conf.py" ]
+```
+
+## Running DiscordBot with Supervisor
+
 * Amend your supervisor.conf, correcting paths as required and add `authbot` to the launch group at the end of the conf
 
 ```ini
@@ -142,13 +177,14 @@ priority=999
 
 Go to admin and configure your admin users in the bot config model.
 
-
 > Enable groups/states/users to utilize the lookup command by adding permissions under **corputils | corp stats |**
+
 ```ini
 corputils.view_alliance_corpstats
 ```
 
 ## Optional Settings
+
 ### Built in Cogs
 ```python
 # Change the bots default Cogs, add or remove if you want to use any of the extra cogs.
@@ -177,6 +213,7 @@ DISCORD_BOT_COGS = [
 ```
 
 ### Additional Rate Limiting
+
 ```python
 # configure the optional rate limited
 # this is a bot_task function and how many / time period
@@ -191,32 +228,42 @@ DISCORD_BOT_TASK_RATE_LIMITS = {
 ```
 
 ## Reaction Roles
+>
 > ❗❗❗ **This will bypass the Group Leadership/Join Request System**: This is intended for open groups but not limited to it! ❗❗❗
 
 The bot is able to run a reaction roles system that is compatible with auth and public users on a discord.
- - If a member is part of auth it will do auth syncing of roles
- - If a member is not found in auth and the reaction role message has the public flag set it will assign roles to anyone who reacts
 
-### How To Reaction Role!
+* If a member is part of auth it will do auth syncing of roles
+* If a member is not found in auth and the reaction role message has the public flag set it will assign roles to anyone who reacts
+
+### How To Reaction Role
+
  1. Setup the inital Message you wish to use buy using the command `!rr`
-   - *Optional* Edit the name and settings of this message in `Admin > Discord Bot > Reaction Role Messages`
+
+    * _Optional_ Edit the name and settings of this message in `Admin > Discord Bot > Reaction Role Messages`
+
  2. React to the message with the reactions you wish to use.
  3. The bot will counter react to the reactions when it creates the binding in auth.
  4. Goto `Admin > Discord Bot > Reaction Role Bindings`
  5. Assign the groups you want for each reaction
 
 #### Messages Admin
+
 ![https://cdn.discordapp.com/attachments/639369068930924546/936082605156237332/unknown.png](https://cdn.discordapp.com/attachments/639369068930924546/936082605156237332/unknown.png)
+
 #### Reactions Admin
+
 ![https://cdn.discordapp.com/attachments/639369068930924546/936084126379962378/unknown.png](https://cdn.discordapp.com/attachments/639369068930924546/936084126379962378/unknown.png)
 
 ## Integrations
+
 * [Statistics](https://github.com/pvyParts/aa-statistics)
   * Adds zkill Monthly/Yearly stats to !lookup
 * [timezones](https://github.com/ppfeufer/aa-timezones)
   * Updates the `time` command to have all timezones configured in auth.
 
 ## Welcome Messaages
+
 `
 With the WelcomeGoodbye Cog activated, Discordbot will grab a random message from the Welcome or Goodbye Message Model and send it to the Guild System channel
 
@@ -227,7 +274,8 @@ The messages support some string formatting
 * `{user_mention} - A Discord @ Mention
 * `{guild_name} - The name of the Discord Server
 * `{auth_url} - A link to Auth
-```
+
+```text
 Welcome {user_mention} to {guild_name}, I hope you enjoy your stay.
 
 You can Authenticate for more access {auth_url}
@@ -243,23 +291,26 @@ The groups available for selection are configurable in the site admin under
 `Discord Bot > Ticket Cog Configuration`
 
 You also need to choose a channel to create the threads in from the site admin `Discord Bot > Ticket Cog Configuration`:
-  - Anyone who can use the `/help` command must have View and Send Message permissions on this channel otherwise they will not be able to see the tickets authbot creates for them
-  - Authbot must have the permissions to create private threads in this channel
-  - Authbot must have the permissions to send messages to this channel
 
+* Anyone who can use the `/help` command must have View and Send Message permissions on this channel otherwise they will not be able to see the tickets authbot creates for them
+* Authbot must have the permissions to create private threads in this channel
+* Authbot must have the permissions to send messages to this channel
 
 ## Using AA-Discordbot from my project
 
 ### Send Messages
+
 You can use the send_message helper to send a message with text/embed to:
-  - Discord user_id
-  - Discord channel_id
-  - Auth User Model Object
-  - Auth user_pk
+
+* Discord user_id
+* Discord channel_id
+* Auth User Model Object
+* Auth user_pk
 
 [aadiscordbot/tasks.py](https://github.com/pvyParts/allianceauth-discordbot/blob/master/aadiscordbot/tasks.py)
 
 ### Example Usage
+
 ```python
 from django.contrib.auth.models import User
 from django.apps import apps
@@ -336,14 +387,17 @@ if discord_bot_active():
 ### Registering 3rd Party Cogs (Handling Commands)
 
 In `auth_hooks.py`, define a function that returns an array of cog modules, and register it as a `discord_cogs_hook`:
+
 ```python
 @hooks.register('discord_cogs_hook')
 def register_cogs():
     return ["yourapp.cogs.cog_a", "yourapp.cogs.cog_b"]
 ```
 
-## Optional Settings
+## Optional Settings continued
+
 ### Isolate AuthBot from Auth's Discord Service
+
 ```python
 AUTHBOT_DISCORD_APP_ID = 'App ID for dedicated bot'
 AUTHBOT_DISCORD_BOT_TOKEN = 'Token for dedicated bot'
@@ -356,6 +410,7 @@ Please remember to report any aa-discordbot related issues using the issues on *
 ## Troubleshooting
 
 ### Py-Cord and discord.py fighting in venv
+
 **Problem:**
 
 Something has gone funny with my venv after i installed another app that wanted `discord.py`
@@ -365,6 +420,7 @@ Something has gone funny with my venv after i installed another app that wanted 
 This is due to the Py-cord lib sharing the `discord` namespace. Py-Cord is however a drop in replacement. So no issues should arise from using it over the now legacy discord.py lib. **YMMV**
 
 **Fix:**
+
  1. Uninstall `discord.py` by running `pip uninstall discord.py` with your venv active.
  2. Reinstall `py-cord` by running `pip install -U py-cord==2.0.0b3` with your venv active.
  3. Approach the dev from the app that overrode your py-cord to update to a maintained lib.

@@ -4,27 +4,74 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "allianceauth-discordbot"
-authors = [{name = "AaronKable", email = "aaronkable@gmail.com"}]
+dynamic = ["version", "description" ]
 readme = "README.md"
 license = {file = "LICENSE"}
-classifiers = [
-    "Framework :: Django",
-    "License :: OSI Approved :: MIT License",
-
+requires-python = ">=3.8"
+authors = [
+    { name = "AaronKable", email = "aaronkable@gmail.com"}
 ]
-dynamic = ["version", "description"]
+keywords = [
+    "allianceauth",
+    "eveonline",
+]
+classifiers = [
+    "Environment :: Web Environment",
+    "Framework :: Celery",
+    "Framework :: Django",
+    "Framework :: Django :: 4.0",
+    "Framework :: Django :: 4.2",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content"
+]
 dependencies = [
-    "allianceauth>=2.9.0",
+    "allianceauth>=3.0.0,<5.0.0",
     "py-cord>2.0.0,<3.0.0",
-    "pendulum>=2.1.2,<3.0.0",
+    "pendulum>=2.1.2,<4.0.0",
     "redis>=4.2.0,<5.0.0",
     "django-solo>=2.1.0,<3.0.0"
 ]
-
-[tool.flit.module]
-name = "aadiscordbot"
 
 [project.urls]
 Home = "https://github.com/Solar-Helix-Independent-Transport/allianceauth-discordbot"
 Source = "https://github.com/Solar-Helix-Independent-Transport/allianceauth-discordbot"
 Tracker = "https://github.com/Solar-Helix-Independent-Transport/allianceauth-discordbot/issues"
+[tool.flit.module]
+name = "aadiscordbot"
+
+[tool.isort]
+profile = "django"
+sections = [
+    "FUTURE",
+    "STDLIB",
+    "THIRDPARTY",
+    "DJANGO",
+    "ALLIANCEAUTH",
+    "FIRSTPARTY",
+    "LOCALFOLDER"
+]
+known_allianceauth = ["allianceauth", "esi"]
+known_django = ["django"]
+skip_gitignore = true
+
+[tool.flake8]
+exclude = [".git", "*migrations*", ".tox", "dist", "htmlcov"]
+max-line-length = 119
+select = ["C", "E", "F", "W", "B", "B950"]
+ignore = ['E203', 'E231', 'E501', 'W503', 'W291', 'W293']
+
+[tool.djlint]
+max_attribute_length=119
+max_line_length=119
+max_blank_lines=1
