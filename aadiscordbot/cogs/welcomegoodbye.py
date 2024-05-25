@@ -7,6 +7,8 @@ import logging
 import discord
 from discord.ext import commands
 
+from django.db.models import Q
+
 from aadiscordbot.app_settings import get_site_url
 from aadiscordbot.models import GoodbyeMessage, WelcomeMessage
 from aadiscordbot.utils.auth import is_user_authenticated
@@ -38,8 +40,10 @@ class Welcome(commands.Cog):
             if authenticated:
                 try:
                     message = WelcomeMessage.objects.filter(
+                        Q(
+                            Q(guild_id=member.guild.id) | Q(guild_id=None)
+                        ),
                         authenticated=True,
-                        guild_id=member.guild.id
                     ).order_by('?').first().message
                     message_formatted = message.format(
                         user_mention=member.mention,
@@ -54,8 +58,10 @@ class Welcome(commands.Cog):
             else:
                 try:
                     message = WelcomeMessage.objects.filter(
+                        Q(
+                            Q(guild_id=member.guild.id) | Q(guild_id=None)
+                        ),
                         unauthenticated=True,
-                        guild_id=member.guild.id
                     ).order_by('?').first().message
                     message_formatted = message.format(
                         user_mention=member.mention,
@@ -80,7 +86,7 @@ class Goodbye(commands.Cog):
     @commands.Cog.listener("on_member_remove")
     async def on_member_remove(self, member: discord.Member):
         logger.info(
-            f"{member} joined {member.guild.name}"
+            f"{member} Left {member.guild.name}"
         )
         channel = member.guild.system_channel
         if channel is not None:
@@ -93,8 +99,10 @@ class Goodbye(commands.Cog):
                 # Authenticated
                 try:
                     message = GoodbyeMessage.objects.filter(
+                        Q(
+                            Q(guild_id=member.guild.id) | Q(guild_id=None)
+                        ),
                         authenticated=True,
-                        guild_id=member.guild.id
                     ).order_by('?').first().message
                     message_formatted = message.format(
                         user_mention=member.mention,
@@ -111,8 +119,10 @@ class Goodbye(commands.Cog):
                 # Un-Authenticated
                 try:
                     message = GoodbyeMessage.objects.filter(
+                        Q(
+                            Q(guild_id=member.guild.id) | Q(guild_id=None)
+                        ),
                         unauthenticated=True,
-                        guild_id=member.guild.id
                     ).order_by('?').first().message
                     message_formatted = message.format(
                         user_mention=member.mention,
@@ -123,7 +133,7 @@ class Goodbye(commands.Cog):
                     logger.error(
                         'No Leave Message configured for Discordbot Goodbye cog')
                 except Exception as e:
-                    logger.error(e)
+                    logger.error(e, stack_info=True)
 
 
 def setup(bot):
