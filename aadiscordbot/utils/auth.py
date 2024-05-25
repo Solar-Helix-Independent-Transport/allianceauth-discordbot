@@ -10,6 +10,7 @@
 """
 
 import logging
+import warnings
 
 from discord import Guild, User
 
@@ -129,6 +130,11 @@ def is_guild_managed(guild: Guild):
 
 
 def user_is_authenticated(user: User, guild: Guild):
+    warnings.warn(
+        "user_is_authenticated is deprecated use is_user_authenticated instead",
+        DeprecationWarning,
+        stacklevel=2
+    )
     logger.warning("user_is_authenticated is deprecated use is_user_authenticated instead")
     return is_user_authenticated(user, guild)
 
