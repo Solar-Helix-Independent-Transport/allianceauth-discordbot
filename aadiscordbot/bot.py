@@ -29,10 +29,9 @@ from aadiscordbot.app_settings import (
     DISCORD_BOT_ACCESS_DENIED_REACT, DISCORD_BOT_MESSAGE_INTENT,
     DISCORD_BOT_PREFIX,
 )
-from aadiscordbot.cogs.utils.exceptions import NotAuthenticated
+from aadiscordbot.cogs.utils.exceptions import NotAuthenticated, NotManaged
 
 from . import bot_tasks
-from .cogs.utils import context
 
 description = """
 AuthBot is watching...
@@ -285,7 +284,7 @@ class AuthBot(commands.Bot):
             await self.process_application_commands(interaction)
             django.db.close_old_connections()
         except Exception as e:
-            logger.error("Interaction Failed {e}", stack_info=True)
+            logger.error(f"Interaction Failed {e}", stack_info=True)
 
     async def on_message(self, message):
         if message.author.bot:
@@ -295,7 +294,7 @@ class AuthBot(commands.Bot):
     async def sync_commands(self, *args, **kwargs):
         try:
             return await super(__class__, self).sync_commands(*args, **kwargs)
-        except discord.Forbidden:
+        except discord.Forbidden as e:
             logger.error(
                 "******************************************************")
             logger.error("|   AuthBot was Unable to Sync Slash Commands!!!!")
@@ -310,6 +309,7 @@ class AuthBot(commands.Bot):
             logger.error("|      3. Restart Bot")
             logger.error(
                 "******************************************************")
+            logger.error(e)
 
     @tasks.loop(seconds=1.0)
     async def poll_queue(self):
@@ -372,6 +372,8 @@ class AuthBot(commands.Bot):
         elif isinstance(exception, commands.MissingPermissions):
             await context.send_response(exception, ephemeral=True)
         elif isinstance(exception, NotAuthenticated):
+            await context.send_response(exception, ephemeral=True)
+        elif isinstance(exception, NotManaged):
             await context.send_response(exception, ephemeral=True)
         else:  # Catch everything, and close out the interactions gracefully.
             logger.error(f"Unknown Error {exception}")

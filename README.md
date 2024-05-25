@@ -186,8 +186,7 @@ corputils.view_alliance_corpstats
 ## Optional Settings
 
 ### Built in Cogs
-
- ```python
+```python
 # Change the bots default Cogs, add or remove if you want to use any of the extra cogs.
 
 DISCORD_BOT_COGS = [
@@ -209,6 +208,7 @@ DISCORD_BOT_COGS = [
   "aadiscordbot.cogs.quote", # Save and recall messages
   "aadiscordbot.cogs.prom_export", # Admin Level Logging cog
   "aadiscordbot.cogs.tickets", # Private thread ticket system with pingable groups.
+  "aadiscordbot.cogs.recruit_me", # Private thread recruitment ticket system.
   ]
 ```
 

@@ -15,7 +15,7 @@ from allianceauth.eveonline.models import EveCharacter, EveCorporationInfo
 
 from aadiscordbot.app_settings import aastatistics_active
 from aadiscordbot.cogs.utils.decorators import (
-    has_any_perm, in_channels, message_in_channels, sender_has_any_perm,
+    is_guild_managed, message_in_channels, sender_has_any_perm,
 )
 
 logger = logging.getLogger(__name__)
@@ -155,6 +155,7 @@ class Members(commands.Cog):
             return embed
 
     @commands.command(pass_context=True)
+    @is_guild_managed()
     @sender_has_any_perm(['corputils.view_alliance_corpstats', 'corpstats.view_alliance_corpstats', 'aadiscordbot.member_command_access'])
     @message_in_channels(settings.ADMIN_DISCORD_BOT_CHANNELS)
     async def lookup(self, ctx):
@@ -169,24 +170,21 @@ class Members(commands.Cog):
         """Returns a list of colors that begin with the characters entered so far."""
         return list(EveCharacter.objects.filter(character_name__icontains=ctx.value).values_list('character_name', flat=True)[:10])
 
-    @commands.slash_command(name='lookup', guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    @commands.slash_command(name='lookup')
+    @is_guild_managed()
+    @sender_has_any_perm(['corputils.view_alliance_corpstats', 'corpstats.view_alliance_corpstats', 'aadiscordbot.member_command_access'])
+    @message_in_channels(settings.ADMIN_DISCORD_BOT_CHANNELS)
     @option("character", description="Search for a Character!", autocomplete=search_characters)
     async def slash_lookup(
         self,
         ctx,
         character: str,
     ):
-        try:
-            in_channels(ctx.channel.id, settings.ADMIN_DISCORD_BOT_CHANNELS)
-            has_any_perm(ctx.author.id, ['corputils.view_alliance_corpstats',
-                         'corpstats.view_alliance_corpstats', 'aadiscordbot.member_command_access'])
-            await ctx.defer()
-            return await ctx.respond(embed=self.get_lookup_embed(character))
-        except commands.MissingPermissions as e:
-            return await ctx.respond(e.missing_permissions[0], ephemeral=True)
+        await ctx.defer()
+        return await ctx.respond(embed=self.get_lookup_embed(character))
 
     async def search_corps_on_characters(ctx: AutocompleteContext):
-        """Returns a list of colors that begin with the characters entered so far."""
+        """Returns a list of corporations that begin with the characters entered so far."""
         return list(EveCharacter.objects.filter(corporation_name__icontains=ctx.value).values_list('corporation_name', flat=True).distinct()[:10])
 
     def build_altcorp_embeds(self, input_name):
@@ -198,7 +196,6 @@ class Members(commands.Cog):
             knowns = 0
             for c in chars:
                 corp_id = c.corporation_id
-                alliance = c.alliance_name
                 if c.alliance_id not in own_ids:
                     alts_in_corp.append(c)
 
@@ -210,7 +207,7 @@ class Members(commands.Cog):
                         mains[main.character_id] = [main, 0]
                     mains[main.character_id][1] += 1
                     knowns += 1
-                except Exception as e:
+                except Exception:
                     # logger.error(e)
                     pass
             output = []
@@ -249,31 +246,31 @@ class Members(commands.Cog):
                 embeds.append(embed)
             return embeds
 
-    @commands.slash_command(name='altcorp', guild_ids=[int(settings.DISCORD_GUILD_ID)])
-    @option("corporation", description="Search for a Character!", autocomplete=search_corps_on_characters)
+    @commands.slash_command(name='altcorp')
+    @is_guild_managed()
+    @sender_has_any_perm(['aadiscordbot.member_command_access'])
+    @message_in_channels(settings.ADMIN_DISCORD_BOT_CHANNELS)
+    @option("corporation",
+            description="Search for a Character!",
+            autocomplete=search_corps_on_characters)
     async def slash_altcorp(
         self,
         ctx,
         corporation: str,
     ):
-        try:
-            in_channels(ctx.channel.id, settings.ADMIN_DISCORD_BOT_CHANNELS)
-            has_any_perm(ctx.author.id, ['corputils.view_alliance_corpstats',
-                         'corpstats.view_alliance_corpstats', 'aadiscordbot.member_command_access'])
-            await ctx.defer()
-            embeds = self.build_altcorp_embeds(corporation)
-            if len(embeds):
-                e = embeds.pop(0)
-                await ctx.respond(embed=e)
-                for e in embeds:
-                    await ctx.send(embed=e)
-            else:
-                await ctx.respond("No Members Found!")
-        except commands.MissingPermissions as e:
-            return await ctx.respond(e.missing_permissions[0], ephemeral=True)
+        await ctx.defer()
+        embeds = self.build_altcorp_embeds(corporation)
+        if len(embeds):
+            e = embeds.pop(0)
+            await ctx.respond(embed=e)
+            for e in embeds:
+                await ctx.send(embed=e)
+        else:
+            await ctx.respond("No Members Found!")
 
     @commands.command(pass_context=True)
-    @sender_has_any_perm(['corputils.view_alliance_corpstats', 'corpstats.view_alliance_corpstats', 'aadiscordbot.member_command_access'])
+    @is_guild_managed()
+    @sender_has_any_perm(['aadiscordbot.member_command_access'])
     @message_in_channels(settings.ADMIN_DISCORD_BOT_CHANNELS)
     async def altcorp(self, ctx):
         """

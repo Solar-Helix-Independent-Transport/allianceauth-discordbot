@@ -8,7 +8,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from allianceauth.services.modules.discord.models import DiscordUser
 
 from aadiscordbot.app_settings import get_admins
-from aadiscordbot.cogs.utils.exceptions import NotAuthenticated
+from aadiscordbot.cogs.utils.exceptions import NotAuthenticated, NotManaged
+from aadiscordbot.utils import auth
 
 logger = logging.getLogger(__name__)
 
@@ -20,8 +21,8 @@ def has_perm(id, perm: str):
     if id in get_admins():
         return True
     try:
-        user = DiscordUser.objects.get(uid=id)
-        has_perm = user.user.has_perm(perm)
+        user = auth.get_auth_user(id)
+        has_perm = user.has_perm(perm)
 
         if has_perm:
             return True
@@ -45,11 +46,29 @@ def sender_has_perm(perm: str):
     return commands.check(predicate)
 
 
+def is_guild_managed():
+    """
+    Managed Guild Decorator: Is the guild managed by Auth
+    """
+    def predicate(ctx):
+        if hasattr(ctx, "guild"):
+            managed = auth.is_guild_managed(ctx.guild)
+            logger.debug(f"Guild is Managed: {managed}")
+            if not managed:
+                raise NotManaged()
+            return managed
+        else:
+            return False
+
+    return commands.check(predicate)
+
+
 def has_all_perms(id, perms: list):
     if id in get_admins():
         return True
     try:
-        has_perm = DiscordUser.objects.get(uid=id).user.has_perms(perms)
+        user = auth.get_auth_user(id)
+        has_perm = user.has_perms(perms)
         if has_perm:
             return True
         else:
@@ -76,8 +95,9 @@ def has_any_perm(id, perms: list):
     if id in get_admins():
         return True
     for perm in perms:
+        user = auth.get_auth_user(id)
         try:
-            has_perm = DiscordUser.objects.get(uid=id).user.has_perm(perm)
+            has_perm = user.has_perm(perm)
             if has_perm:
                 return True
         except Exception as e:
@@ -100,6 +120,12 @@ def sender_has_any_perm(perms: list):
 
 
 def is_admin(id):
+    """
+        Deprecated use `aadiscordbot.utils.auth.user_is_authenticated` instead
+    """
+    logger.warning("aadiscordbot.cogs.utils.is_authenticated is deprecated."
+                   "Use aadiscordbot.utils.auth.user_is_authenticated instead.")
+
     if id in get_admins():
         return True
     else:
@@ -127,11 +153,23 @@ def in_channels(channel, channels):
 
 def message_in_channels(channels: list):
     def predicate(ctx):
-        return in_channels(ctx.message.channel.id, channels)
+        if hasattr(ctx, "message") and ctx.message is not None:
+            logger.debug("Decorator message_in_channels .message")
+            return in_channels(ctx.message.channel.id, channels)
+        elif hasattr(ctx, "channel") and ctx.channel is not None:
+            logger.debug("Decorator message_in_channels .channel")
+            return in_channels(ctx.channel.id, channels)
+        else:
+            return False
     return commands.check(predicate)
 
 
 def is_authenticated(id):
+    """
+        Deprecated use `aadiscordbot.utils.auth.user_is_authenticated` instead
+    """
+    logger.warning("aadiscordbot.cogs.utils.is_authenticated is deprecated."
+                   "Use aadiscordbot.utils.auth.user_is_authenticated instead.")
     try:
         DiscordUser.objects.get(uid=id)
         return True
@@ -141,8 +179,19 @@ def is_authenticated(id):
 
 def sender_is_authenticated():
     """
-    Permission Decorator: Is the user Authenticated
+        Permission Decorator: Is the user Authenticated
+        Deprecated use `aadiscordbot.utils.auth.user_is_authenticated` instead
+    """
+
+    def predicate(ctx):
+        return auth.user_is_authenticated(ctx.user.id)
+    return commands.check(predicate)
+
+
+def is_sender_authenticated():
+    """
+        Permission Decorator: Is the user Authenticated to auth
     """
     def predicate(ctx):
-        return is_authenticated(ctx.user.id)
+        return auth.user_is_authenticated(ctx.user.id)
     return commands.check(predicate)

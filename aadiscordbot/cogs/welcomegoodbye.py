@@ -7,9 +7,11 @@ import logging
 import discord
 from discord.ext import commands
 
+from django.db.models import Q
+
 from aadiscordbot.app_settings import get_site_url
 from aadiscordbot.models import GoodbyeMessage, WelcomeMessage
-from aadiscordbot.utils.auth import user_is_authenticated
+from aadiscordbot.utils.auth import is_user_authenticated
 
 logger = logging.getLogger(__name__)
 
@@ -24,19 +26,24 @@ class Welcome(commands.Cog):
 
     @commands.Cog.listener("on_member_join")
     async def on_member_join(self, member: discord.Member):
+        logger.info(
+            f"{member} joined {member.guild.name}"
+        )
         channel = member.guild.system_channel
         if channel is not None:
             try:
                 # Give AA a chance to save the UID for a joiner.
                 await asyncio.sleep(3)
-                authenticated = user_is_authenticated(member, member.guild)
+                authenticated = is_user_authenticated(member, member.guild)
             except Exception:
                 authenticated = False
             if authenticated:
                 try:
                     message = WelcomeMessage.objects.filter(
+                        Q(
+                            Q(guild_id=member.guild.id) | Q(guild_id=None)
+                        ),
                         authenticated=True,
-                        guild_id=member.guild.id
                     ).order_by('?').first().message
                     message_formatted = message.format(
                         user_mention=member.mention,
@@ -51,8 +58,10 @@ class Welcome(commands.Cog):
             else:
                 try:
                     message = WelcomeMessage.objects.filter(
+                        Q(
+                            Q(guild_id=member.guild.id) | Q(guild_id=None)
+                        ),
                         unauthenticated=True,
-                        guild_id=member.guild.id
                     ).order_by('?').first().message
                     message_formatted = message.format(
                         user_mention=member.mention,
@@ -76,19 +85,24 @@ class Goodbye(commands.Cog):
 
     @commands.Cog.listener("on_member_remove")
     async def on_member_remove(self, member: discord.Member):
+        logger.info(
+            f"{member} Left {member.guild.name}"
+        )
         channel = member.guild.system_channel
         if channel is not None:
             try:
                 # Give AA a chance to save the UID for a joiner.
-                authenticated = user_is_authenticated(member, member.guild)
+                authenticated = is_user_authenticated(member, member.guild)
             except Exception:
                 authenticated = False
             if authenticated:
                 # Authenticated
                 try:
                     message = GoodbyeMessage.objects.filter(
+                        Q(
+                            Q(guild_id=member.guild.id) | Q(guild_id=None)
+                        ),
                         authenticated=True,
-                        guild_id=member.guild.id
                     ).order_by('?').first().message
                     message_formatted = message.format(
                         user_mention=member.mention,
@@ -105,8 +119,10 @@ class Goodbye(commands.Cog):
                 # Un-Authenticated
                 try:
                     message = GoodbyeMessage.objects.filter(
+                        Q(
+                            Q(guild_id=member.guild.id) | Q(guild_id=None)
+                        ),
                         unauthenticated=True,
-                        guild_id=member.guild.id
                     ).order_by('?').first().message
                     message_formatted = message.format(
                         user_mention=member.mention,
@@ -117,7 +133,7 @@ class Goodbye(commands.Cog):
                     logger.error(
                         'No Leave Message configured for Discordbot Goodbye cog')
                 except Exception as e:
-                    logger.error(e)
+                    logger.error(e, stack_info=True)
 
 
 def setup(bot):

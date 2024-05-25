@@ -1,6 +1,5 @@
 from solo.models import SingletonModel
 
-from django.conf import settings
 from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -81,7 +80,7 @@ class ReactionRoleBinding(models.Model):
     def __str__(self):
         try:
             b = eval(self.emoji_text).decode('utf-8')
-        except:
+        except Exception:
             b = self.emoji_text
         return f'{self.message.name}: {b} ({self.group})'
 
@@ -107,7 +106,7 @@ class WelcomeMessage(models.Model):
     authenticated = models.BooleanField(_("Valid for Authenticated Users"))
     unauthenticated = models.BooleanField(
         _("Valid for Un-Authenticated Users"))
-    guild_id = models.BigIntegerField(default=settings.DISCORD_GUILD_ID)
+    guild_id = models.BigIntegerField(default=None, null=True, blank=True)
 
     class Meta:
         default_permissions = ()
@@ -120,7 +119,7 @@ class GoodbyeMessage(models.Model):
     authenticated = models.BooleanField(_("Valid for Authenticated Users"))
     unauthenticated = models.BooleanField(
         _("Valid for Un-Authenticated Users"))
-    guild_id = models.BigIntegerField(default=settings.DISCORD_GUILD_ID)
+    guild_id = models.BigIntegerField(default=None, null=True, blank=True)
 
     class Meta:
         default_permissions = ()
