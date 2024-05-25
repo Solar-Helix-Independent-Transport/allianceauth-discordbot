@@ -1,5 +1,4 @@
 import re
-from inspect import getgeneratorlocals
 
 from django.apps import apps
 from django.conf import settings
@@ -48,6 +47,10 @@ def mumble_active():
 
 def discord_active():
     return apps.is_installed('allianceauth.services.modules.discord')
+
+
+def dmv_active():
+    return apps.is_installed('aadiscordmultiverse')
 
 
 DISCORD_BOT_PREFIX = getattr(settings, 'DISCORD_BOT_PREFIX', '!')
@@ -122,7 +125,7 @@ DISCORD_BOT_FAILURE_MESSAGES_CHANNEL = getattr(
 PRICE_CHECK_HOSTNAME = getattr(
     settings, 'PRICE_CHECK_HOSTNAME', "evepraisal.com")
 
-# List of ints to sync commands
+# List of ints to sync commands to non global commands
 DISCORD_GUILD_IDS = getattr(settings, 'DISCORD_GUILD_IDS', [])
 
 DISCORD_GUILD_ID = getattr(settings, 'DISCORD_GUILD_ID', None)

@@ -16,27 +16,31 @@ from discord import Guild, User
 
 from django.conf import settings
 
-from allianceauth.services.modules.discord.models import DiscordUser
-
-from aadiscordbot.app_settings import get_admins
+from aadiscordbot.app_settings import discord_active, dmv_active, get_admins
 
 logger = logging.getLogger(__name__)
 
-DMV_ACTIVE = False
 
 try:
-    from aadiscordmultiverse.models import (
-        DiscordManagedServer, MultiDiscordUser,
-    )
-
-    # TODO also check for in installed_apps
-    DMV_ACTIVE = True
+    if discord_active():
+        # this needs to be imported safely incase only DMV installed
+        from allianceauth.services.modules.discord.models import DiscordUser
 except ImportError:
-    logger.debug("DMV not installed")
+    logger.debug("Discord not installed?")
+
+
+try:
+    if dmv_active():
+        # this needs to be imported safely incase only Core service installed
+        from aadiscordmultiverse.models import (
+            DiscordManagedServer, MultiDiscordUser,
+        )
+except ImportError:
+    logger.debug("DMV not installed?")
 
 
 def _get_dmv_discord_user(user_id, guild_id):
-    if DMV_ACTIVE:
+    if dmv_active():
         try:
             return MultiDiscordUser.objects.get(
                 guild_id=guild_id,
@@ -85,8 +89,11 @@ def _guild_is_core_module(guild_id):
     """
     # May be string in settings so cast to int for check.
     # discord returns int for guild.id
-
-    return guild_id == int(getattr(settings, "DISCORD_GUILD_ID", -1))
+    return (
+        guild_id == (
+            int(getattr(settings, "DISCORD_GUILD_ID", -1)) and discord_active()
+        )
+    )
 
 
 def _guild_is_dmv_module(guild_id):
@@ -104,7 +111,7 @@ def _get_dmv_guild(guild_id):
     """
         Return DMV Guild model if DMV installed and
     """
-    if DMV_ACTIVE:
+    if dmv_active():
         try:
             return DiscordManagedServer.objects.get(
                 guild_id=guild_id,
