@@ -119,7 +119,11 @@ wget https://raw.githubusercontent.com/pvyParts/allianceauth-discordbot/master/b
 
 ## Running Discordbot with Docker
 
-Update base image to have bot_conf.py mapped
+* To download the `bot_conf.py` file into your `conf/` folder, run the following from your aa-docker folder
+```bash
+wget https://raw.githubusercontent.com/pvyParts/allianceauth-discordbot/master/bot_conf.py -O conf/bot_conf.py
+```
+* Update base image to have bot_conf.py mapped
 
 ```dockerfile
 x-allianceauth-base:

@@ -20,9 +20,10 @@ from aadiscordbot.app_settings import discord_active, dmv_active, get_admins
 
 logger = logging.getLogger(__name__)
 
-
+DMV_ACTIVE = dmv_active()
+DISCORD_ACTIVE = discord_active()
 try:
-    if discord_active():
+    if DISCORD_ACTIVE:
         # this needs to be imported safely incase only DMV installed
         from allianceauth.services.modules.discord.models import DiscordUser
 except ImportError:
@@ -30,7 +31,7 @@ except ImportError:
 
 
 try:
-    if dmv_active():
+    if DMV_ACTIVE:
         # this needs to be imported safely incase only Core service installed
         from aadiscordmultiverse.models import (
             DiscordManagedServer, MultiDiscordUser,
@@ -40,7 +41,7 @@ except ImportError:
 
 
 def _get_dmv_discord_user(user_id, guild_id):
-    if dmv_active():
+    if DMV_ACTIVE:
         try:
             return MultiDiscordUser.objects.get(
                 guild_id=guild_id,
@@ -65,9 +66,12 @@ def _check_for_dmv_user(user: User, guild: Guild):
 
 
 def _get_core_discord_user(user_id):
-    try:
-        return DiscordUser.objects.get(uid=user_id)
-    except DiscordUser.DoesNotExist:
+    if DISCORD_ACTIVE:
+        try:
+            return DiscordUser.objects.get(uid=user_id)
+        except DiscordUser.DoesNotExist:
+            return None
+    else:
         return None
 
 
@@ -89,11 +93,9 @@ def _guild_is_core_module(guild_id):
     """
     # May be string in settings so cast to int for check.
     # discord returns int for guild.id
-    return (
-        guild_id == (
-            int(getattr(settings, "DISCORD_GUILD_ID", -1)) and discord_active()
-        )
-    )
+    gid = int(getattr(settings, "DISCORD_GUILD_ID", -1))
+
+    return guild_id == gid and DISCORD_ACTIVE
 
 
 def _guild_is_dmv_module(guild_id):
@@ -111,7 +113,7 @@ def _get_dmv_guild(guild_id):
     """
         Return DMV Guild model if DMV installed and
     """
-    if dmv_active():
+    if DMV_ACTIVE:
         try:
             return DiscordManagedServer.objects.get(
                 guild_id=guild_id,
@@ -133,7 +135,9 @@ def is_user_bot_admin(user: User):
 
 
 def is_guild_managed(guild: Guild):
-    return _guild_is_core_module(guild.id) or _guild_is_dmv_module(guild.id)
+    core = _guild_is_core_module(guild.id)
+    dmv = _guild_is_dmv_module(guild.id)
+    return core or dmv
 
 
 def user_is_authenticated(user: User, guild: Guild):

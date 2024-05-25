@@ -120,12 +120,6 @@ def sender_has_any_perm(perms: list):
 
 
 def is_admin(id):
-    """
-        Deprecated use `aadiscordbot.utils.auth.user_is_authenticated` instead
-    """
-    logger.warning("aadiscordbot.cogs.utils.is_authenticated is deprecated."
-                   "Use aadiscordbot.utils.auth.user_is_authenticated instead.")
-
     if id in get_admins():
         return True
     else:
