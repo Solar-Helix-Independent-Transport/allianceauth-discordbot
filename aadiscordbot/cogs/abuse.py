@@ -3,10 +3,6 @@ from random import randrange
 
 from discord.ext import commands
 
-from django.conf import settings
-
-from aadiscordbot import __branch__, __version__
-
 logger = logging.getLogger(__name__)
 
 
@@ -52,7 +48,7 @@ class Abuse(commands.Cog):
             "Pardon me, but you've obviously mistaken me for someone who gives a damn.",
             "https://media.tenor.com/x8v1oNUOmg4AAAAC/rickroll-roll.gif"
         ]
-        rand = randrange(0, len(replies)-1)
+        rand = randrange(0, len(replies) - 1)
         if message.mention_everyone:
             return
         try:
@@ -61,7 +57,7 @@ class Abuse(commands.Cog):
                     await message.reply("https://media.tenor.com/x8v1oNUOmg4AAAAC/rickroll-roll.gif")
                 else:
                     await message.reply(replies[rand])
-        except:
+        except Exception:
             pass
 
 

@@ -52,7 +52,7 @@ def is_guild_managed():
     """
     def predicate(ctx):
         if hasattr(ctx, "guild"):
-            managed = auth.guild_is_managed(ctx.guild)
+            managed = auth.is_guild_managed(ctx.guild)
             logger.debug(f"Guild is Managed: {managed}")
             if not managed:
                 raise NotManaged()

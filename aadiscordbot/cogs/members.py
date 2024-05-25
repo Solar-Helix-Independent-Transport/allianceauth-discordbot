@@ -15,8 +15,7 @@ from allianceauth.eveonline.models import EveCharacter, EveCorporationInfo
 
 from aadiscordbot.app_settings import aastatistics_active
 from aadiscordbot.cogs.utils.decorators import (
-    has_any_perm, in_channels, is_guild_managed, message_in_channels,
-    sender_has_any_perm,
+    is_guild_managed, message_in_channels, sender_has_any_perm,
 )
 
 logger = logging.getLogger(__name__)
@@ -185,7 +184,7 @@ class Members(commands.Cog):
         return await ctx.respond(embed=self.get_lookup_embed(character))
 
     async def search_corps_on_characters(ctx: AutocompleteContext):
-        """Returns a list of colors that begin with the characters entered so far."""
+        """Returns a list of corporations that begin with the characters entered so far."""
         return list(EveCharacter.objects.filter(corporation_name__icontains=ctx.value).values_list('corporation_name', flat=True).distinct()[:10])
 
     def build_altcorp_embeds(self, input_name):
@@ -197,7 +196,6 @@ class Members(commands.Cog):
             knowns = 0
             for c in chars:
                 corp_id = c.corporation_id
-                alliance = c.alliance_name
                 if c.alliance_id not in own_ids:
                     alts_in_corp.append(c)
 
@@ -209,7 +207,7 @@ class Members(commands.Cog):
                         mains[main.character_id] = [main, 0]
                     mains[main.character_id][1] += 1
                     knowns += 1
-                except Exception as e:
+                except Exception:
                     # logger.error(e)
                     pass
             output = []
@@ -252,7 +250,9 @@ class Members(commands.Cog):
     @is_guild_managed()
     @sender_has_any_perm(['aadiscordbot.member_command_access'])
     @message_in_channels(settings.ADMIN_DISCORD_BOT_CHANNELS)
-    @option("corporation", description="Search for a Character!", autocomplete=search_corps_on_characters)
+    @option("corporation",
+            description="Search for a Character!",
+            autocomplete=search_corps_on_characters)
     async def slash_altcorp(
         self,
         ctx,
