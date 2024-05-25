@@ -128,6 +128,11 @@ def is_guild_managed(guild: Guild):
     return _guild_is_core_module(guild.id) or _guild_is_dmv_module(guild.id)
 
 
+def user_is_authenticated(user: User, guild: Guild):
+    logger.warning("user_is_authenticated is deprecated use is_user_authenticated instead")
+    return is_user_authenticated(user, guild)
+
+
 def is_user_authenticated(user: User, guild: Guild):
     """
         Return `True` if a discord user is authenticated to the
