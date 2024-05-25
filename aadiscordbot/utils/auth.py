@@ -129,11 +129,12 @@ def _get_dmv_guild(guild_id):
 def is_user_bot_admin(user: User):
     """
         Is user a configured Bot Admin
+        TODO: Make this work with DNV somehow.
     """
     if user.id in get_admins():
         return True
     else:
-        raise False
+        return False
 
 
 def is_guild_managed(guild: Guild):
