@@ -170,16 +170,31 @@ def is_user_authenticated(user: User, guild: Guild):
         return False
 
 
-def get_auth_user(user: User, guild: Guild):
+def get_auth_user(user: User | int, guild: Guild | int = None):
     """
         Get auth user from any service module
     """
-    discord_user = None
-    if _guild_is_core_module(guild.id):
-        discord_user = _get_core_discord_user(user.id)
+    guild_id = None
+    user_id = None
 
-    elif _guild_is_dmv_module(guild.id):
-        discord_user = _get_dmv_discord_user(user.id, guild.id)
+    if isinstance(user, int):
+        user_id = user
+    else:
+        user_id = user.id
+
+    if guild:
+        if isinstance(guild, int):
+            guild_id = guild
+        else:
+            guild_id = guild.id
+
+    discord_user = None
+
+    if guild_id is None or _guild_is_core_module(guild_id):
+        discord_user = _get_core_discord_user(user_id)
+
+    elif _guild_is_dmv_module(guild_id):
+        discord_user = _get_dmv_discord_user(user_id, guild_id)
 
     if discord_user:
         return discord_user.user
