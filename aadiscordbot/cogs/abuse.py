@@ -49,7 +49,7 @@ class Abuse(commands.Cog):
             "https://media.tenor.com/x8v1oNUOmg4AAAAC/rickroll-roll.gif"
         ]
         rand = randrange(0, len(replies) - 1)
-        if message.mention_everyone:
+        if message.mention_everyone or message.author.id == self.bot.user.id:
             return
         try:
             if self.bot.user.mentioned_in(message):
