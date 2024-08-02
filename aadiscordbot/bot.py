@@ -1,10 +1,8 @@
 import logging
-import sys
 import time
 import traceback
 from datetime import datetime
 from socket import timeout
-from typing import Dict
 
 import aiohttp
 import discord
@@ -26,8 +24,7 @@ from allianceauth import hooks
 import aadiscordbot
 from aadiscordbot import app_settings
 from aadiscordbot.app_settings import (
-    DISCORD_BOT_ACCESS_DENIED_REACT, DISCORD_BOT_MESSAGE_INTENT,
-    DISCORD_BOT_PREFIX,
+    DISCORD_BOT_ACCESS_DENIED_REACT, DISCORD_BOT_PREFIX,
 )
 from aadiscordbot.cogs.utils.exceptions import NotAuthenticated, NotManaged
 
@@ -85,7 +82,7 @@ class RateLimiter:
     def check_rate_limit(self, task):
         if task not in self.rate_buckets:
             self.rate_buckets[task] = self.bucket_for_task(task)
-        #logger.debug(f" {self.rate_buckets[task].capacity} {self.rate_buckets[task].fill_rate} {self.rate_buckets[task].expected_time()}")
+        # logger.debug(f" {self.rate_buckets[task].capacity} {self.rate_buckets[task].fill_rate} {self.rate_buckets[task].expected_time()}")
         return self.rate_buckets[task].can_consume()
 
     def to_string(self):
@@ -178,7 +175,7 @@ class AuthBot(commands.Bot):
                 try:
                     self.load_extension(cog)
                     self.cog_names_loaded.append(cog)
-                except Exception as e:
+                except Exception:
                     logger.exception(f"Failed to load cog {cog}")
                     self.cog_names_failed.append(cog)
 
@@ -319,7 +316,7 @@ class AuthBot(commands.Bot):
                 with self.message_consumer:
                     self.message_connection.drain_events(timeout=0.01)
             except timeout as e:
-                # logging.exception(e)
+                logging.exception(e)
                 message_avail = False
 
         next_task = self.pending_tasks.pop_next()
@@ -384,7 +381,7 @@ class AuthBot(commands.Bot):
                 message = [f"`{context.command}` failed for `{context.author}`\n",
                            f"**Exception:** ```{exception}```",
                            f"\n**Interaction:** ```{context.interaction.data}```",
-                           f"\n**Trace:**```"]
+                           "\n**Trace:**```"]
                 message += traceback.format_tb(
                     exception.original.__traceback__)
                 message.append("\n```")
@@ -399,7 +396,7 @@ class AuthBot(commands.Bot):
 
             logger.info(
                 "******************************************************")
-            logger.info(f"         ##            Alliance Auth 'AuthBot'")
+            logger.info("         ##            Alliance Auth 'AuthBot'")
             logger.info(
                 f"        ####           Version         :  {aadiscordbot.__version__}")
             logger.info(
@@ -410,13 +407,13 @@ class AuthBot(commands.Bot):
                 f"     ######## ((       Prefix          :  {app_settings.DISCORD_BOT_PREFIX}")
             logger.info(
                 f"    ###### ((((((      Bot Join Link   :  {INVITE_URL}")
-            logger.info(f"   ###        ((((     Starting up...")
-            logger.info(f"  ##             ((")
-            logger.info(f"                       [Cogs Loaded]")
+            logger.info("   ###        ((((     Starting up...")
+            logger.info("  ##             ((")
+            logger.info("                       [Cogs Loaded]")
             for c in self.cog_names_loaded:
                 logger.info(f"                         - {c}")
             if len(self.cog_names_failed):
-                logger.info(f"                       [Cog Failures]")
+                logger.info("                       [Cog Failures]")
                 for c in self.cog_names_failed:
                     logger.info(f"                         - {c}")
             logger.info(

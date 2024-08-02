@@ -11,6 +11,7 @@
 
 import logging
 import warnings
+from typing import Union
 
 from discord import Guild, User
 
@@ -170,7 +171,7 @@ def is_user_authenticated(user: User, guild: Guild):
         return False
 
 
-def get_auth_user(user: User | int, guild: Guild | int = None):
+def get_auth_user(user: Union[User, int], guild: Union[Guild, int] = None):
     """
         Get auth user from any service module
     """
