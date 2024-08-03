@@ -315,8 +315,9 @@ class AuthBot(commands.Bot):
             try:
                 with self.message_consumer:
                     self.message_connection.drain_events(timeout=0.01)
-            except timeout as e:
-                logging.exception(e)
+            except timeout:
+                # This is when there are no messages in the queue.
+                # logging.exception(e)
                 message_avail = False
 
         next_task = self.pending_tasks.pop_next()
