@@ -279,9 +279,9 @@ class AuthBot(commands.Bot):
         try:
             django.db.close_old_connections()
             await self.process_application_commands(interaction)
-            django.db.close_old_connections()
         except Exception as e:
             logger.error(f"Interaction Failed {e}", stack_info=True)
+        django.db.close_old_connections()
 
     async def on_message(self, message):
         if message.author.bot:
@@ -363,6 +363,7 @@ class AuthBot(commands.Bot):
         else:
             logger.error(f"Unknown Error {error}", exc_info=True)
             await ctx.send("Something Went Wrong, Please try again Later.",)
+        django.db.close_old_connections()
 
     async def on_application_command_error(self, context: ApplicationContext, exception: DiscordException) -> None:
         if isinstance(exception, commands.CheckFailure):
@@ -390,6 +391,7 @@ class AuthBot(commands.Bot):
                 tasks.send_message(message="\n".join(message),
                                    channel_id=app_settings.DISCORD_BOT_FAILURE_MESSAGES_CHANNEL)
             await context.respond("Something Went Wrong, Please try again Later.", ephemeral=True)
+        django.db.close_old_connections()
 
     def run(self):
         # self.load_extension("aadiscordbot.slash.admin")
