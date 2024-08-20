@@ -7,7 +7,6 @@ from discord import (
 from discord.commands import SlashCommandGroup
 from discord.ext import commands
 
-from django.conf import settings
 from django.contrib.auth.models import Group
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -27,10 +26,13 @@ class Admin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    admin_commands = SlashCommandGroup("admin", "Server Admin Commands", guild_ids=[
-                                       int(settings.DISCORD_GUILD_ID)])
+    admin_commands = SlashCommandGroup(
+        "admin",
+        "Server Admin Commands",
+        guild_ids=app_settings.get_all_servers()
+    )
 
-    @admin_commands.command(name='add_role', guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    @admin_commands.command(name='add_role', guild_ids=app_settings.get_all_servers())
     async def add_role_slash(self, ctx, channel: TextChannel, role: Role):
         """
         Add a role as read/write to a channel....
@@ -45,7 +47,7 @@ class Admin(commands.Cog):
 
         await ctx.respond(f"Set Read/Write `{role.name}` in `{channel.name}`")
 
-    @admin_commands.command(name='add_role_read', guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    @admin_commands.command(name='add_role_read', guild_ids=app_settings.get_all_servers())
     async def add_role_read_slash(self, ctx, channel: TextChannel, role: Role):
         """
         Add a role as read only to a channel....
@@ -62,7 +64,7 @@ class Admin(commands.Cog):
 
         await ctx.respond(f"Set Readonly `{role.name}` in `{channel.name}`")
 
-    @admin_commands.command(name='rem_role', guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    @admin_commands.command(name='rem_role', guild_ids=app_settings.get_all_servers())
     async def rem_role_slash(self, ctx, channel: TextChannel, role: Role):
         """
         Remove a role from a channel....
@@ -77,7 +79,7 @@ class Admin(commands.Cog):
 
         await ctx.respond(f"Removed `{role.name}` from `{channel.name}`")
 
-    @admin_commands.command(name='new_channel', guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    @admin_commands.command(name='new_channel', guild_ids=app_settings.get_all_servers())
     async def new_channel_slash(self, ctx, category: CategoryChannel, channel_name: str, first_role: Role):
         """
         Create a new channel and add a role....
@@ -104,7 +106,7 @@ class Admin(commands.Cog):
 
             await ctx.respond(f"Created New Channel `{channel.name}` and added the `{first_role.name}` Role")
 
-    @admin_commands.command(name='promote_to_god', guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    @admin_commands.command(name='promote_to_god', guild_ids=app_settings.get_all_servers())
     async def promote_role_to_god(self, ctx, role: Role):
         """
         set role as admin....
@@ -119,7 +121,7 @@ class Admin(commands.Cog):
         await role.edit(permissions=perms)
         await ctx.respond(f"Set `{role.name}` as admin", ephemeral=True)
 
-    @admin_commands.command(name='demote_from_god', guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    @admin_commands.command(name='demote_from_god', guild_ids=app_settings.get_all_servers())
     async def demote_role_from_god(self, ctx, role: Role):
         """
         revoke role admin....
@@ -134,7 +136,7 @@ class Admin(commands.Cog):
         await role.edit(permissions=perms)
         await ctx.respond(f"Removed admin from `{role.name}`", ephemeral=True)
 
-    @admin_commands.command(name='empty_roles', guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    @admin_commands.command(name='empty_roles', guild_ids=app_settings.get_all_servers())
     async def empty_roles(self, ctx):
         """
         Dump all roles with no members.
@@ -161,7 +163,7 @@ class Admin(commands.Cog):
 
         await ctx.respond(embed=embed)
 
-    @admin_commands.command(name='clear_empty_roles', guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    @admin_commands.command(name='clear_empty_roles', guild_ids=app_settings.get_all_servers())
     async def clear_empty_roles(self, ctx):
         """
         delete all roles with no members.
@@ -186,7 +188,7 @@ class Admin(commands.Cog):
         for c in chunks:
             await ctx.respond("\n".join(c))
 
-    @admin_commands.command(name='orphans', guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    @admin_commands.command(name='orphans', guild_ids=app_settings.get_all_servers())
     async def orphans_slash(self, ctx):
         """
         Returns a list of users on this server, who are not known to AA
@@ -228,7 +230,7 @@ class Admin(commands.Cog):
         except Exception:
             await ctx.respond(payload[0:1999])
 
-    @admin_commands.command(name='get_webhooks', guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    @admin_commands.command(name='get_webhooks', guild_ids=app_settings.get_all_servers())
     async def get_webhooks(self, ctx):
         """
         Returns the webhooks for the channel
@@ -259,7 +261,7 @@ class Admin(commands.Cog):
 
             await ctx.respond("\n".join(strs), ephemeral=True)
 
-    @admin_commands.command(name='uptime', guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    @admin_commands.command(name='uptime', guild_ids=app_settings.get_all_servers())
     async def uptime(self, ctx):
         """
         Returns the uptime of the bot
@@ -275,14 +277,15 @@ class Admin(commands.Cog):
         except AttributeError:
             await ctx.respond("Still Booting up!", ephemeral=True)
 
-    @admin_commands.command(name='versions', guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    @admin_commands.command(name='versions', guild_ids=app_settings.get_all_servers())
     async def versions(self, ctx):
         """
         Returns the uptime of the bot
         """
         await ctx.defer(ephemeral=True)
 
-        if ctx.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+        # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+        if ctx.author.id not in app_settings.get_admins():
             return await ctx.respond("You do not have permission to use this command", ephemeral=True)
         try:
             output = {}
@@ -317,7 +320,7 @@ class Admin(commands.Cog):
         except Exception as e:
             await ctx.respond(f"Something went wrong! {e}", ephemeral=True)
 
-    @admin_commands.command(name='stats', guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    @admin_commands.command(name='stats', guild_ids=app_settings.get_all_servers())
     async def stats(self, ctx):
         """
         Returns the Task Stats of the bot.
@@ -369,7 +372,7 @@ class Admin(commands.Cog):
         """Returns a list of colors that begin with the characters entered so far."""
         return list(EveCharacter.objects.filter(character_name__icontains=ctx.value).values_list('character_name', flat=True)[:10])
 
-    @admin_commands.command(name='force_sync', guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    @admin_commands.command(name='force_sync', guild_ids=app_settings.get_all_servers())
     @option("character", description="Search for a Character!", autocomplete=search_characters)
     async def slash_sync(
         self,
@@ -394,7 +397,7 @@ class Admin(commands.Cog):
         except ObjectDoesNotExist:
             return await ctx.respond(f"**{character}** is Unlinked unable to update characters")
 
-    @admin_commands.command(name='sync_commands', guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    @admin_commands.command(name='sync_commands', guild_ids=app_settings.get_all_servers())
     @option("force", description="Force Sync Everything")
     async def sync_commands(
         self,
@@ -413,7 +416,7 @@ class Admin(commands.Cog):
 
         return await ctx.respond("Sync Complete!", ephemeral=True)
 
-    @commands.user_command(name="Group Sync", guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    @commands.user_command(name="Group Sync", guild_ids=app_settings.get_all_servers())
     async def group_sync_user_context(self, ctx, user):
         # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
         if ctx.author.id not in app_settings.get_admins():
@@ -422,7 +425,7 @@ class Admin(commands.Cog):
         update_groups.delay(auth_user.user_id)
         await ctx.respond(f"Requested Group Sync for {auth_user.user.profile.main_character}", ephemeral=True)
 
-    @commands.user_command(name="Nickname Sync", guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    @commands.user_command(name="Nickname Sync", guild_ids=app_settings.get_all_servers())
     async def nick_sync_user_context(self, ctx, user):
         # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
         if ctx.author.id not in app_settings.get_admins():
