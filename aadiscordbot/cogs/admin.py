@@ -6,6 +6,7 @@ from discord import (
 )
 from discord.commands import SlashCommandGroup
 from discord.ext import commands
+from discord.ext.commands import Paginator
 
 from django.contrib.auth.models import Group
 from django.core.exceptions import ObjectDoesNotExist
@@ -319,6 +320,24 @@ class Admin(commands.Cog):
             )
         except Exception as e:
             await ctx.respond(f"Something went wrong! {e}", ephemeral=True)
+
+    @admin_commands.command(name='commands', guild_ids=app_settings.get_all_servers())
+    async def command_list(self, ctx):
+        await ctx.defer(ephemeral=True)
+        helptext = Paginator()
+        for command in self.bot.walk_application_commands():
+            if isinstance(command, SlashCommandGroup):
+                continue
+            _parent = f"{command.full_parent_name}{' ' if command.full_parent_name else ''}"
+            _msg = f"{_parent}{command.name} ({command.module} - {command.__class__.__name__})"
+            try:
+                helptext.add_line(_msg)
+            except RuntimeError:
+                helptext.close_page()
+                helptext.add_line(_msg)
+        for _str in helptext.pages:
+            await ctx.send(_str)
+        await ctx.respond("Done", ephemeral=True)
 
     @admin_commands.command(name='stats', guild_ids=app_settings.get_all_servers())
     async def stats(self, ctx):

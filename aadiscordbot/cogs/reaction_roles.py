@@ -1,6 +1,5 @@
 import logging
 
-from discord import reaction
 from discord.ext import commands
 from discord.utils import get
 
@@ -69,7 +68,7 @@ class Reactions(commands.Cog):
                 try:
                     rr_binds = ReactionRoleBinding.objects.get(
                         message=rr_msg, emoji=payload.emoji.name)
-                except:
+                except Exception:
                     # admin adding new role?
                     if DiscordUser.objects.get(uid=payload.user_id).user.has_perm("aadiscordbot.manage_reactions"):
                         gld = get(self.bot.guilds, id=payload.guild_id)
