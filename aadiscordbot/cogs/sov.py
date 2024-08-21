@@ -2,7 +2,7 @@ import datetime
 import logging
 
 import pendulum
-from discord import Option
+from discord import option
 from discord.colour import Color
 from discord.commands import SlashCommandGroup
 from discord.embeds import Embed
@@ -27,8 +27,11 @@ class Sov(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    sov_commands = SlashCommandGroup("sov", "Commands for Managing/Attacking Sov", guild_ids=[
-        int(settings.DISCORD_GUILD_ID)])
+    sov_commands = SlashCommandGroup(
+        "sov",
+        "Commands for Managing/Attacking Sov",
+        guild_ids=app_settings.get_all_servers()
+    )
 
     def get_search_token(self, uid):
         user = DiscordUser.objects.get(uid=uid).user
@@ -36,8 +39,18 @@ class Sov(commands.Cog):
             ['esi-search.search_structures.v1'])
         return tokens.first()
 
-    @sov_commands.command(name='lowadm', guild_ids=[int(settings.DISCORD_GUILD_ID)])
-    async def lowadm(self, ctx, adm: Option(float, description="Optional ADM Level to flag under.", required=False)):
+    @sov_commands.command(name='lowadm', guild_ids=app_settings.get_all_servers())
+    @option(
+        "adm",
+        float,
+        description="Optional ADM Level to flag under.",
+        required=False
+    )
+    async def lowadm(
+        self,
+        ctx,
+        adm
+    ):
         """
         Systems with low ADMs.
         """
@@ -47,7 +60,7 @@ class Sov(commands.Cog):
         #    @message_in_channels(settings.SOV_DISCORD_BOT_CHANNELS)
 
         if ctx.channel.id not in settings.SOV_DISCORD_BOT_CHANNELS:
-            return await ctx.respond(f"You do not have permission to use this command here.", ephemeral=True)
+            return await ctx.respond("You do not have permission to use this command here.", ephemeral=True)
 
         await ctx.defer()
 
@@ -149,13 +162,14 @@ class Sov(commands.Cog):
 
         return True
 
-    @sov_commands.command(name='vulnerable', guild_ids=[int(settings.DISCORD_GUILD_ID)])
-    async def vuln(self, ctx, name_search: Option(str, description="String to search against the sov database.")):
+    @sov_commands.command(name='vulnerable', guild_ids=app_settings.get_all_servers())
+    @option("name_search", str, description="String to search against the sov database.")
+    async def vuln(self, ctx, name_search):
         """
         Vulnerable Sov Structures for region/constelation/system/alliance
         """
         if ctx.channel.id not in settings.SOV_DISCORD_BOT_CHANNELS:
-            return await ctx.respond(f"You do not have permission to use this command here.", ephemeral=True)
+            return await ctx.respond("You do not have permission to use this command here.", ephemeral=True)
 
         await ctx.defer()
 
@@ -279,13 +293,14 @@ class Sov(commands.Cog):
         for c in chunks[:5]:
             await ctx.send("\n".join(c))
 
-    @sov_commands.command(name='search', guild_ids=[int(settings.DISCORD_GUILD_ID)])
-    async def sov(self, ctx, name_search: Option(str, description="String to search against the sov database.")):
+    @sov_commands.command(name='search', guild_ids=app_settings.get_all_servers())
+    @option("name_search", str, description="String to search against the sov database.")
+    async def sov(self, ctx, name_search):
         """
         Sov Details for region/constelation/system/alliance
         """
         if ctx.channel.id not in settings.SOV_DISCORD_BOT_CHANNELS:
-            return await ctx.respond(f"You do not have permission to use this command here.", ephemeral=True)
+            return await ctx.respond("You do not have permission to use this command here.", ephemeral=True)
 
         await ctx.defer()
         token = self.get_search_token(ctx.author.id)

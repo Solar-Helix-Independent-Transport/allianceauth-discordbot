@@ -1,9 +1,9 @@
 import logging
 
-from discord import Embed, User, option
+from discord import Embed, option
 from discord.ext import commands
 
-from django.conf import settings
+from aadiscordbot import app_settings
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +16,7 @@ class FactionWar(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.slash_command(name='facwar_km', guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    @commands.slash_command(name='facwar_km', guild_ids=app_settings.get_all_servers())
     @option("esi_link", description="External ESI Killmail link from in game!")
     async def facwar_km(self, ctx, esi_link: str):
         """
@@ -24,7 +24,7 @@ class FactionWar(commands.Cog):
         """
         await ctx.defer()
         if not esi_link.startswith("https://esi.evetech.net/"):
-            return await ctx.respond(f"not a valid ESI Killmail link, please try again...")
+            return await ctx.respond("not a valid ESI Killmail link, please try again...")
         km_json = {}
         async with self.bot.session.get(esi_link) as km:
             km_json = await km.json()
@@ -44,7 +44,7 @@ class FactionWar(commands.Cog):
                 if a_fac:
                     names_to_fetch.add(a.get('faction_id'))
         names = {}
-        names_url = f"https://esi.evetech.net/latest/universe/names/?datasource=tranquility"
+        names_url = "https://esi.evetech.net/latest/universe/names/?datasource=tranquility"
         names_payload = list(names_to_fetch)
         async with self.bot.session.post(names_url, json=names_payload) as nm:
             nms = await nm.json()
@@ -75,12 +75,12 @@ class FactionWar(commands.Cog):
                     detail_needed = True
 
         if len(fac_attackers):
-            fac_attack_msg = f"\n".join(fac_attackers)
+            fac_attack_msg = "\n".join(fac_attackers)
             messages.append("\n**Faction Warfare Attackers**")
             messages.append(f"```\n{fac_attack_msg}\n```")
 
         if len(non_fac_attackers):
-            non_fac_attackers_msg = f"\n".join(non_fac_attackers)
+            non_fac_attackers_msg = "\n".join(non_fac_attackers)
             messages.append("\n**Non-Faction Warfare Attackers**")
             messages.append(f"```\n{non_fac_attackers_msg}\n```")
 

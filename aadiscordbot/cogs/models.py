@@ -3,10 +3,8 @@ import logging
 from discord.commands import SlashCommandGroup
 from discord.ext import commands
 
-from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 
-from aadiscordbot import __branch__, __version__
 from aadiscordbot.cogs.utils.decorators import sender_is_admin
 from aadiscordbot.models import Channels, Servers
 
@@ -21,16 +19,18 @@ class Models(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    model_commands = SlashCommandGroup("models", "Django Model Population", guild_ids=[
-                                       int(settings.DISCORD_GUILD_ID)])
+    model_commands = SlashCommandGroup(
+        "models",
+        "Django Model Population",
+    )
 
-    @model_commands.command(name="populate", guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    @model_commands.command(name="populate")
     @sender_is_admin()
     async def populate_models(self, ctx):
         """
         Populates Django Models for every Channel in the Guild
         """
-        await ctx.respond(f"Populating Models, this might take a while on large servers", ephemeral=True)
+        await ctx.respond("Populating Models, this might take a while on large servers", ephemeral=True)
         try:
             Servers.objects.update_or_create(
                 server=ctx.guild.id,
@@ -60,7 +60,7 @@ class Models(commands.Cog):
             deleted_channel.deleted = True
             deleted_channel.save()
         except ObjectDoesNotExist:
-            #this is fine
+            # this is fine
             pass
         except Exception as e:
             logger.error(e)

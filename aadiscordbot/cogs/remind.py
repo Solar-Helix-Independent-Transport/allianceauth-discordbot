@@ -1,10 +1,9 @@
-import asyncio
 import logging
 
 from discord import AllowedMentions
 from discord.ext import commands
 
-from django.conf import settings
+from aadiscordbot import app_settings
 
 from ..tasks import send_channel_message_by_discord_id
 
@@ -19,7 +18,11 @@ class Remind(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.slash_command(name='remind', description="Set a Reminder", guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    @commands.slash_command(
+        name='remind',
+        description="Set a Reminder",
+        guild_ids=app_settings.get_all_servers()
+    )
     async def reminder(self, ctx, reminder: str, seconds: int = 0, minutes: int = 0, hours: int = 0, days: int = 0):
         counter = seconds + minutes * 60 + hours * 60 * 60 + days * 60 * 60 * 24
         await ctx.respond(f"Alright, I will remind you about {reminder} in {seconds}s {minutes}m {hours}h {days}d.", allowed_mentions=AllowedMentions(everyone=False, roles=False, users=False))

@@ -29,7 +29,15 @@ def timerboard_active():
 
 def get_admins():
     from .models import AuthBotConfiguration
-    return list(AuthBotConfiguration.objects.get(pk=1).admin_users.all().values_list('uid', flat=True))
+    return list(
+        AuthBotConfiguration.objects.get(
+            pk=1
+        ).admin_users.all(
+        ).values_list(
+            'uid',
+            flat=True
+        )
+    )
 
 
 def get_low_adm():

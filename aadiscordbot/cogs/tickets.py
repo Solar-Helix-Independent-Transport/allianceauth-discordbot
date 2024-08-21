@@ -7,8 +7,9 @@ from discord.commands import option
 from discord.ext import commands
 
 # AA Contexts
-from django.conf import settings
 from django.utils import timezone
+
+from aadiscordbot import app_settings
 
 from .. import models
 
@@ -93,7 +94,7 @@ class HelpCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @command(name='help', guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    @command(name='help', guild_ids=app_settings.get_all_servers())
     async def slash_halp(
         self,
         ctx,
@@ -104,7 +105,7 @@ class HelpCog(commands.Cog):
         await ctx.defer(ephemeral=True)
         return await ctx.respond(view=HelpView())
 
-    @command(name='close_ticket', guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    @command(name='close_ticket', guild_ids=app_settings.get_all_servers())
     async def slash_close(
         self,
         ctx,
@@ -126,7 +127,7 @@ class HelpCog(commands.Cog):
         await ctx.respond(embed=embd)
         return await ch.archive()
 
-    @command(name='help_targeted', guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    @command(name='help_targeted', guild_ids=app_settings.get_all_servers())
     @option("character", description="What Character to add to the ticket")
     @option("group", description="What Group to add to the ticket ")
     async def slash_reverse_help(
@@ -184,7 +185,10 @@ class HelpCog(commands.Cog):
             ephemeral=True
         )
 
-    @commands.message_command(name="Create Help Ticket", guild_ids=[int(settings.DISCORD_GUILD_ID)])
+    @commands.message_command(
+        name="Create Help Ticket",
+        guild_ids=app_settings.get_all_servers()
+    )
     async def reverse_halp(self, ctx, message: Message):
         sup_channel = models.TicketGroups.get_solo().ticket_channel.channel
         ch = message.guild.get_channel(sup_channel)
