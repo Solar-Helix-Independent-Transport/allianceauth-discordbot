@@ -2,7 +2,8 @@ import logging
 
 import pendulum
 from discord import (
-    AutocompleteContext, CategoryChannel, Embed, Role, TextChannel, option,
+    AutocompleteContext, CategoryChannel, Embed, Role, TextChannel,
+    VoiceChannel, option,
 )
 from discord.commands import SlashCommandGroup
 from discord.ext import commands
@@ -85,27 +86,43 @@ class Admin(commands.Cog):
         """
         Create a new channel and add a role....
         """
-        if ctx.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
-            return await ctx.respond("You do not have permission to use this command", ephemeral=True)
+        if ctx.author.id not in app_settings.get_admins():
+            # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+            return await ctx.respond(
+                "You do not have permission to use this command",
+                ephemeral=True
+            )
 
         await ctx.defer()
 
-        found_channel = False
+        for channel in ctx.guild.channels:  # TODO replace with channel lookup not loop
+            if isinstance(channel, (TextChannel, VoiceChannel)):
+                if channel.name.lower() == channel_name.lower():
+                    if channel.category_id == category.id:
+                        return await ctx.respond(
+                            f"Channel Exists <#{channel.id}>"
+                        )
 
-        for channel in ctx.guild.channels:   # TODO replace with channel lookup not loop
-            if channel.name.lower() == channel_name.lower():
-                found_channel = True
+        channel = await ctx.guild.create_text_channel(
+            channel_name.lower(),
+            category=category
+        )  # make channel
 
-        if not found_channel:
-            channel = await ctx.guild.create_text_channel(channel_name.lower(),
-                                                          category=category)  # make channel
-            await channel.set_permissions(ctx.guild.default_role, read_messages=False,
-                                          send_messages=False)
+        await channel.set_permissions(
+            ctx.guild.default_role,
+            read_messages=False,
+            send_messages=False
+        )
 
-            await channel.set_permissions(first_role, read_messages=True,
-                                          send_messages=True)
+        await channel.set_permissions(
+            first_role,
+            read_messages=True,
+            send_messages=True
+        )
 
-            await ctx.respond(f"Created New Channel `{channel.name}` and added the `{first_role.name}` Role")
+        await ctx.respond(
+            f"Created New Channel `{channel.name}` and added the `{first_role.name}` Role"
+        )
 
     @admin_commands.command(name='promote_to_god', guild_ids=app_settings.get_all_servers())
     async def promote_role_to_god(self, ctx, role: Role):
