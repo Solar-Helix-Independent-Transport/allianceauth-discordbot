@@ -172,9 +172,10 @@ def is_user_authenticated(user: User, guild: Guild):
         return False
 
 
-def get_auth_user(user: Union[User, int], guild: Union[Guild, int] = None):
+def get_auth_user(user: Union[User, int], guild: Union[Guild, int] = None) -> User:
     """
-        Get auth user from any service module
+        Get auth user from any Discord Service
+        raises NotAuthenticated if user is not found.
     """
     guild_id = None
     user_id = None
