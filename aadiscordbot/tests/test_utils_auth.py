@@ -1,5 +1,7 @@
 from unittest.mock import MagicMock, patch
 
+from aadiscordbot.cogs.utils.exceptions import NotAuthenticated
+
 from ..app_settings import discord_active, dmv_active
 from ..models import AuthBotConfiguration
 from ..utils import auth
@@ -248,9 +250,8 @@ class TestUtilsAuth(AuthbotTestCase):
         gld = MagicMock()
         gld.id = 5678
 
-        self.assertIsNone(
+        with self.assertRaises(NotAuthenticated):
             auth.get_auth_user(usr, gld)
-        )
 
     def test_bot_admin_fail(self):
         user = self.create_discord_user()
