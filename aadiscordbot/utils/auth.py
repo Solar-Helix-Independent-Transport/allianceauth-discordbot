@@ -13,6 +13,7 @@ import logging
 import warnings
 from typing import Union
 
+from aadiscordbot.cogs.utils.exceptions import NotAuthenticated
 from discord import Guild, User
 
 from django.conf import settings
@@ -200,4 +201,4 @@ def get_auth_user(user: Union[User, int], guild: Union[Guild, int] = None):
     if discord_user:
         return discord_user.user
     else:
-        return None
+        raise NotAuthenticated
