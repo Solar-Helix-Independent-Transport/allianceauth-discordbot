@@ -11,6 +11,7 @@ app = Celery('devauth')
 
 # Using a string here means the worker don't have to serialize
 # the configuration object to child processes.
+app.config_from_object('django.conf:settings')
 
 # Automatically try to establish the connection to the AMQP broker on
 # Celery startup if it is unavailable.
