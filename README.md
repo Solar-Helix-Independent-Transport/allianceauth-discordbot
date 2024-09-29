@@ -64,7 +64,7 @@ AA-Discordbot for [Alliance Auth](https://gitlab.com/allianceauth/allianceauth).
 pip install allianceauth-discordbot
 ```
 
-* Add `'aadiscordbot',` and  `'solo',` to your INSTALLED_APPS list in local.py.
+* Add `'aadiscordbot',` to your INSTALLED_APPS list in local.py.
 
 * Add the below lines to your `local.py` settings file, Changing the contexts to yours.
 
