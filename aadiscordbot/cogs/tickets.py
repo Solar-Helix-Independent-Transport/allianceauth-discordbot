@@ -55,6 +55,13 @@ class TicketDropdown(discord.ui.Select):
         if sup_channel:
             ch = interaction.guild.get_channel(sup_channel)
             grp = discord.utils.get(interaction.guild.roles, name=self.values[0])
+            if grp is None:
+                return await interaction.response.edit_message(
+                    content=(
+                        "That group is not found in this server?"
+                    ),
+                    view=None,
+                )
             th = await ch.create_thread(
                 name=(
                     f"{interaction.user.display_name} | "
@@ -79,10 +86,11 @@ class TicketDropdown(discord.ui.Select):
         else:
             await interaction.response.edit_message(
                 content=(
-                    f"No Channel found in the configuration for this server? Contact the admins."
+                    "No Channel found in the configuration for this server? Contact the admins."
                 ),
                 view=None,
             )
+
 
 class HelpView(ui.View):
     """
