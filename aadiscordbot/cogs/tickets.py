@@ -50,32 +50,39 @@ class TicketDropdown(discord.ui.Select):
         )
 
     async def callback(self, interaction: discord.Interaction):
-        sup_channel = models.TicketGroups.get_solo().ticket_channel.channel
-        ch = interaction.guild.get_channel(sup_channel)
-        grp = discord.utils.get(interaction.guild.roles, name=self.values[0])
-        th = await ch.create_thread(
-            name=(
-                f"{interaction.user.display_name} | "
-                f"{self.values[0]} | {timezone.now().strftime('%Y-%m-%d %H:%M')}"
-            ),
-            auto_archive_duration=10080,
-            type=discord.ChannelType.private_thread,
-            reason=None
-        )
-        msg = (
-            f"<@{interaction.user.id}> needs help!, Someone from"
-            f" <@&{grp.id}> will get in touch soon!"
-        )
-        await th.send(msg, embed=THREAD_EMBED)
-        await interaction.response.send_message(
-            content=(
-                f"Check the thread created! {th.mention} "
-                "Ping in the thread for urgent help!"
-            ),
-            view=None,
-            ephemeral=True
-        )
-
+        sup_channel = models.TicketGroups.get_solo(
+        ).get_channel_for_server(interaction.guild_id)
+        if sup_channel:
+            ch = interaction.guild.get_channel(sup_channel)
+            grp = discord.utils.get(interaction.guild.roles, name=self.values[0])
+            th = await ch.create_thread(
+                name=(
+                    f"{interaction.user.display_name} | "
+                    f"{self.values[0]} | {timezone.now().strftime('%Y-%m-%d %H:%M')}"
+                ),
+                auto_archive_duration=10080,
+                type=discord.ChannelType.private_thread,
+                reason=None
+            )
+            msg = (
+                f"<@{interaction.user.id}> needs help!, Someone from"
+                f" <@&{grp.id if grp else 0}> will get in touch soon!"
+            )
+            await th.send(msg, embed=THREAD_EMBED)
+            await interaction.response.edit_message(
+                content=(
+                    f"Check the thread created! {th.mention} "
+                    "Ping in the thread for urgent help!"
+                ),
+                view=None,
+            )
+        else:
+            await interaction.response.edit_message(
+                content=(
+                    f"No Channel found in the configuration for this server? Contact the admins."
+                ),
+                view=None,
+            )
 
 class HelpView(ui.View):
     """

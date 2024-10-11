@@ -1,3 +1,5 @@
+import json
+
 from solo.models import SingletonModel
 
 from django.contrib.auth.models import Group
@@ -152,8 +154,14 @@ class TicketGroups(SingletonModel):
     groups = models.ManyToManyField(
         Group, blank=True, help_text="Pingable groups for ticketing")
     ticket_channel = models.ForeignKey(
-        Channels, on_delete=models.SET_NULL, null=True, default=None)
-
+        Channels, on_delete=models.SET_NULL, null=True, default=None, blank=True)
+    
+    ticket_channels = models.TextField(
+        default=None,
+        null=True,
+        blank=True,
+        help_text="JSON dictionary {server_id:channel_id}")
+    
     class Meta:
         default_permissions = ()
         verbose_name = 'Ticket Cog Configuration'
@@ -161,3 +169,15 @@ class TicketGroups(SingletonModel):
 
     def __str__(self):
         return "Ticket Cog Configuration"
+
+    def get_channel_for_server(self, server_id):
+        try:
+            channels = json.loads(self.ticket_channels)
+            channel_id = channels.get(str(server_id), 0)
+            return channel_id if channel_id else None
+        except json.JSONDecodeError as e:
+            if self.ticket_channel:
+                return self.ticket_channel.channel
+            else:
+                return None
+
