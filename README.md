@@ -64,7 +64,7 @@ AA-Discordbot for [Alliance Auth](https://gitlab.com/allianceauth/allianceauth).
 pip install allianceauth-discordbot
 ```
 
-* Add `'aadiscordbot',` and  `'solo',` to your INSTALLED_APPS list in local.py.
+* Add `'aadiscordbot',` to your INSTALLED_APPS list in local.py.
 
 * Add the below lines to your `local.py` settings file, Changing the contexts to yours.
 
@@ -289,7 +289,7 @@ You can Authenticate for more access {auth_url}
 
 > ❗❗❗ **While this is fully functional, this is still in early stages of development, Please report any issues you find!** ❗❗❗
 
-With the `aadiscordbot.cogs.tickets` Cog activated, users wll be able to issue the `/help` command to pick a group to get help from.
+With the `aadiscordbot.cogs.tickets` Cog activated, users will be able to issue the `/help` command to pick a group to get help from.
 
 The groups available for selection are configurable in the site admin under
 `Discord Bot > Ticket Cog Configuration`
