@@ -1,3 +1,5 @@
+from solo.admin import SingletonModelAdmin
+
 from django.contrib import admin
 
 from allianceauth.services.hooks import get_extension_logger
@@ -34,12 +36,12 @@ class ChannelsAdmin(admin.ModelAdmin):
 
 
 @admin.register(AuthBotConfiguration)
-class AuthBotConfigurationAdmin(admin.ModelAdmin):
+class AuthBotConfigurationAdmin(SingletonModelAdmin):
     filter_horizontal = ['admin_users']
 
 
 @admin.register(ReactionRoleMessage)
-class ChannelsAdmin(admin.ModelAdmin):
+class RRAdmin(admin.ModelAdmin):
     list_display = ('name', 'non_auth_users')
     ordering = ('name',)
 
@@ -47,7 +49,7 @@ class ChannelsAdmin(admin.ModelAdmin):
 
 
 @admin.register(ReactionRoleBinding)
-class ChannelsAdmin(admin.ModelAdmin):
+class RRBAdmin(admin.ModelAdmin):
     list_display = ('message_name', 'emoji_decoded', 'group')
 
     search_fields = ('message_name', 'emoji_decoded', 'group')
@@ -63,7 +65,7 @@ class ChannelsAdmin(admin.ModelAdmin):
     def emoji_decoded(ob):
         try:
             b = eval(ob.emoji_text).decode('utf-8')
-        except:
+        except Exception:
             b = ob.emoji_text
         return b
 
@@ -79,5 +81,5 @@ class GoodbyeMessageAdmin(admin.ModelAdmin):
 
 
 @admin.register(TicketGroups)
-class TicketGroupAdmin(admin.ModelAdmin):
+class TicketGroupAdmin(SingletonModelAdmin):
     filter_horizontal = ['groups']
