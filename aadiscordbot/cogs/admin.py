@@ -349,7 +349,7 @@ class Admin(commands.Cog):
             _msg = f"{_parent}{command.name} ({command.module} - {command.__class__.__name__})"
             helptext.add_line(_msg)
         for _str in helptext.pages:
-            await ctx.send(helptext.pages)
+            await ctx.send(_str)
         await ctx.respond("Done", ephemeral=True)
 
     @admin_commands.command(name='stats', guild_ids=app_settings.get_all_servers())
