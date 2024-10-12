@@ -172,61 +172,83 @@ class HelpCog(commands.Cog):
 
         mentions = ", ".join(mentions)
         names = ", ".join(names)
-        sup_channel = models.TicketGroups.get_solo().ticket_channel.channel
-        ch = interaction.guild.get_channel(sup_channel)
+        sup_channel = models.TicketGroups.get_solo(
+        ).get_channel_for_server(interaction.guild_id)
+        if sup_channel:
+            ch = interaction.guild.get_channel(sup_channel)
 
-        th = await ch.create_thread(
-            name=(
-                f"{interaction.user.display_name} |"
-                f" {names} | {timezone.now().strftime('%Y-%m-%d %H:%M')}"
-            ),
-            auto_archive_duration=10080,
-            type=discord.ChannelType.private_thread,
-            reason=None)
-        msg = f"<@{interaction.user.id}> has a question for: "
-        mentions = []
-        if character is not None:
-            mentions.append(f"{character.mention} ")
+            th = await ch.create_thread(
+                name=(
+                    f"{interaction.user.display_name} |"
+                    f" {names} | {timezone.now().strftime('%Y-%m-%d %H:%M')}"
+                ),
+                auto_archive_duration=10080,
+                type=discord.ChannelType.private_thread,
+                reason=None)
+            msg = f"<@{interaction.user.id}> has a question for: "
+            mentions = []
+            if character is not None:
+                mentions.append(f"{character.mention} ")
 
-        if group is not None:
-            mentions.append(f"{group.mention} ")
+            if group is not None:
+                mentions.append(f"{group.mention} ")
 
-        msg += ", ".join(mentions)
+            msg += ", ".join(mentions)
 
-        await th.send(msg, embed=THREAD_EMBED)
-        await interaction.response.send_message(
-            content=f"Check the thread created! {th.mention}",
-            view=None,
-            ephemeral=True
-        )
+            await th.send(msg, embed=THREAD_EMBED)
+            await interaction.respond(
+                content=f"Check the thread created! {th.mention}",
+                view=None,
+                ephemeral=True
+            )
+        else:
+            await interaction.respond(
+                content="No Channel found in the configuration for this server? Contact the admins.",
+                view=None,
+                ephemeral=True
+            )
 
     @commands.message_command(
         name="Create Help Ticket",
         guild_ids=app_settings.get_all_servers()
     )
     async def reverse_halp(self, ctx, message: Message):
-        sup_channel = models.TicketGroups.get_solo().ticket_channel.channel
-        ch = message.guild.get_channel(sup_channel)
-        files = []
-        for a in message.attachments:
-            files.append(a.proxy_url)
-        _f = "\n".join(files)
+        sup_channel = models.TicketGroups.get_solo(
+        ).get_channel_for_server(message.guild.id)
+        if sup_channel:
+            ch = message.guild.get_channel(sup_channel)
+            files = []
+            for a in message.attachments:
+                files.append(a.proxy_url)
+            _f = "\n".join(files)
 
-        th = await ch.create_thread(
-            name=(
-                f"{message.author.display_name} | "
-                f"{message.id} | {timezone.now().strftime('%Y-%m-%d %H:%M')}"
-            ),
-            auto_archive_duration=10080,
-            type=discord.ChannelType.private_thread,
-            reason=None
-        )
-        msg = (
-            f"hi, <@{message.author.id}>, <@{ctx.author.id}> "
-            "wants clarification on this message\n\n"
-            f"```{message.content}```\n\n{message.jump_url}\n{_f}"
-        )
-        await th.send(msg, embed=THREAD_EMBED)
+            th = await ch.create_thread(
+                name=(
+                    f"{message.author.display_name} | "
+                    f"{message.id} | {timezone.now().strftime('%Y-%m-%d %H:%M')}"
+                ),
+                auto_archive_duration=10080,
+                type=discord.ChannelType.private_thread,
+                reason=None
+            )
+            msg = (
+                f"hi, <@{message.author.id}>, <@{ctx.author.id}> "
+                "wants clarification on this message\n\n"
+                f"```{message.content}```\n\n{message.jump_url}\n{_f}"
+            )
+            await th.send(msg, embed=THREAD_EMBED)
+            await ctx.respond(
+                content=f"Check the thread created! {th.mention}",
+                view=None,
+                ephemeral=True
+            )
+
+        else:
+            await ctx.respond(
+                content="No Channel found in the configuration for this server? Contact the admins.",
+                view=None,
+                ephemeral=True
+            )
 
 
 def setup(bot):
