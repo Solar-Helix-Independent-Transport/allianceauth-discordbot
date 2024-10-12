@@ -91,6 +91,17 @@ class AuthBotConfiguration(models.Model):
 
     admin_users = models.ManyToManyField(DiscordUser, blank=True)
 
+    admin_user_ids = models.TextField(default=None, null=True, blank=True)
+
+    def get_non_model_admin_ids(self):
+        try:
+            ids = self.admin_user_ids.split(",")
+            return [
+                int(id) for id in ids
+            ]
+        except Exception:
+            return []
+
     def __str__(self):
         return "AuthBot Configuration"
 
@@ -155,13 +166,13 @@ class TicketGroups(SingletonModel):
         Group, blank=True, help_text="Pingable groups for ticketing")
     ticket_channel = models.ForeignKey(
         Channels, on_delete=models.SET_NULL, null=True, default=None, blank=True)
-    
+
     ticket_channels = models.TextField(
         default=None,
         null=True,
         blank=True,
         help_text="JSON dictionary {server_id:channel_id}")
-    
+
     class Meta:
         default_permissions = ()
         verbose_name = 'Ticket Cog Configuration'
@@ -175,9 +186,8 @@ class TicketGroups(SingletonModel):
             channels = json.loads(self.ticket_channels)
             channel_id = channels.get(str(server_id), 0)
             return channel_id if channel_id else None
-        except json.JSONDecodeError as e:
+        except json.JSONDecodeError:
             if self.ticket_channel:
                 return self.ticket_channel.channel
             else:
                 return None
-
