@@ -29,15 +29,34 @@ def timerboard_active():
 
 def get_admins():
     from .models import AuthBotConfiguration
-    return list(
-        AuthBotConfiguration.objects.get(
-            pk=1
-        ).admin_users.all(
+    conf = AuthBotConfiguration.objects.get(
+        pk=1
+    )
+    admins = list(
+        conf.admin_users.all(
         ).values_list(
             'uid',
             flat=True
         )
     )
+    admins += conf.get_non_model_admin_ids()
+    return admins
+
+
+async def aget_admins():
+    from .models import AuthBotConfiguration
+    conf = await AuthBotConfiguration.objects.aget(
+        pk=1
+    )
+    admins = [
+        a async for a in conf.admin_users.all(
+        ).values_list(
+            'uid',
+            flat=True
+        )
+    ]
+    admins += conf.get_non_model_admin_ids()
+    return admins
 
 
 def get_low_adm():
