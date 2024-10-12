@@ -365,15 +365,21 @@ class AuthBot(commands.Bot):
             await ctx.send("Something Went Wrong, Please try again Later.",)
         django.db.close_old_connections()
 
+    async def send_resp(self, ctx, exp):
+        try:
+            await ctx.send_response(exp, ephemeral=True)
+        except RuntimeError:
+            await ctx.send_followup(exp, ephemeral=True)
+
     async def on_application_command_error(self, context: ApplicationContext, exception: DiscordException) -> None:
         if isinstance(exception, commands.CheckFailure):
-            await context.send_response(exception, ephemeral=True)
+            await self.send_resp(exception)
         elif isinstance(exception, commands.MissingPermissions):
-            await context.send_response(exception, ephemeral=True)
+            await self.send_resp(exception)
         elif isinstance(exception, NotAuthenticated):
-            await context.send_response(exception, ephemeral=True)
+            await self.send_resp(exception)
         elif isinstance(exception, NotManaged):
-            await context.send_response(exception, ephemeral=True)
+            await self.send_resp(exception)
         else:  # Catch everything, and close out the interactions gracefully.
             logger.error(f"Unknown Error {exception}")
             logger.error("\n".join(traceback.format_tb(
@@ -382,7 +388,7 @@ class AuthBot(commands.Bot):
             if app_settings.DISCORD_BOT_SEND_FAILURE_MESSAGES and app_settings.DISCORD_BOT_FAILURE_MESSAGES_CHANNEL:
                 message = [f"`{context.command}` failed for `{context.author}`\n",
                            f"**Exception:** ```{exception}```",
-                           f"\n**Interaction:** ```{context.interaction.data}```",
+                           f"\n**Interaction:** ```{str(context.interaction.data).replace("`", "\'")}```",
                            "\n**Trace:**```"]
                 message += traceback.format_tb(
                     exception.original.__traceback__)
