@@ -114,11 +114,11 @@ class Reactions(commands.Cog):
             if payload.emoji.id is not None:
                 emoji = payload.emoji.id
             try:
-                rr_binds = ReactionRoleBinding.objects.get(
+                rr_binds = ReactionRoleBinding.objects.aget(
                     message=rr_msg, emoji=emoji)
             except ReactionRoleBinding.DoesNotExist:
                 try:
-                    rr_binds = ReactionRoleBinding.objects.get(
+                    rr_binds = ReactionRoleBinding.objects.aget(
                         message=rr_msg, emoji=payload.emoji.name)
                 except ReactionRoleBinding.DoesNotExist:
                     return await self.clean_emojis(payload)
