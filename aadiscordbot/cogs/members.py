@@ -14,6 +14,7 @@ from allianceauth.eveonline.evelinks import evewho
 from allianceauth.eveonline.models import EveCharacter, EveCorporationInfo
 
 from aadiscordbot.app_settings import aastatistics_active
+from aadiscordbot.cogs.utils.autocompletes import search_characters
 from aadiscordbot.cogs.utils.decorators import (
     is_guild_managed, message_in_channels, sender_has_any_perm,
 )
@@ -36,7 +37,7 @@ class Members(commands.Cog):
         )
 
         try:
-            char = EveCharacter.objects.get(character_name=input_name)
+            char = EveCharacter.objects.aget(character_name=input_name)
 
             try:
                 main = char.character_ownership.user.profile.main_character
@@ -80,7 +81,7 @@ class Members(commands.Cog):
                 for idx, names in enumerate([alt_list[i:i + 6] for i in range(0, len(alt_list), 6)]):
                     if idx < 6:
                         embed.add_field(
-                            name=f"Linked Characters {idx+1}", value=", ".join(names), inline=False
+                            name=f"Linked Characters {idx + 1}", value=", ".join(names), inline=False
                         )
                     else:
                         embed.add_field(
@@ -135,7 +136,7 @@ class Members(commands.Cog):
                 for idx, names in enumerate([alt_list[i:i + 6] for i in range(0, len(alt_list), 6)]):
                     if idx < 6:
                         embed.add_field(
-                            name=f"Found Characters {idx+1}", value=", ".join(names), inline=False
+                            name=f"Found Characters {idx + 1}", value=", ".join(names), inline=False
                         )
                     else:
                         embed.add_field(
@@ -165,10 +166,6 @@ class Members(commands.Cog):
         """
         input_name = ctx.message.content[8:]
         return await ctx.send(embed=self.get_lookup_embed(input_name))
-
-    async def search_characters(ctx: AutocompleteContext):
-        """Returns a list of colors that begin with the characters entered so far."""
-        return list(EveCharacter.objects.filter(character_name__icontains=ctx.value).values_list('character_name', flat=True)[:10])
 
     @commands.slash_command(name='lookup')
     @is_guild_managed()
@@ -230,7 +227,7 @@ class Members(commands.Cog):
             msg = f"**[ [{corp_info.ticker}]({evewho.corporation_url(corp_id)}) ]** has {corp_info.members} members:\n\n"\
                 f"```diff\n"\
                 f"+Known Members     : {knowns}\n"\
-                f"-Unknowns          : {corp_info.members-knowns}```"
+                f"-Unknowns          : {corp_info.members - knowns}```"
 
             _header = Embed(
                 title=input_name,

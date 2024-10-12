@@ -1,7 +1,6 @@
 import datetime
 import logging
 
-import pendulum
 from discord.colour import Color
 from discord.embeds import Embed
 from discord.ext import commands
@@ -33,11 +32,10 @@ class Timers(commands.Cog):
         :param ctx:
         :return:
         """
-        next_timer = Timer.objects.filter(corp_timer=False,
-                                          eve_time__gte=datetime.datetime.utcnow().replace(tzinfo=timezone.utc)).first()
-        time_until = pendulum.now(tz="UTC").diff_for_humans(
-            next_timer.eve_time, absolute=True
-        )
+        next_timer = Timer.objects.filter(
+            corp_timer=False,
+            eve_time__gte=datetime.datetime.utcnow().replace(tzinfo=timezone.utc)
+        ).afirst()
         embed = Embed(title="Next Timer")
         embed.description = next_timer.details
         if next_timer.objective == "Friendly":

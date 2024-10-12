@@ -44,7 +44,7 @@ class Welcome(commands.Cog):
                             Q(guild_id=member.guild.id) | Q(guild_id=None)
                         ),
                         authenticated=True,
-                    ).order_by('?').first().message
+                    ).order_by('?').afirst().message
                     message_formatted = message.format(
                         user_mention=member.mention,
                         guild_name=member.guild.name,
@@ -62,7 +62,7 @@ class Welcome(commands.Cog):
                             Q(guild_id=member.guild.id) | Q(guild_id=None)
                         ),
                         unauthenticated=True,
-                    ).order_by('?').first().message
+                    ).order_by('?').afirst().message
                     message_formatted = message.format(
                         user_mention=member.mention,
                         guild_name=member.guild.name,
@@ -103,7 +103,7 @@ class Goodbye(commands.Cog):
                             Q(guild_id=member.guild.id) | Q(guild_id=None)
                         ),
                         authenticated=True,
-                    ).order_by('?').first().message
+                    ).order_by('?').afirst().message
                     message_formatted = message.format(
                         user_mention=member.mention,
                         guild_name=member.guild.name,
@@ -123,7 +123,7 @@ class Goodbye(commands.Cog):
                             Q(guild_id=member.guild.id) | Q(guild_id=None)
                         ),
                         unauthenticated=True,
-                    ).order_by('?').first().message
+                    ).order_by('?').afirst().message
                     message_formatted = message.format(
                         user_mention=member.mention,
                         guild_name=member.guild.name,
