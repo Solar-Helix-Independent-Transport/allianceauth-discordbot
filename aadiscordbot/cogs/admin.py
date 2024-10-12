@@ -39,7 +39,7 @@ class Admin(commands.Cog):
         """
         Add a role as read/write to a channel....
         """
-        if ctx.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+        if ctx.author.id not in await app_settings.aget_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
             return await ctx.respond("You do not have permission to use this command", ephemeral=True)
 
         await ctx.defer()
@@ -56,7 +56,7 @@ class Admin(commands.Cog):
         """
 
         # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
-        if ctx.author.id not in app_settings.get_admins():
+        if ctx.author.id not in await app_settings.aget_admins():
             return await ctx.respond("You do not have permission to use this command", ephemeral=True)
 
         await ctx.defer()
@@ -71,7 +71,7 @@ class Admin(commands.Cog):
         """
         Remove a role from a channel....
         """
-        if ctx.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+        if ctx.author.id not in await app_settings.aget_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
             return await ctx.respond("You do not have permission to use this command", ephemeral=True)
 
         await ctx.defer()
@@ -86,7 +86,7 @@ class Admin(commands.Cog):
         """
         Create a new channel and add a role....
         """
-        if ctx.author.id not in app_settings.get_admins():
+        if ctx.author.id not in await app_settings.aget_admins():
             # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
             return await ctx.respond(
                 "You do not have permission to use this command",
@@ -129,7 +129,7 @@ class Admin(commands.Cog):
         """
         set role as admin....
         """
-        if ctx.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+        if ctx.author.id not in await app_settings.aget_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
             return await ctx.respond("You do not have permission to use this command", ephemeral=True)
 
         await ctx.defer(ephemeral=True)
@@ -144,7 +144,7 @@ class Admin(commands.Cog):
         """
         revoke role admin....
         """
-        if ctx.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+        if ctx.author.id not in await app_settings.aget_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
             return await ctx.respond("You do not have permission to use this command", ephemeral=True)
 
         await ctx.defer(ephemeral=True)
@@ -159,7 +159,7 @@ class Admin(commands.Cog):
         """
         Dump all roles with no members.
         """
-        if ctx.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+        if ctx.author.id not in await app_settings.aget_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
             return await ctx.respond("You do not have permission to use this command", ephemeral=True)
 
         await ctx.defer()
@@ -186,7 +186,7 @@ class Admin(commands.Cog):
         """
         delete all roles with no members.
         """
-        if ctx.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+        if ctx.author.id not in await app_settings.aget_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
             return await ctx.respond("You do not have permission to use this command", ephemeral=True)
 
         await ctx.defer()
@@ -211,7 +211,7 @@ class Admin(commands.Cog):
         """
         Returns a list of users on this server, who are not known to AA
         """
-        if ctx.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+        if ctx.author.id not in await app_settings.aget_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
             return await ctx.respond("You do not have permission to use this command", ephemeral=True)
 
         await ctx.defer()
@@ -253,7 +253,7 @@ class Admin(commands.Cog):
         """
         Returns the webhooks for the channel
         """
-        if ctx.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+        if ctx.author.id not in await app_settings.aget_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
             return await ctx.respond("You do not have permission to use this command", ephemeral=True)
 
         await ctx.defer(ephemeral=True)
@@ -284,7 +284,7 @@ class Admin(commands.Cog):
         """
         Returns the uptime of the bot
         """
-        if ctx.author.id not in app_settings.get_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
+        if ctx.author.id not in await app_settings.aget_admins():  # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
             return await ctx.respond("You do not have permission to use this command", ephemeral=True)
         try:
             await ctx.respond(
@@ -303,7 +303,7 @@ class Admin(commands.Cog):
         await ctx.defer(ephemeral=True)
 
         # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
-        if ctx.author.id not in app_settings.get_admins():
+        if ctx.author.id not in await app_settings.aget_admins():
             return await ctx.respond("You do not have permission to use this command", ephemeral=True)
         try:
             output = {}
@@ -342,12 +342,23 @@ class Admin(commands.Cog):
     async def command_list(self, ctx):
         await ctx.defer(ephemeral=True)
         helptext = Paginator()
+        helptext.add_line(
+            "Parent          Command                   "
+            "Module                         "
+            "Type"
+        )
+        helptext.add_line("-" * 90)
+        coms = set()
         for command in self.bot.walk_application_commands():
             if isinstance(command, SlashCommandGroup):
                 continue
-            _parent = f"{command.full_parent_name}{' ' if command.full_parent_name else ''}"
-            _msg = f"{_parent}{command.name} ({command.module} - {command.__class__.__name__})"
-            helptext.add_line(_msg)
+            _parent = f"{command.full_parent_name.ljust(15)}{' ' if command.full_parent_name.rjust else ''}"
+            _msg = f"{_parent}{command.name.ljust(25)} {command.module.ljust(30)} {command.__class__.__name__}"
+            if _msg not in coms:
+                coms.add(_msg)
+                helptext.add_line(_msg)
+            else:
+                pass
         for _str in helptext.pages:
             await ctx.send(_str)
         await ctx.respond("Done", ephemeral=True)
@@ -361,7 +372,7 @@ class Admin(commands.Cog):
         await ctx.defer(ephemeral=True)
 
         # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
-        if ctx.author.id not in app_settings.get_admins():
+        if ctx.author.id not in await app_settings.aget_admins():
             return await ctx.respond("You do not have permission to use this command", ephemeral=True)
 
         embed = Embed(title="Bot Task Stats!")
@@ -414,7 +425,7 @@ class Admin(commands.Cog):
         """
         Queue Update tasks for the character and all alts.
         """
-        if ctx.author.id not in app_settings.get_admins():
+        if ctx.author.id not in await app_settings.aget_admins():
             return await ctx.respond("You do not have permission to use this command", ephemeral=True)
 
         try:
@@ -439,7 +450,7 @@ class Admin(commands.Cog):
         """
         Re-Sync the commands to discord.
         """
-        if ctx.author.id not in app_settings.get_admins():
+        if ctx.author.id not in await app_settings.aget_admins():
             return await ctx.respond("You do not have permission to use this command", ephemeral=True)
 
         await ctx.defer(ephemeral=True)
@@ -451,7 +462,7 @@ class Admin(commands.Cog):
     @commands.user_command(name="Group Sync", guild_ids=app_settings.get_all_servers())
     async def group_sync_user_context(self, ctx, user):
         # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
-        if ctx.author.id not in app_settings.get_admins():
+        if ctx.author.id not in await app_settings.aget_admins():
             return await ctx.respond("You do not have permission to use this command", ephemeral=True)
         auth_user = DiscordUser.objects.get(uid=user.id)
         update_groups.delay(auth_user.user_id)
@@ -460,7 +471,7 @@ class Admin(commands.Cog):
     @commands.user_command(name="Nickname Sync", guild_ids=app_settings.get_all_servers())
     async def nick_sync_user_context(self, ctx, user):
         # https://media1.tenor.com/images/1796f0fa0b4b07e51687fad26a2ce735/tenor.gif
-        if ctx.author.id not in app_settings.get_admins():
+        if ctx.author.id not in await app_settings.aget_admins():
             return await ctx.respond("You do not have permission to use this command", ephemeral=True)
         auth_user = DiscordUser.objects.get(uid=user.id)
         update_nickname.delay(auth_user.user_id)
