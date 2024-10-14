@@ -373,13 +373,13 @@ class AuthBot(commands.Bot):
 
     async def on_application_command_error(self, context: ApplicationContext, exception: DiscordException) -> None:
         if isinstance(exception, commands.CheckFailure):
-            await self.send_resp(exception)
+            await self.send_resp(context, exception)
         elif isinstance(exception, commands.MissingPermissions):
-            await self.send_resp(exception)
+            await self.send_resp(context, exception)
         elif isinstance(exception, NotAuthenticated):
-            await self.send_resp(exception)
+            await self.send_resp(context, exception)
         elif isinstance(exception, NotManaged):
-            await self.send_resp(exception)
+            await self.send_resp(context, exception)
         else:  # Catch everything, and close out the interactions gracefully.
             logger.error(f"Unknown Error {exception}")
             logger.error("\n".join(traceback.format_tb(
