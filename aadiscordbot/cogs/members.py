@@ -37,7 +37,7 @@ class Members(commands.Cog):
         )
 
         try:
-            char = EveCharacter.objects.aget(character_name=input_name)
+            char = EveCharacter.objects.get(character_name=input_name)
 
             try:
                 main = char.character_ownership.user.profile.main_character
