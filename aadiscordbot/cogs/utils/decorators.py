@@ -1,6 +1,7 @@
 import logging
 import os
 
+from discord import Guild
 from discord.ext import commands
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -17,11 +18,11 @@ logger = logging.getLogger(__name__)
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
 
-def has_perm(id, perm: str):
+def has_perm(id, perm: str, guild: Guild = None):
     if id in get_admins():
         return True
     try:
-        user = auth.get_auth_user(id)
+        user = auth.get_auth_user(id, guild=guild)
         has_perm = user.has_perm(perm)
 
         if has_perm:
@@ -38,8 +39,9 @@ def sender_has_perm(perm: str):
     Permission Decorator: Does the user have x Django Permission
     """
     def predicate(ctx):
+        guild = getattr(ctx, "guild", None)
         if hasattr(ctx, "user"):
-            return has_perm(ctx.user.id, perm)
+            return has_perm(ctx.user.id, perm, guild=guild)
         else:
             return has_perm(ctx.author.id, perm)  # !Commands
 
@@ -91,11 +93,11 @@ def sender_has_all_perms(perms: list):
     return commands.check(predicate)
 
 
-def has_any_perm(id, perms: list):
+def has_any_perm(id, perms: list, guild: Guild = None):
     if id in get_admins():
         return True
     for perm in perms:
-        user = auth.get_auth_user(id)
+        user = auth.get_auth_user(id, guild=guild)
         try:
             has_perm = user.has_perm(perm)
             if has_perm:
@@ -111,8 +113,9 @@ def sender_has_any_perm(perms: list):
     Permission Decorator: Does the user have x or y Django Permission
     """
     def predicate(ctx):
+        guild = getattr(ctx, "guild", None)
         if hasattr(ctx, "user"):
-            return has_any_perm(ctx.user.id, perms)
+            return has_any_perm(ctx.user.id, perms, guild=guild)
         else:
             return has_any_perm(ctx.author.id, perms)  # !Commands
 
