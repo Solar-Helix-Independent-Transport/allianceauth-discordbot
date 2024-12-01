@@ -14,8 +14,6 @@ from django.utils import timezone
 
 from aadiscordbot.cogs.utils.exceptions import NotAuthenticated
 
-from .utils.auth import get_discord_user_id
-
 logger = logging.getLogger(__name__)
 
 GUILD_ID = settings.DISCORD_GUILD_ID
@@ -117,6 +115,9 @@ async def send_direct_message(bot, discord_user_id, message, embed=False):
 async def send_direct_message_by_user_id(bot, user_pk, message, embed=False):
     # App isn't loaded when this file is imported, so importing here
     from django.contrib.auth.models import User
+
+    from .utils.auth import get_discord_user_id
+
     logger.debug(f"Sending DM to User ID {user_pk}")
     user = User.objects.get(pk=user_pk)
     try:
