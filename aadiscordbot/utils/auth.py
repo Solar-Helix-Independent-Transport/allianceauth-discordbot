@@ -13,12 +13,13 @@ import logging
 import warnings
 from typing import Union
 
-from aadiscordbot.cogs.utils.exceptions import NotAuthenticated
 from discord import Guild, User
 
 from django.conf import settings
+from django.contrib.auth.models import User as AuthUser
 
 from aadiscordbot.app_settings import discord_active, dmv_active, get_admins
+from aadiscordbot.cogs.utils.exceptions import NotAuthenticated
 
 logger = logging.getLogger(__name__)
 
@@ -201,5 +202,36 @@ def get_auth_user(user: Union[User, int], guild: Union[Guild, int] = None) -> Us
 
     if discord_user:
         return discord_user.user
+    else:
+        raise NotAuthenticated
+
+
+def get_discord_user_id(user: Union[AuthUser, int]) -> int:
+    """
+        Get discord_id from any Discord Service
+        raises NotAuthenticated if user is not found.
+    """
+    user_id = None
+
+    if isinstance(user, int):
+        user_id = user
+    else:
+        user_id = user.id
+
+    discord_user = None
+
+    if DISCORD_ACTIVE:
+        try:
+            discord_user = DiscordUser.objects.get(user_id=user_id)
+        except DiscordUser.DoesNotExist:
+            pass
+    if not discord_user and DMV_ACTIVE:
+        try:
+            discord_user = MultiDiscordUser.objects.get(user_id=user_id)
+        except MultiDiscordUser.DoesNotExist:
+            pass
+
+    if discord_user:
+        return discord_user.uid
     else:
         raise NotAuthenticated

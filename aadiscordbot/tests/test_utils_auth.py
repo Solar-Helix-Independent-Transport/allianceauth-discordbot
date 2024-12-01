@@ -267,3 +267,21 @@ class TestUtilsAuth(AuthbotTestCase):
         usr.id = user.uid
 
         self.assertTrue(auth.is_user_bot_admin(usr))
+
+    def test_get_discord_user_core(self):
+        user = self.create_discord_user()
+        self.assertEqual(
+            auth.get_discord_user_id(self.u1),
+            user.uid
+        )
+
+    def test_get_discord_user_dnv(self):
+        user = self.create_dmv_user()
+        self.assertEqual(
+            auth.get_discord_user_id(self.u1),
+            user.uid
+        )
+
+    def test_get_discord_user_none(self):
+        with self.assertRaises(NotAuthenticated):
+            auth.get_discord_user_id(self.u2)

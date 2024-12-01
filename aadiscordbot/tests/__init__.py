@@ -23,6 +23,18 @@ class AuthbotTestCase(TestCase):
             "BTL"
         )
 
+        cls.u2 = AuthUtils.create_user(
+            "user_2"
+        )
+        AuthUtils.add_main_character(
+            cls.u2,
+            "Authbot2",
+            12345,
+            56789,
+            "BareMetal1",
+            "BTL1"
+        )
+
         AuthUtils.connect_signals()
 
     def create_discord_user(self):
