@@ -227,7 +227,7 @@ def get_discord_user_id(user: Union[AuthUser, int]) -> int:
             pass
     if not discord_user and DMV_ACTIVE:
         try:
-            discord_user = MultiDiscordUser.objects.get(user_id=user_id)
+            discord_user = MultiDiscordUser.objects.filter(user_id=user_id).first()
         except MultiDiscordUser.DoesNotExist:
             pass
 
