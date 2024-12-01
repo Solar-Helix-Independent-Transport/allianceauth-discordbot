@@ -4,14 +4,17 @@ import logging
 import warnings
 from datetime import timedelta
 
-from discord import Embed, File, Member
+from discord import Embed, File
 from discord.ext import tasks
 from discord.ext.commands import Bot
-from discord.ui import View
 
 import django
 from django.conf import settings
 from django.utils import timezone
+
+from aadiscordbot.cogs.utils.exceptions import NotAuthenticated
+
+from .utils.auth import get_discord_user_id
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +36,7 @@ async def run_tasks(bot: Bot):
             timeout = 1
             eta = timezone.now() + timedelta(seconds=timeout)
             bot.pending_tasks.append((eta, (task, args, kwargs)))
-            #logger.debug(f"Rate Limit hit! Re Queueing `{task}`")
+            # logger.debug(f"Rate Limit hit! Re Queueing `{task}`")
         else:
             try:
                 await task(bot, *args, **kwargs)
@@ -116,8 +119,8 @@ async def send_direct_message_by_user_id(bot, user_pk, message, embed=False):
     from django.contrib.auth.models import User
     logger.debug(f"Sending DM to User ID {user_pk}")
     user = User.objects.get(pk=user_pk)
-    if hasattr(user, "discord"):
-        discord_user_id = user.discord.uid
+    try:
+        discord_user_id = get_discord_user_id(user)
         user_object = await bot.fetch_user(discord_user_id)
         if user_object.can_send():
             await user_object.create_dm()
@@ -129,7 +132,7 @@ async def send_direct_message_by_user_id(bot, user_pk, message, embed=False):
         else:
             logger.error(f"Unable to DM user_pk={user_pk} {user_object}")
 
-    else:
+    except NotAuthenticated:
         logger.debug(f"No discord account on record for user_pk={user_pk}")
 
 
