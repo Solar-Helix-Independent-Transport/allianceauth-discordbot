@@ -3,12 +3,7 @@ import logging
 from celery import shared_task
 from discord import Embed
 
-import django
-import django.db
-from django.conf import settings
 from django.contrib.auth.models import User
-
-from allianceauth.services.modules.discord.models import DiscordUser
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +74,7 @@ def send_direct_message_by_discord_id(discord_user_id, message_content, embed=Fa
 def send_direct_message(user_id, message_content, embed=False):
     # DEPRECATED shim to queue a Private Message to a specific user
     raise Exception(
-        f"This function should be called asynchronously. Failed to queue a message to User {discord_user_id}. Warning! This function is deprecated.")
+        f"This function should be called asynchronously. Failed to queue a message to User {user_id}. Warning! This function is deprecated.")
 
 
 @shared_task
@@ -92,4 +87,39 @@ def send_direct_message_by_user_id(user_pk, message_content, embed=False):
 @shared_task
 def pop_user_group_cache(user_pk):
     raise Exception(
-        f"This function should be called asynchronously. Failed to queue...")
+        "This function should be called asynchronously. Failed to queue...")
+
+
+@shared_task
+def run_task_function(function:str, task_args: list = [], task_kwargs: dict = {}):
+    """
+        Run any async code with bot context.
+        function provided must have its first argument as the bot context
+        eg.
+
+        example.bot_task.py
+            async def abuse_ariel(bot, message, dm=False):
+                if dm:
+                    user = await bot.get_user("ArielRin")
+                    user.send_message(message)
+                else:
+                    channel = bot.get_channel(1)
+                    channel.send_message(message)
+
+        example.code.py
+            from aadiscordbot.tasks import run_task_function
+            # run ASAP
+            run_task_function.delay("example.bot_task.py", task_args=["Ariel is a nice guy"], task_kwargs={"dm": True})
+            # run in 60 seconds
+            run_task_function.apply_async(
+                args=[
+                    "example.bot_task.py"
+                ],
+                kwargs=[
+                    "task_kwargs": {"dm": True}
+                ],
+                countdown=60
+            )
+    """
+    raise Exception(
+        f"This function should be called asynchronously. Failed to queue a task {function}")
