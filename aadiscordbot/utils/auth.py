@@ -58,6 +58,18 @@ def _get_dmv_discord_user(user_id, guild_id):
         return None
 
 
+def _get_any_dmv_discord_user(user_id):
+    if DMV_ACTIVE:
+        try:
+            return MultiDiscordUser.objects.filter(
+                uid=user_id
+            ).first()
+        except MultiDiscordUser.DoesNotExist:
+            return None
+    else:
+        return None
+
+
 def _check_for_dmv_user(user: User, guild: Guild):
     """
         Return `True` if a discord user is authenticated to
@@ -194,11 +206,14 @@ def get_auth_user(user: Union[User, int], guild: Union[Guild, int] = None) -> Us
 
     discord_user = None
 
-    if guild_id is None or _guild_is_core_module(guild_id):
+    if _guild_is_core_module(guild_id):
         discord_user = _get_core_discord_user(user_id)
 
     elif _guild_is_dmv_module(guild_id):
         discord_user = _get_dmv_discord_user(user_id, guild_id)
+
+    else:
+        discord_user = _get_any_dmv_discord_user(user_id)
 
     if discord_user:
         return discord_user.user
