@@ -119,31 +119,6 @@ wget https://raw.githubusercontent.com/pvyParts/allianceauth-discordbot/master/b
 
 ## Running Discordbot with Docker
 
-* To download the `bot_conf.py` file into your `conf/` folder, run the following from your aa-docker folder
-```bash
-wget https://raw.githubusercontent.com/pvyParts/allianceauth-discordbot/master/bot_conf.py -O conf/bot_conf.py
-```
-* Update base image to have bot_conf.py mapped
-
-```dockerfile
-x-allianceauth-base:
-
-# image: ${AA_DOCKER_TAG?err}
-
-  &allianceauth-base
-  build:
-    context: .
-    dockerfile: custom.dockerfile
-    args:
-      AA_DOCKER_TAG: ${AA_DOCKER_TAG?err}
-  restart: always
-  env_file:
-    - ./.env
-  volumes:
-...
-    - ./conf/bot_conf.py:/home/allianceauth/myauth/bot_conf.py
-...
-```
 
 Add a service to run the Discordbot
 
@@ -151,8 +126,8 @@ Add a service to run the Discordbot
   allianceauth_discordbot:
     container_name: allianceauth_discordbot
     <<: [ *allianceauth-base ]
-    restart: on-failure:1
-    entrypoint: [ "python", "/home/allianceauth/myauth/bot_conf.py" ]
+    restart: on-failure
+    entrypoint: [ "auth", "run_authbot" ]
 ```
 
 ## Running DiscordBot with Supervisor
