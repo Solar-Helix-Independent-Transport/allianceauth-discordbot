@@ -113,7 +113,7 @@ app.conf.task_routes = {'aadiscordbot.tasks.*': {'queue': 'aadiscordbot'}}
 ## Running Discordbot with Docker
 Add a service to run the Discordbot
 
-```dockerfile
+```yaml
   allianceauth_discordbot:
     container_name: allianceauth_discordbot
     <<: [ *allianceauth-base ]
@@ -121,7 +121,9 @@ Add a service to run the Discordbot
     entrypoint: [ "auth", "run_authbot" ]
 ```
 
-## Running DiscordBot with Supervisor
+* run `docker compose up -d` to start the bot.
+
+## **[Bare Metal]** Running DiscordBot with Supervisor
 
 * Amend your supervisor.conf, correcting paths as required and add `authbot` to the launch group at the end of the conf
 
@@ -145,7 +147,9 @@ programs=beat,worker,gunicorn,authbot
 priority=999
 ```
 
-Go to admin and configure your admin users in the bot config model.
+* **[Bare metal only]** Restart and reload supervisor `sudo service supervisord reload`
+
+* Go to admin and configure your admin users in the bot config model.
 
 > Enable groups/states/users to utilize the lookup command by adding permissions under **corputils | corp stats |**
 
