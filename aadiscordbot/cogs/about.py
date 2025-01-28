@@ -28,7 +28,7 @@ class About(commands.Cog):
         """
         embed = Embed(title="AuthBot: The Authening")
         embed.set_thumbnail(
-            url="https://cdn.discordapp.com/icons/516758158748811264/ae3991584b0f800b181c936cfc707880.webp?size=128"
+            url=f"{ctx.bot.user.display_avatar.url}"
         )
         embed.colour = Color.blue()
 
@@ -82,7 +82,7 @@ class About(commands.Cog):
             channels = len(ctx.guild.channels)
             cats = len(ctx.guild.categories)
             embed.add_field(name="Channel Count:",
-                            value=channels-cats, inline=True)
+                            value=channels - cats, inline=True)
 
             roles = len(ctx.guild.roles)
             embed.add_field(name="Role Count:",
