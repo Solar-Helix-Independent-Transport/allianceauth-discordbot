@@ -153,8 +153,12 @@ priority=999
 
 > Enable groups/states/users to utilize the lookup command by adding permissions under **corputils | corp stats |**
 
-```ini
+```python
 corputils.view_alliance_corpstats
+
+or
+
+aadiscordbot.member_command_access "aadiscordbot | DiscordBot | can access the member commands"
 ```
 
 ## Optional Settings
