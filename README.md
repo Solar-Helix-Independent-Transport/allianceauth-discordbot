@@ -58,7 +58,7 @@ AA-Discordbot for [Alliance Auth](https://gitlab.com/allianceauth/allianceauth).
 
 ![screenshot](https://i.imgur.com/A1yA24P.png)
 
-* Install the app with your venv active
+* **[BARE METAL ONLY]** Install the app with your venv active
 
 ```bash
 pip install allianceauth-discordbot
@@ -107,14 +107,10 @@ LOGGING['loggers']['aadiscordbot'] = {'handlers': ['bot_log_file'],'level': 'DEB
 ## Route AA Discord bot tasks away from AllianceAuth
 app.conf.task_routes = {'aadiscordbot.tasks.*': {'queue': 'aadiscordbot'}}
 ```
-
-* Run migrations `python manage.py migrate` (There should be none from this app)
-* Gather your static files `python manage.py collectstatic` (There should be none from this app)
-
+* **[Docker Only]** add `alianceauth-discordbot=version.number` to your requirements.txt and rebuild your containers and restart auth.
+* Run migrations `python manage.py migrate`
 
 ## Running Discordbot with Docker
-
-
 Add a service to run the Discordbot
 
 ```dockerfile
@@ -235,10 +231,13 @@ The bot is able to run a reaction roles system that is compatible with auth and 
   * Adds zkill Monthly/Yearly stats to !lookup
 * [timezones](https://github.com/ppfeufer/aa-timezones)
   * Updates the `time` command to have all timezones configured in auth.
+* [corptools](https://github.com/Solar-Helix-Independent-Transport/allianceauth-corp-tools)
+  * `where_is` to allow users to find assets quickly
+  * `locate` to find all characters and show location and ships
+  * `route` to show a route with known JB's
 
 ## Welcome Messaages
 
-`
 With the WelcomeGoodbye Cog activated, Discordbot will grab a random message from the Welcome or Goodbye Message Model and send it to the Guild System channel
 
 These can be configured in admin under `/admin/aadiscordbot/welcomemessage/` and `/admin/aadiscordbot/goodbyemessage/`
@@ -257,8 +256,6 @@ You can Authenticate for more access {auth_url}
 
 ## Private Thread Ticket System
 
-> ❗❗❗ **While this is fully functional, this is still in early stages of development, Please report any issues you find!** ❗❗❗
-
 With the `aadiscordbot.cogs.tickets` Cog activated, users will be able to issue the `/help` command to pick a group to get help from.
 
 The groups available for selection are configurable in the site admin under
@@ -272,6 +269,15 @@ You also need to choose a channel to create the threads in from the site admin `
 
 ## Using AA-Discordbot from my project
 
+When using authbot from your application, best practive is to use the provided helper functions for fetching users or checcking permisions to ensure compatability with new versions of the bot, Alliance Auth and potential 3rd party service modules like `discord-multiverse`
+
+```python
+from aadiscordbot.utils.auth import is_user_bot_admin, is_user_authenticated, get_discord_user_id, get_auth_user
+
+# etc
+```
+[More details can be found here](https://github.com/Solar-Helix-Independent-Transport/allianceauth-discordbot/blob/master/aadiscordbot/utils/auth.py)
+
 ### Send Messages
 
 You can use the send_message helper to send a message with text/embed to:
@@ -283,7 +289,7 @@ You can use the send_message helper to send a message with text/embed to:
 
 [aadiscordbot/tasks.py](https://github.com/pvyParts/allianceauth-discordbot/blob/master/aadiscordbot/tasks.py)
 
-### Example Usage
+#### Example Usage
 
 ```python
 from django.contrib.auth.models import User
@@ -368,12 +374,13 @@ def register_cogs():
     return ["yourapp.cogs.cog_a", "yourapp.cogs.cog_b"]
 ```
 
-### Running fully custom bot tasks
+### Running custom bot context tasks
 
 Create your async task, the function must have a bot instance as its first arg, otherwise you are fine to use any args/kwargs
 
+[Basic example task and how to run it](https://github.com/Solar-Helix-Independent-Transport/allianceauth-discordbot/blob/master/aadiscordbot/tests/task_tests.py)
 ```python
-# aadiscordbot.tests.task_test.py
+# file > aadiscordbot.tests.task_test.py
 
 async def send_configuration_to_log(bot, message, commands=False):
     logger.error(f"{bot.user} {message} - (commands: {commands})")
@@ -389,8 +396,8 @@ run_task_function.delay(
   ["TESTING a custom function!"],
   {"commands":True}
 )
-
-you will need to manage your own error handling. but TLDR these run just like any other celery task. you can also use apply_async and countdown to delay the running of the task.
+```
+you will need to manage your own error handling. but TLDR these run just like any other celery task. you can also use `apply_async` and `countdown` to delay the running of the task.
 
 ## Optional Settings continued
 
