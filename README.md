@@ -368,6 +368,30 @@ def register_cogs():
     return ["yourapp.cogs.cog_a", "yourapp.cogs.cog_b"]
 ```
 
+### Running fully custom bot tasks
+
+Create your async task, the function must have a bot instance as its first arg, otherwise you are fine to use any args/kwargs
+
+```python
+# aadiscordbot.tests.task_test.py
+
+async def send_configuration_to_log(bot, message, commands=False):
+    logger.error(f"{bot.user} {message} - (commands: {commands})")
+    logger.error(f"Guilds: {len(bot.guilds)}")
+    logger.error(f"Users:  {len(bot.users)}")
+```
+
+Call the your task by using the shim task. [Source](https://github.com/Solar-Helix-Independent-Transport/allianceauth-discordbot/blob/master/aadiscordbot/tasks.py#L94) and the bot side async context shown [here](https://github.com/Solar-Helix-Independent-Transport/allianceauth-discordbot/blob/master/aadiscordbot/bot_tasks.py#L150)
+```python
+from aadiscordbot.tasks import run_task_function
+run_task_function.delay(
+  "aadiscordbot.tests.task_tests.send_configuration_to_log",
+  ["TESTING a custom function!"],
+  {"commands":True}
+)
+
+you will need to manage your own error handling. but TLDR these run just like any other celery task. you can also use apply_async and countdown to delay the running of the task.
+
 ## Optional Settings continued
 
 ### Isolate AuthBot from Auth's Discord Service
