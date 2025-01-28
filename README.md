@@ -111,11 +111,6 @@ app.conf.task_routes = {'aadiscordbot.tasks.*': {'queue': 'aadiscordbot'}}
 * Run migrations `python manage.py migrate` (There should be none from this app)
 * Gather your static files `python manage.py collectstatic` (There should be none from this app)
 
-* Fetch `bot_conf.py` from the Git Repo into the root of your AA install, beside `manage.py`
-
-```bash
-wget https://raw.githubusercontent.com/pvyParts/allianceauth-discordbot/master/bot_conf.py
-```
 
 ## Running Discordbot with Docker
 
@@ -136,7 +131,7 @@ Add a service to run the Discordbot
 
 ```ini
 [program:authbot]
-command=/home/allianceserver/venv/auth/bin/python /home/allianceserver/myauth/bot_conf.py
+command=/home/allianceserver/venv/auth/bin/python /home/allianceserver/myauth/manage.py run_authbot
 directory=/home/allianceserver/myauth
 user=allianceserver
 numprocs=1
