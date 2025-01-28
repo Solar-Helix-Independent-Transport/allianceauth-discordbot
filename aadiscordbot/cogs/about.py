@@ -32,10 +32,15 @@ class About(commands.Cog):
         )
         embed.colour = Color.blue()
 
-        embed.description = "This is a multi-de-functional discord bot tailored specifically for Alliance Auth Shenanigans."
+        embed.description = (
+            "This is a multi-de-functional discord bot tailored specifically for Alliance Auth Shenanigans.\n\n"
+            "With extra special thanks to all "
+            "[Contributors](https://github.com/Solar-Helix-Independent-Transport/allianceauth-discordbot/graphs/contributors)\n"
+        )
 
         embed.set_footer(
-            text="Lovingly developed for Init.™ by AaronRin and ArielKable")
+            text="Lovingly developed for Init.™ and all EvE Nerds by AaronRin and ArielKable"
+        )
 
         if not ctx.guild:
             embed.add_field(
@@ -51,7 +56,7 @@ class About(commands.Cog):
             )
 
         embed.add_field(
-            name="Version", value=f"{__version__}@{__branch__}", inline=False
+            name="Version", value=f"{__version__} `{__branch__}`", inline=False
         )
 
         return await ctx.respond(embed=embed)
