@@ -25,7 +25,7 @@ jobs:
       - name: Build Python
         run: make package
 
-      - name: Uploade Package
+      - name: Upload Package
         if: ${{ !env.ACT }} # Don't run in a local test environment
         env:
           TWINE_USERNAME: __token__
