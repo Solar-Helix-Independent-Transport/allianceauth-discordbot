@@ -44,7 +44,7 @@ class Reactions(commands.Cog):
     @commands.command(pass_context=True)
     @sender_has_perm('aadiscordbot.manage_reactions')
     async def rr(self, ctx):
-        await ReactionRoleMessage.objects.acreate(
+        ReactionRoleMessage.objects.create(
             message=ctx.message.id, name=f"{ctx.message.channel.name} RR Message {ctx.message.id}")
         return await ctx.message.add_reaction("👍")
 
@@ -56,18 +56,18 @@ class Reactions(commands.Cog):
         if payload.user_id == self.bot.user.id:
             return True
         try:
-            rr_msg = ReactionRoleMessage.objects.aget(
+            rr_msg = ReactionRoleMessage.objects.get(
                 message=payload.message_id)
             # do we have a binding?
             emoji = payload.emoji.name.encode('utf-8')
             if payload.emoji.id is not None:
                 emoji = payload.emoji.id
             try:
-                rr_binds = ReactionRoleBinding.objects.aget(
+                rr_binds = ReactionRoleBinding.objects.get(
                     message=rr_msg, emoji=emoji)
             except ReactionRoleBinding.DoesNotExist:
                 try:
-                    rr_binds = ReactionRoleBinding.objects.aget(
+                    rr_binds = ReactionRoleBinding.objects.get(
                         message=rr_msg, emoji=payload.emoji.name)
                 except Exception:
                     # admin adding new role?
@@ -81,7 +81,7 @@ class Reactions(commands.Cog):
                         return await self.clean_emojis(payload)
             if rr_binds.group:
                 try:
-                    user = DiscordUser.objects.aget(uid=payload.user_id)
+                    user = DiscordUser.objects.get(uid=payload.user_id)
                     user = user.user
                     if rr_binds.group not in user.groups.all():
                         user.groups.add(rr_binds.group)
@@ -107,18 +107,18 @@ class Reactions(commands.Cog):
         if payload.user_id == self.bot.client_id:
             return True
         try:
-            rr_msg = ReactionRoleMessage.objects.aget(
+            rr_msg = ReactionRoleMessage.objects.get(
                 message=payload.message_id)
             # do we have a binding?
             emoji = payload.emoji.name.encode('utf-8')
             if payload.emoji.id is not None:
                 emoji = payload.emoji.id
             try:
-                rr_binds = ReactionRoleBinding.objects.aget(
+                rr_binds = ReactionRoleBinding.objects.get(
                     message=rr_msg, emoji=emoji)
             except ReactionRoleBinding.DoesNotExist:
                 try:
-                    rr_binds = ReactionRoleBinding.objects.aget(
+                    rr_binds = ReactionRoleBinding.objects.get(
                         message=rr_msg, emoji=payload.emoji.name)
                 except ReactionRoleBinding.DoesNotExist:
                     return await self.clean_emojis(payload)
