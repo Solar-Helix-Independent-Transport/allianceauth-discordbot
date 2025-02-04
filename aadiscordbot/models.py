@@ -186,7 +186,7 @@ class TicketGroups(SingletonModel):
             channels = json.loads(self.ticket_channels)
             channel_id = channels.get(str(server_id), 0)
             return channel_id if channel_id else None
-        except json.JSONDecodeError:
+        except (json.JSONDecodeError, TypeError):
             if self.ticket_channel:
                 return self.ticket_channel.channel
             else:
