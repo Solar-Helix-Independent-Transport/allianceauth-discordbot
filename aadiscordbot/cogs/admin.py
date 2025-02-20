@@ -15,9 +15,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from allianceauth.eveonline.models import EveCharacter
 from allianceauth.eveonline.tasks import update_character
 from allianceauth.services.modules.discord.models import DiscordUser
-from allianceauth.services.modules.discord.tasks import (
-    update_groups, update_nickname,
-)
 
 from aadiscordbot.utils import auth
 
@@ -467,6 +464,8 @@ class Admin(commands.Cog):
         if ctx.author.id not in app_settings.get_admins():
             return await ctx.respond("You do not have permission to use this command", ephemeral=True)
         try:
+            from allianceauth.services.modules.discord.tasks import update_groups
+
             auth_user = auth.get_auth_user(user, ctx.guild)
             update_groups.delay(auth_user.pk)
         except Exception as e:
@@ -474,12 +473,13 @@ class Admin(commands.Cog):
             pass
         try:
             from aadiscordmultiverse.tasks import update_groups
+
             auth_user = auth.get_auth_user(user, ctx.guild)
             update_groups.delay(ctx.guild_id, auth_user.pk)
         except Exception as e:
             logger.error(e)
             pass
-        await ctx.respond(f"Requested Group Sync for {auth_user.user.profile.main_character}", ephemeral=True)
+        await ctx.respond(f"Requested Group Sync for {auth_user.profile.main_character}", ephemeral=True)
 
     @commands.user_command(name="Nickname Sync", guild_ids=app_settings.get_all_servers())
     async def nick_sync_user_context(self, ctx, user):
@@ -487,20 +487,23 @@ class Admin(commands.Cog):
         if ctx.author.id not in app_settings.get_admins():
             return await ctx.respond("You do not have permission to use this command", ephemeral=True)
         try:
-            auth_user = auth.get_auth_user(user)
+            from allianceauth.services.modules.discord.tasks import update_nickname
+
+            auth_user = auth.get_auth_user(user, ctx.guild)
             update_nickname.delay(auth_user.pk)
         except Exception as e:
             logger.error(e)
             pass
         try:
             from aadiscordmultiverse.tasks import update_nickname
+
             auth_user = auth.get_auth_user(user, ctx.guild)
             update_nickname.delay(ctx.guild_id, auth_user.pk)
         except Exception as e:
             logger.error(e)
             pass
 
-        await ctx.respond(f"Requested Nickname Sync for {auth_user.user.profile.main_character}", ephemeral=True)
+        await ctx.respond(f"Requested Nickname Sync for {auth_user.profile.main_character}", ephemeral=True)
 
 
 def setup(bot):
