@@ -117,7 +117,7 @@ def sender_has_any_perm(perms: list):
         if hasattr(ctx, "user"):
             return has_any_perm(ctx.user.id, perms, guild=guild)
         else:
-            return has_any_perm(ctx.author.id, perms)  # !Commands
+            return has_any_perm(ctx.author.id, perms, guild=guild)  # !Commands
 
     return commands.check(predicate)
 

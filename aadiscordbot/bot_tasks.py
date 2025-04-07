@@ -148,7 +148,7 @@ async def pop_user_group_cache(bot, user_pk):
 
 
 async def run_task_function(bot, function, task_args, task_kwargs):
-    mod_name, func_name = function.rsplit('.',1)
+    mod_name, func_name = function.rsplit('.', 1)
     mod = importlib.import_module(mod_name)
     func = getattr(mod, func_name)
     await func(bot, *task_args, **task_kwargs)
