@@ -1,6 +1,8 @@
+import csv
+import io
 import logging
 
-from discord import AutocompleteContext
+from discord import File
 from discord.colour import Color
 from discord.commands import option
 from discord.embeds import Embed
@@ -14,7 +16,9 @@ from allianceauth.eveonline.evelinks import evewho
 from allianceauth.eveonline.models import EveCharacter, EveCorporationInfo
 
 from aadiscordbot.app_settings import aastatistics_active
-from aadiscordbot.cogs.utils.autocompletes import search_characters
+from aadiscordbot.cogs.utils.autocompletes import (
+    search_characters, search_corporations_on_characters,
+)
 from aadiscordbot.cogs.utils.decorators import (
     is_guild_managed, message_in_channels, sender_has_any_perm,
 )
@@ -29,6 +33,26 @@ class Members(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+
+    def get_csv(self, input_name):
+        char = EveCharacter.objects.get(character_name=input_name)
+        alts = char.character_ownership.user.character_ownerships.all().select_related('character')
+        buffer = io.StringIO()
+        writer = csv.writer(buffer)
+        header = ['Character ID', 'Character Name', 'Corporation ID',
+                  'Corporation Name', 'Alliance ID', 'Alliance Name']
+        writer.writerow(header)
+        for a in alts:
+            writer.writerow([
+                a.character.character_id,
+                a.character.character_name,
+                a.character.corporation_id,
+                a.character.corporation_name,
+                a.character.alliance_id,
+                a.character.alliance_name
+            ])
+        buffer.seek(0)
+        return File(buffer, f"{input_name}_Known_alts.csv")
 
     def get_lookup_embed(self, input_name):
         embed = Embed(
@@ -172,17 +196,18 @@ class Members(commands.Cog):
     @sender_has_any_perm(['corputils.view_alliance_corpstats', 'corpstats.view_alliance_corpstats', 'aadiscordbot.member_command_access'])
     @message_in_channels(settings.ADMIN_DISCORD_BOT_CHANNELS)
     @option("character", description="Search for a Character!", autocomplete=search_characters)
+    @option("gib_csv", description="Output a CSV of all characters")
     async def slash_lookup(
         self,
         ctx,
         character: str,
+        gib_csv: bool = False
     ):
         await ctx.defer()
-        return await ctx.respond(embed=self.get_lookup_embed(character))
-
-    async def search_corps_on_characters(ctx: AutocompleteContext):
-        """Returns a list of corporations that begin with the characters entered so far."""
-        return list(EveCharacter.objects.filter(corporation_name__icontains=ctx.value).values_list('corporation_name', flat=True).distinct()[:10])
+        file = None
+        if gib_csv:
+            file = self.get_csv(character)
+        return await ctx.respond(embed=self.get_lookup_embed(character), file=file)
 
     def build_altcorp_embeds(self, input_name):
         chars = EveCharacter.objects.filter(corporation_name=input_name)
@@ -249,7 +274,7 @@ class Members(commands.Cog):
     @message_in_channels(settings.ADMIN_DISCORD_BOT_CHANNELS)
     @option("corporation",
             description="Search for a Character!",
-            autocomplete=search_corps_on_characters)
+            autocomplete=search_corporations_on_characters)
     async def slash_altcorp(
         self,
         ctx,
