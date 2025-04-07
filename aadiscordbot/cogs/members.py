@@ -15,7 +15,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from allianceauth.eveonline.evelinks import evewho
 from allianceauth.eveonline.models import EveCharacter, EveCorporationInfo
 
-from aadiscordbot.app_settings import aastatistics_active
+from aadiscordbot.app_settings import aastatistics_active, get_all_servers
 from aadiscordbot.cogs.utils.autocompletes import (
     search_characters, search_corporations_on_characters,
 )
@@ -191,7 +191,7 @@ class Members(commands.Cog):
         input_name = ctx.message.content[8:]
         return await ctx.send(embed=self.get_lookup_embed(input_name))
 
-    @commands.slash_command(name='lookup')
+    @commands.slash_command(name='lookup', guild_ids=get_all_servers())
     @is_guild_managed()
     @sender_has_any_perm(['corputils.view_alliance_corpstats', 'corpstats.view_alliance_corpstats', 'aadiscordbot.member_command_access'])
     @message_in_channels(settings.ADMIN_DISCORD_BOT_CHANNELS)
@@ -268,7 +268,7 @@ class Members(commands.Cog):
                 embeds.append(embed)
             return embeds
 
-    @commands.slash_command(name='altcorp')
+    @commands.slash_command(name='altcorp', guild_ids=get_all_servers())
     @is_guild_managed()
     @sender_has_any_perm(['aadiscordbot.member_command_access'])
     @message_in_channels(settings.ADMIN_DISCORD_BOT_CHANNELS)
