@@ -204,10 +204,10 @@ class Members(commands.Cog):
         gib_csv: bool = False
     ):
         await ctx.defer()
-        file = None
         if gib_csv:
             file = self.get_csv(character)
-        return await ctx.respond(embed=self.get_lookup_embed(character), file=file)
+            return await ctx.respond(embed=self.get_lookup_embed(character), file=file)
+        return await ctx.respond(embed=self.get_lookup_embed(character))
 
     def build_altcorp_embeds(self, input_name):
         chars = EveCharacter.objects.filter(corporation_name=input_name)
