@@ -1,20 +1,20 @@
 [build-system]
-requires = ["flit_core >=3.2,<4"]
 build-backend = "flit_core.buildapi"
+
+requires = [ "flit-core>=3.2,<4" ]
 
 [project]
 name = "allianceauth-discordbot"
-dynamic = ["version", "description" ]
 readme = "README.md"
-license = {file = "LICENSE"}
-requires-python = ">=3.8"
-authors = [
-    { name = "AaronKable", email = "aaronkable@gmail.com"}
-]
 keywords = [
     "allianceauth",
     "eveonline",
 ]
+license = { file = "LICENSE" }
+authors = [
+    { name = "AaronKable", email = "aaronkable@gmail.com" },
+]
+requires-python = ">=3.8"
 classifiers = [
     "Environment :: Web Environment",
     "Framework :: Celery",
@@ -25,7 +25,7 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
@@ -33,20 +33,21 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: Implementation :: CPython",
     "Topic :: Internet :: WWW/HTTP",
-    "Topic :: Internet :: WWW/HTTP :: Dynamic Content"
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
 ]
+dynamic = [ "description", "version" ]
 dependencies = [
-    "allianceauth>=3.0.0,<5.0.0",
-    "py-cord>2.0.0,<3.0.0",
-    "pendulum>=2.1.2,<4.0.0",
-    "redis>=4.2.0,<6.0.0",
-    "django-solo>=2.1.0,<3.0.0"
+    "allianceauth>=3,<6",
+    "django-solo>=2.1,<3",
+    "pendulum>=2.1.2,<4",
+    "py-cord>2,<3",
+    "redis>=4.2,<6",
 ]
 
-[project.urls]
-Home = "https://github.com/Solar-Helix-Independent-Transport/allianceauth-discordbot"
-Source = "https://github.com/Solar-Helix-Independent-Transport/allianceauth-discordbot"
-Tracker = "https://github.com/Solar-Helix-Independent-Transport/allianceauth-discordbot/issues"
+urls.Home = "https://github.com/Solar-Helix-Independent-Transport/allianceauth-discordbot"
+urls.Source = "https://github.com/Solar-Helix-Independent-Transport/allianceauth-discordbot"
+urls.Tracker = "https://github.com/Solar-Helix-Independent-Transport/allianceauth-discordbot/issues"
+
 [tool.flit.module]
 name = "aadiscordbot"
 
@@ -59,19 +60,19 @@ sections = [
     "DJANGO",
     "ALLIANCEAUTH",
     "FIRSTPARTY",
-    "LOCALFOLDER"
+    "LOCALFOLDER",
 ]
-known_allianceauth = ["allianceauth", "esi"]
-known_django = ["django"]
+known_allianceauth = [ "allianceauth", "esi" ]
+known_django = [ "django" ]
 skip_gitignore = true
 
 [tool.flake8]
-exclude = [".git", "*migrations*", ".tox", "dist", "htmlcov"]
+exclude = [ ".git", "*migrations*", ".tox", "dist", "htmlcov" ]
 max-line-length = 119
-select = ["C", "E", "F", "W", "B", "B950"]
-ignore = ['E203', 'E231', 'E501', 'W503', 'W291', 'W293']
+select = [ "C", "E", "F", "W", "B", "B950" ]
+ignore = [ 'E203', 'E231', 'E501', 'W503', 'W291', 'W293' ]
 
 [tool.djlint]
-max_attribute_length=119
-max_line_length=119
-max_blank_lines=1
+max_attribute_length = 119
+max_line_length = 119
+max_blank_lines = 1
