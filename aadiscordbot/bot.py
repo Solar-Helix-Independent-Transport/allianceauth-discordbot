@@ -134,6 +134,7 @@ class AuthBot(commands.Bot):
     def __init__(self):
         django.setup()
         client_id = app_settings.DISCORD_APP_ID
+        self.client_id = client_id
         intents = discord.Intents.default()
         intents.members = True
         intents.message_content = app_settings.DISCORD_BOT_MESSAGE_INTENT
@@ -145,49 +146,15 @@ class AuthBot(commands.Bot):
         )
         print(f"Authbot Started with command prefix {DISCORD_BOT_PREFIX}")
 
-        self.redis = None
-        self.redis = self.loop.run_until_complete(
-            aioredis.from_url(
-                getattr(
-                    settings,
-                    "BROKER_URL",
-                    "redis://localhost:6379/0"
-                ),
-                encoding="utf-8",
-                decode_responses=True
-            )
-        )
-        print('redis pool started', self.redis)
-
-        self.client_id = client_id
+        # Set some base stuff up
         self.tasks = []
         self.pending_tasks = PendingQueue()
         self.rate_limits = RateLimiter()
         self.statistics = Statistics()
-
-        self.message_connection = Connection(
-            getattr(
-                settings,
-                "BROKER_URL",
-                'redis://localhost:6379/0'
-            )
-        )
-
-        queues = []
-        for que in queue_keys:
-            queues.append(Queue(que))
-
-        self.message_consumer = Consumer(
-            self.message_connection,
-            queues,
-            callbacks=[
-                self.on_queue_message
-            ],
-            accept=['json']
-        )
-
         self.cog_names_loaded = []
         self.cog_names_failed = []
+
+        # Load our hooks
         hooks_ = hooks.get_hooks("discord_cogs_hook")
         for hook in hooks_:
             for cog in hook():
@@ -233,10 +200,9 @@ class AuthBot(commands.Bot):
         message.ack()
 
     async def on_ready(self):
-        if not hasattr(self, "currentuptime"):
-            self.currentuptime = pendulum.now(tz="UTC")
-        if not hasattr(self, "statistics"):
-            self.statistics.start_time = timezone.now()
+        logger.info("Starting on_ready")
+
+        logger.info("Setting bot activity")
         activity = discord.Activity(name="Everything!",
                                     application_id=0,
                                     type=discord.ActivityType.watching,
@@ -245,9 +211,59 @@ class AuthBot(commands.Bot):
                                     emoji={"name": ":smiling_imp:"}
                                     )
         await self.change_presence(activity=activity)
+        logger.info("Bot activity set")
 
+        logger.info("Creating aiohttp session")
+        self.session = aiohttp.ClientSession()
+        logger.info(f"aiohttp session started {self.session}")
+
+        logger.info("Creating redis pool")
+        self.redis = None
+        self.redis = aioredis.from_url(
+            getattr(
+                settings,
+                "BROKER_URL",
+                "redis://localhost:6379/0"
+            ),
+            encoding="utf-8",
+            decode_responses=True
+        )
+
+        logger.info(f"redis pool started {self.redis}")
+
+        if not hasattr(self, "currentuptime"):
+            self.currentuptime = pendulum.now(tz="UTC")
+
+        if not hasattr(self, "statistics"):
+            self.statistics.start_time = timezone.now()
+
+        logger.info("Starting task connection")
+        self.message_connection = Connection(
+            getattr(
+                settings,
+                "BROKER_URL",
+                'redis://localhost:6379/0'
+            )
+        )
+        logger.info(f"Task connection created {self.message_connection}")
+
+        queues = []
+        for que in queue_keys:
+            queues.append(Queue(que))
+
+        logger.info("Creating task consumer")
+        self.message_consumer = Consumer(
+            self.message_connection,
+            queues,
+            callbacks=[
+                self.on_queue_message
+            ],
+            accept=['json']
+        )
+        logger.info(f"Task consumer created {self.message_consumer}")
+        logger.info("Starting task loop")
         self.poll_queue.start()
-        logger.info("Ready")
+        logger.info("on_ready Complete!")
 
     async def close(self):
         # return tasks to queue
@@ -418,34 +434,52 @@ class AuthBot(commands.Bot):
             await context.respond("Something Went Wrong, Please try again Later.", ephemeral=True)
         django.db.close_old_connections()
 
-    async def run(self):
+    def run(self):
         try:
             logger.info(
-                "******************************************************")
-            logger.info("         ##            Alliance Auth 'AuthBot'")
+                "******************************************************"
+            )
             logger.info(
-                f"        ####           Version         :  {aadiscordbot.__version__}")
+                "         ##            Alliance Auth 'AuthBot'"
+            )
             logger.info(
-                f"       #######         Branch          :  {aadiscordbot.__branch__}")
+                f"        ####           Version         :  {aadiscordbot.__version__}"
+            )
             logger.info(
-                f"      #########        Message Intents :  {app_settings.DISCORD_BOT_MESSAGE_INTENT}")
+                f"       #######         Branch          :  {aadiscordbot.__branch__}"
+            )
             logger.info(
-                f"     ######## ((       Prefix          :  {app_settings.DISCORD_BOT_PREFIX}")
+                f"      #########        Message Intents :  {app_settings.DISCORD_BOT_MESSAGE_INTENT}"
+            )
             logger.info(
-                f"    ###### ((((((      Bot Join Link   :  {INVITE_URL}")
-            logger.info("   ###        ((((     Starting up...")
-            logger.info("  ##             ((")
-            logger.info("                       [Cogs Loaded]")
+                f"     ######## ((       Prefix          :  {app_settings.DISCORD_BOT_PREFIX}"
+            )
+            logger.info(
+                f"    ###### ((((((      Bot Join Link   :  {INVITE_URL}"
+            )
+            logger.info(
+                "   ###        ((((     Starting up..."
+            )
+            logger.info(
+                "  ##             (("
+            )
+            logger.info(
+                "                       [Cogs Loaded]"
+            )
             for c in self.cog_names_loaded:
-                logger.info(f"                         - {c}")
+                logger.info(
+                    f"                         - {c}"
+                )
             if len(self.cog_names_failed):
-                logger.info("                       [Cog Failures]")
+                logger.info(
+                    "                       [Cog Failures]"
+                )
                 for c in self.cog_names_failed:
                     logger.info(f"                         - {c}")
             logger.info(
-                "******************************************************")
-            self.session = aiohttp.ClientSession()
-            await super().start(app_settings.DISCORD_BOT_TOKEN, reconnect=True)
+                "******************************************************"
+            )
+            super().run(app_settings.DISCORD_BOT_TOKEN, reconnect=True)
         except discord.PrivilegedIntentsRequired as e:
             logger.error("Unable to start bot with Messages Intent! Going to Sleep for 2min. "
                          "Please enable the Message Intent for your bot. "
