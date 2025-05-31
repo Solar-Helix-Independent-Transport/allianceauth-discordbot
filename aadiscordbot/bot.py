@@ -146,26 +146,45 @@ class AuthBot(commands.Bot):
         print(f"Authbot Started with command prefix {DISCORD_BOT_PREFIX}")
 
         self.redis = None
-        self.redis = self.loop.run_until_complete(aioredis.from_url(getattr(
-            settings, "BROKER_URL", "redis://localhost:6379/0"), encoding="utf-8", decode_responses=True))
+        self.redis = self.loop.run_until_complete(
+            aioredis.from_url(
+                getattr(
+                    settings,
+                    "BROKER_URL",
+                    "redis://localhost:6379/0"
+                ),
+                encoding="utf-8",
+                decode_responses=True
+            )
+        )
         print('redis pool started', self.redis)
-        self.client_id = client_id
-        self.session = aiohttp.ClientSession(loop=self.loop)
 
+        self.client_id = client_id
         self.tasks = []
         self.pending_tasks = PendingQueue()
         self.rate_limits = RateLimiter()
         self.statistics = Statistics()
 
         self.message_connection = Connection(
-            getattr(settings, "BROKER_URL", 'redis://localhost:6379/0'))
+            getattr(
+                settings,
+                "BROKER_URL",
+                'redis://localhost:6379/0'
+            )
+        )
 
         queues = []
         for que in queue_keys:
             queues.append(Queue(que))
 
-        self.message_consumer = Consumer(self.message_connection, queues, callbacks=[
-                                         self.on_queue_message], accept=['json'])
+        self.message_consumer = Consumer(
+            self.message_connection,
+            queues,
+            callbacks=[
+                self.on_queue_message
+            ],
+            accept=['json']
+        )
 
         self.cog_names_loaded = []
         self.cog_names_failed = []
@@ -399,10 +418,8 @@ class AuthBot(commands.Bot):
             await context.respond("Something Went Wrong, Please try again Later.", ephemeral=True)
         django.db.close_old_connections()
 
-    def run(self):
-        # self.load_extension("aadiscordbot.slash.admin")
+    async def run(self):
         try:
-
             logger.info(
                 "******************************************************")
             logger.info("         ##            Alliance Auth 'AuthBot'")
@@ -427,7 +444,8 @@ class AuthBot(commands.Bot):
                     logger.info(f"                         - {c}")
             logger.info(
                 "******************************************************")
-            super().run(app_settings.DISCORD_BOT_TOKEN, reconnect=True)
+            self.session = aiohttp.ClientSession()
+            await super().start(app_settings.DISCORD_BOT_TOKEN, reconnect=True)
         except discord.PrivilegedIntentsRequired as e:
             logger.error("Unable to start bot with Messages Intent! Going to Sleep for 2min. "
                          "Please enable the Message Intent for your bot. "
