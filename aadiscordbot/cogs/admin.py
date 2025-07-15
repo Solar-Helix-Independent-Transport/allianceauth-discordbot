@@ -464,7 +464,9 @@ class Admin(commands.Cog):
         if ctx.author.id not in app_settings.get_admins():
             return await ctx.respond("You do not have permission to use this command", ephemeral=True)
         try:
-            from allianceauth.services.modules.discord.tasks import update_groups
+            from allianceauth.services.modules.discord.tasks import (
+                update_groups,
+            )
 
             auth_user = auth.get_auth_user(user, ctx.guild)
             update_groups.delay(auth_user.pk)
@@ -487,7 +489,9 @@ class Admin(commands.Cog):
         if ctx.author.id not in app_settings.get_admins():
             return await ctx.respond("You do not have permission to use this command", ephemeral=True)
         try:
-            from allianceauth.services.modules.discord.tasks import update_nickname
+            from allianceauth.services.modules.discord.tasks import (
+                update_nickname,
+            )
 
             auth_user = auth.get_auth_user(user, ctx.guild)
             update_nickname.delay(auth_user.pk)
@@ -504,6 +508,15 @@ class Admin(commands.Cog):
             pass
 
         await ctx.respond(f"Requested Nickname Sync for {auth_user.profile.main_character}", ephemeral=True)
+
+    @admin_commands.command(name='clear_role_settings', guild_ids=app_settings.get_all_servers())
+    async def clear_role_settings(self, ctx, role: Role):
+        await ctx.defer(ephemeral=True)
+        await role.edit(
+            color=0,
+            hoist=False
+        )
+        await ctx.respond("Done", ephemeral=True)
 
 
 def setup(bot):
