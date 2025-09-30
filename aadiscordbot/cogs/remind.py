@@ -25,7 +25,7 @@ class Remind(commands.Cog):
     )
     async def reminder(self, ctx, reminder: str, seconds: int = 0, minutes: int = 0, hours: int = 0, days: int = 0):
         counter = seconds + minutes * 60 + hours * 60 * 60 + days * 60 * 60 * 24
-        await ctx.respond(f"Alright, I will remind you about {reminder} in {seconds}s {minutes}m {hours}h {days}d.", allowed_mentions=AllowedMentions(everyone=False, roles=False, users=False))
+        await ctx.respond(f"Alright, I will remind you about {reminder} in {days}d {hours}h {minutes}m {seconds}s.", allowed_mentions=AllowedMentions(everyone=False, roles=False, users=False))
         msg = f"{ctx.user.mention} Hi, you asked me to remind you about\n{reminder}"
         msg = msg.replace("@everyone", "`@everyone`")
         msg = msg.replace("@here", "`@here`")
