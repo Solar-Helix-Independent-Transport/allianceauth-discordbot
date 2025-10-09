@@ -189,7 +189,7 @@ class Members(commands.Cog):
         Input: a Eve Character Name
         """
         input_name = ctx.message.content[8:]
-        return await ctx.send(embed=self.get_lookup_embed(input_name))
+        return await ctx.send(embed=self.get_lookup_embed(input_name), ephemeral=settings.DISCORD_BOT_COG_MEMBERS_HIDELOOKUP)
 
     @commands.slash_command(name='lookup', guild_ids=get_all_servers())
     @is_guild_managed()
@@ -203,7 +203,7 @@ class Members(commands.Cog):
         character: str,
         gib_csv: bool = False
     ):
-        await ctx.defer()
+        await ctx.defer(ephemeral=settings.DISCORD_BOT_COG_MEMBERS_HIDELOOKUP)
         if gib_csv:
             file = self.get_csv(character)
             return await ctx.respond(embed=self.get_lookup_embed(character), file=file)
