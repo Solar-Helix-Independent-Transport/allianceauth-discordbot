@@ -416,6 +416,13 @@ AUTHBOT_DISCORD_APP_ID = 'App ID for dedicated bot'
 AUTHBOT_DISCORD_BOT_TOKEN = 'Token for dedicated bot'
 ```
 
+### Member's cog: 'hide' lookup command
+This makes the output of `/lookup` ephemeral.
+ (Messages self-purge after 15 minutes, can only been seen by the admin using the command)
+```python
+DISCORD_BOT_COG_MEMBERS_HIDELOOKUP = False
+```
+
 ## Issues
 
 Please remember to report any aa-discordbot related issues using the issues on **this** repository.
