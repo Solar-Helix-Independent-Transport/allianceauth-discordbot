@@ -15,7 +15,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from allianceauth.eveonline.evelinks import evewho
 from allianceauth.eveonline.models import EveCharacter, EveCorporationInfo
 
-from aadiscordbot.app_settings import aastatistics_active, get_all_servers
+from aadiscordbot.app_settings import (
+    DISCORD_BOT_COG_MEMBERS_HIDELOOKUP, aastatistics_active, get_all_servers,
+)
 from aadiscordbot.cogs.utils.autocompletes import (
     search_characters, search_corporations_on_characters,
 )
@@ -189,7 +191,7 @@ class Members(commands.Cog):
         Input: a Eve Character Name
         """
         input_name = ctx.message.content[8:]
-        return await ctx.send(embed=self.get_lookup_embed(input_name), ephemeral=settings.DISCORD_BOT_COG_MEMBERS_HIDELOOKUP)
+        return await ctx.send(embed=self.get_lookup_embed(input_name), ephemeral=DISCORD_BOT_COG_MEMBERS_HIDELOOKUP)
 
     @commands.slash_command(name='lookup', guild_ids=get_all_servers())
     @is_guild_managed()
@@ -203,11 +205,18 @@ class Members(commands.Cog):
         character: str,
         gib_csv: bool = False
     ):
-        await ctx.defer(ephemeral=settings.DISCORD_BOT_COG_MEMBERS_HIDELOOKUP)
+        await ctx.defer(ephemeral=DISCORD_BOT_COG_MEMBERS_HIDELOOKUP)
         if gib_csv:
             file = self.get_csv(character)
-            return await ctx.respond(embed=self.get_lookup_embed(character), file=file)
-        return await ctx.respond(embed=self.get_lookup_embed(character))
+            return await ctx.respond(
+                embed=self.get_lookup_embed(character),
+                file=file,
+                ephemeral=DISCORD_BOT_COG_MEMBERS_HIDELOOKUP
+            )
+        return await ctx.respond(
+            embed=self.get_lookup_embed(character),
+            ephemeral=DISCORD_BOT_COG_MEMBERS_HIDELOOKUP
+        )
 
     def build_altcorp_embeds(self, input_name):
         chars = EveCharacter.objects.filter(corporation_name=input_name)
