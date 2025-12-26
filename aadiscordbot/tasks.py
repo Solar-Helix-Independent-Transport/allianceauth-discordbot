@@ -91,7 +91,7 @@ def pop_user_group_cache(user_pk):
 
 
 @shared_task
-def run_task_function(function:str, task_args: list = [], task_kwargs: dict = {}):
+def run_task_function(function: str, task_args: list = [], task_kwargs: dict = {}):
     """
         Run any async code with bot context.
         function provided must have its first argument as the bot context
@@ -116,6 +116,7 @@ def run_task_function(function:str, task_args: list = [], task_kwargs: dict = {}
                     "example.bot_task.py"
                 ],
                 kwargs=[
+                    "task_args": [],
                     "task_kwargs": {"dm": True}
                 ],
                 countdown=60

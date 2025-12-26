@@ -2,6 +2,7 @@ import json
 import logging
 
 from aaprom.collectors.discordbot import bot_slash_command, bot_tasks_executed
+from discord.errors import HTTPException
 from discord.ext import commands
 
 from ..app_settings import (
@@ -33,6 +34,11 @@ class PromExporter(commands.Cog):
             message = [f"Bot Task Failed <{error}>"]
             message.append(f"ARGS: ```\n{json.dumps(args)[0:1000]}\n```")
             message.append(f"KWARGS: ```\n{json.dumps(kwargs)[0:1000]}\n```")
+            if isinstance(error, HTTPException):
+                if error.code == 429:
+                    logger.error(message)
+                    # do not try to send a message we are at capacity for doing stuff...
+                    return
             send_message(message="\n".join(message),
                          channel_id=DISCORD_BOT_FAILURE_MESSAGES_CHANNEL)
 
