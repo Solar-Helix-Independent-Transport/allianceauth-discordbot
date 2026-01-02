@@ -30,15 +30,15 @@ class PromExporter(commands.Cog):
     @commands.Cog.listener("on_authbot_task_failed")
     async def on_authbot_task_failed(self, task, args, kwargs, error):
         bot_tasks_executed.labels(task=str(task), state="failed").inc()
+        message = [f"Bot Task Failed <{error}>"]
+        message.append(f"ARGS: ```\n{json.dumps(args)[0:1000]}\n```")
+        message.append(f"KWARGS: ```\n{json.dumps(kwargs)[0:1000]}\n```")
+        if isinstance(error, HTTPException):
+            if error.code == 429 or error.status == 429:
+                logger.error(message)
+                # do not try to send a message we are at capacity for doing stuff...
+                return
         if DISCORD_BOT_SEND_FAILURE_MESSAGES and DISCORD_BOT_FAILURE_MESSAGES_CHANNEL:
-            message = [f"Bot Task Failed <{error}>"]
-            message.append(f"ARGS: ```\n{json.dumps(args)[0:1000]}\n```")
-            message.append(f"KWARGS: ```\n{json.dumps(kwargs)[0:1000]}\n```")
-            if isinstance(error, HTTPException):
-                if error.code == 429 or error.status == 429:
-                    logger.error(message)
-                    # do not try to send a message we are at capacity for doing stuff...
-                    return
             send_message(message="\n".join(message),
                          channel_id=DISCORD_BOT_FAILURE_MESSAGES_CHANNEL)
 
