@@ -491,4 +491,8 @@ class AuthBot(commands.Bot):
         except Exception as e:
             logger.error("Unable to start bot! going to sleep for 2 min. "
                          f"{e}", exc_info=True)
+            try:
+                logger.error(vars(e))
+            except Exception:
+                pass
             time.sleep(120)
