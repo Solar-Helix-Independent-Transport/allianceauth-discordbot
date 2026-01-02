@@ -35,7 +35,7 @@ class PromExporter(commands.Cog):
             message.append(f"ARGS: ```\n{json.dumps(args)[0:1000]}\n```")
             message.append(f"KWARGS: ```\n{json.dumps(kwargs)[0:1000]}\n```")
             if isinstance(error, HTTPException):
-                if error.code == 429:
+                if error.code == 429 or error.status == 429:
                     logger.error(message)
                     # do not try to send a message we are at capacity for doing stuff...
                     return
