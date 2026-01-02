@@ -419,7 +419,10 @@ class AuthBot(commands.Bot):
             logger.error(f"Unknown Error {exception}")
             logger.error("\n".join(traceback.format_tb(
                 exception.original.__traceback__)))
-
+            try:
+                logger.error(vars(exception))
+            except Exception:
+                pass
             if app_settings.DISCORD_BOT_SEND_FAILURE_MESSAGES and app_settings.DISCORD_BOT_FAILURE_MESSAGES_CHANNEL:
                 message = [f"`{context.command}` failed for `{context.author}`\n",
                            f"**Exception:** ```{exception}```",
