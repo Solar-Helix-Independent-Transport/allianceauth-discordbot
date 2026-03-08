@@ -110,7 +110,7 @@ LOGGING['loggers']['aadiscordbot'] = {'handlers': ['bot_log_file'],'level': 'DEB
 ## Route AA Discord bot tasks away from AllianceAuth
 app.conf.task_routes = {'aadiscordbot.tasks.*': {'queue': 'aadiscordbot'}}
 ```
-* **[Docker Only]** add `alianceauth-discordbot=version.number` to your requirements.txt and rebuild your containers and restart auth.
+* **[Docker Only]** add `allianceauth-discordbot=version.number` to your requirements.txt and rebuild your containers and restart auth.
 * Run migrations `python manage.py migrate`
 
 ## Running Discordbot with Docker

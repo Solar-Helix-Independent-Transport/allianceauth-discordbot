@@ -70,16 +70,16 @@ class Sov(commands.Cog):
         include_systems = settings.DISCORD_BOT_ADM_SYSTEMS
         include_constel = settings.DISCORD_BOT_ADM_CONSTELLATIONS
 
-        sov_structures = providers.esi.client.Sovereignty.get_sovereignty_structures().result()
+        sov_structures = providers.esi_openapi.client.Sovereignty.GetSovereigntyStructures().result()
 
         names = {}
         for s in sov_structures:
-            if s.get('alliance_id') in own_ids:
-                if s.get('vulnerability_occupancy_level'):
-                    if s.get('vulnerability_occupancy_level') < adm:
-                        names[s.get('solar_system_id')] = {
-                            "system_name": s.get('solar_system_id'),
-                            "adm": s.get('vulnerability_occupancy_level')
+            if s.alliance_id in own_ids:
+                if s.vulnerability_occupancy_level:
+                    if s.vulnerability_occupancy_level < adm:
+                        names[s.solar_system_id] = {
+                            "system_name": s.solar_system_id,
+                            "adm": s.vulnerability_occupancy_level
                         }
 
         if len(names) == 0:
@@ -89,22 +89,29 @@ class Sov(commands.Cog):
         systems = [k for k, v in names.items()]
         constelations = {}
         for n in systems:
-            system = providers.esi.client.Universe.get_universe_systems_system_id(
-                system_id=n).result()
-            names[n]["system_name"] = system.get("name")
-            names[n]["system_id"] = system.get("system_id")
-            names[n]["constellation_id"] = system.get("constellation_id")
-            if system.get("constellation_id") not in constelations:
-                constelations[system.get("constellation_id")] = {}
+            system = providers.esi_openapi.client.Universe.GetUniverseSystemsSystemId(
+                system_id=n
+            ).result(
+                use_etag=False
+            )
+            names[n]["system_name"] = system.name
+            names[n]["system_id"] = system.system_id
+            names[n]["constellation_id"] = system.constellation_id
+            if system.constellation_id not in constelations:
+                constelations[system.constellation_id] = {}
 
         for c, v in constelations.items():
-            const = providers.esi.client.Universe.get_universe_constellations_constellation_id(
-                constellation_id=c).result()
-            region = providers.esi.client.Universe.get_universe_regions_region_id(
-                region_id=const.get("region_id")).result()
-            v["region_id"] = const.get("region_id")
-            v["region_name"] = region.get("name")
-            v["constellation_name"] = const.get("name")
+            const = providers.esi_openapi.client.Universe.GetUniverseConstellationsConstellationId(
+                constellation_id=c
+            ).result(
+                use_etag=False
+            )
+            region = providers.esi_openapi.client.Universe.GetUniverseRegionsRegionId(
+                region_id=const.region_id
+            ).result()
+            v["region_id"] = const.region_id
+            v["region_name"] = region.name
+            v["constellation_name"] = const.name
 
         out_array = {}
         for k, v in names.items():
@@ -176,16 +183,19 @@ class Sov(commands.Cog):
         token = self.get_search_token(ctx.author.id)
         if not token:
             return await ctx.respond("No Search token found on auth, please add one", ephemeral=True)
-        name_ids = providers.esi.client.Search.get_characters_character_id_search(
-            categories=['constellation',
-                        'solar_system',
-                        'region',
-                        'alliance'
-                        ],
+        name_ids = providers.esi_openapi.client.Search.GetCharactersCharacterIdSearch(
+            categories=[
+                'constellation',
+                'solar_system',
+                'region',
+                'alliance'
+            ],
             search=name_search,
             character_id=token.character_id,
-            token=token.valid_access_token()
-        ).result()
+            token=token
+        ).result(
+            use_etag=False
+        )
 
         hit_ids = {
             "a": name_ids.get("alliance") or [],
@@ -195,20 +205,27 @@ class Sov(commands.Cog):
         }
 
         for r in hit_ids['r']:
-            constellations = providers.esi.client.Universe.get_universe_regions_region_id(
-                region_id=r).result()["constellations"]
+            constellations = providers.esi_openapi.client.Universe.GetUniverseRegionsRegionId(
+                region_id=r
+            ).result(
+                use_etag=False
+            ).constellations
             for c in constellations:
                 if c not in hit_ids["c"]:
                     hit_ids["c"].append(c)
 
         for c in hit_ids['c']:
-            systems = providers.esi.client.Universe.get_universe_constellations_constellation_id(
-                constellation_id=c).result()["systems"]
+            systems = providers.esi_openapi.client.Universe.GetUniverseConstellationsConstellationId(
+                constellation_id=c
+            ).result(
+                use_etag=False
+            ).systems
             for s in systems:
                 if s not in hit_ids["s"]:
                     hit_ids["s"].append(s)
 
-        sov_structures = providers.esi.client.Sovereignty.get_sovereignty_structures().result()
+        sov_structures = providers.esi_openapi.client.Sovereignty.GetSovereigntyStructures(
+        ).result(use_etag=False)
 
         hits = []
         names = []
@@ -217,13 +234,13 @@ class Sov(commands.Cog):
             datetime.timedelta(hours=1)
 
         for s in sov_structures:
-            start = s.get('vulnerable_start_time', False)
+            start = s.vulnerable_start_time
             if start:
                 if start < dt_comp:
-                    if s.get('solar_system_id') in hit_ids["s"] or s.get('alliance_id') in hit_ids["a"]:
-                        alliances.append(s.get('alliance_id'))
-                        names.append(s.get('solar_system_id'))
-                        names.append(s.get('structure_type_id'))
+                    if s.solar_system_id in hit_ids["s"] or s.alliance_id in hit_ids["a"]:
+                        alliances.append(s.alliance_id)
+                        names.append(s.solar_system_id)
+                        names.append(s.structure_type_id)
                         hits.append(s)
 
         if len(names) == 0:
@@ -232,47 +249,51 @@ class Sov(commands.Cog):
 
         names_alli = {}
         for a in set(alliances):
-            res = providers.esi.client.Alliance.get_alliances_alliance_id(
-                alliance_id=a).result()
-            names_alli[a] = res.get("ticker")
+            res = providers.esi_openapi.client.Alliance.GetAlliancesAllianceId(
+                alliance_id=a
+            ).result(
+                use_etag=False
+            )
+            names_alli[a] = res.ticker
 
-        names = providers.esi.client.Universe.post_universe_names(
-            ids=list(set(names))).result()
+        names = providers.esi_openapi.client.Universe.PostUniverseNames(
+            body=list(set(names))
+        ).result()
 
         nms = {}
         for n in names:
-            nms[n.get("id")] = n.get("name")
+            nms[n.id] = n.name
 
         for hit in hits:
-            hit['system_name'] = nms[hit.get('solar_system_id')]
-            if hit.get("structure_type_id") == 32226:
-                hit['structure'] = "TCU"
-            elif hit.get("structure_type_id") == 32458:
-                hit['structure'] = "IHUB"
+            hit.system_name = nms[hit.solar_system_id]
+            if hit.structure_type_id == 32226:
+                hit.structure = "TCU"
+            elif hit.structure_type_id == 32458:
+                hit.structure = "IHUB"
             else:
-                hit['structure'] = "¯\\_(ツ)_/¯"
+                hit.structure = "¯\\_(ツ)_/¯"
 
-            hit['alliance_name'] = names_alli[hit.get('alliance_id')]
+            hit.alliance_name = names_alli[hit.alliance_id]
 
         output = []
         base_str = "**{}** {} (ADM {})[**{}**] Vulnerable{}"
         dt_now = pendulum.now(tz="UTC")
         for h in sorted(hits, key=lambda k: k['vulnerable_start_time']):
             time = ""
-            if h['vulnerable_start_time'] > dt_now:
+            if h.vulnerable_start_time > dt_now:
                 time = " in **{}**".format(pendulum.now(tz="UTC").diff_for_humans(
-                    h['vulnerable_start_time'], absolute=True
+                    h.vulnerable_start_time, absolute=True
                 ))
             else:
                 time = " for **{}**".format(pendulum.now(tz="UTC").diff_for_humans(
-                    h['vulnerable_end_time'], absolute=True
+                    h.vulnerable_end_time, absolute=True
                 ))
             output.append(
                 base_str.format(
-                    h['system_name'],
-                    h['structure'],
-                    h['vulnerability_occupancy_level'],
-                    h['alliance_name'],
+                    h.system_name,
+                    h.structure,
+                    h.vulnerability_occupancy_level,
+                    h.alliance_name,
                     time
                 )
             )
@@ -306,7 +327,7 @@ class Sov(commands.Cog):
         token = self.get_search_token(ctx.author.id)
         if not token:
             return await ctx.respond("No Search token found on auth, please add one", ephemeral=True)
-        name_ids = providers.esi.client.Search.get_characters_character_id_search(
+        name_ids = providers.esi_openapi.client.Search.GetCharactersCharacterIdSearch(
             categories=['constellation',
                         'solar_system',
                         'region',
@@ -314,43 +335,50 @@ class Sov(commands.Cog):
                         ],
             search=name_search,
             character_id=token.character_id,
-            token=token.valid_access_token()
+            token=token
         ).result()
 
         hit_ids = {
-            "a": name_ids.get("alliance") or [],
-            "c": name_ids.get("constellation") or [],
-            "s": name_ids.get("solar_system") or [],
-            "r": name_ids.get("region") or [],
+            "a": name_ids.alliance or [],
+            "c": name_ids.constellation or [],
+            "s": name_ids.solar_system or [],
+            "r": name_ids.region or [],
         }
 
         for r in hit_ids['r']:
-            constellations = providers.esi.client.Universe.get_universe_regions_region_id(
-                region_id=r).result()["constellations"]
+            constellations = providers.esi_openapi.client.Universe.GetUniverseRegionsRegionId(
+                region_id=r
+            ).result(
+                use_etag=False
+            ).constellations
             for c in constellations:
                 if c not in hit_ids["c"]:
                     hit_ids["c"].append(c)
 
         for c in hit_ids['c']:
-            systems = providers.esi.client.Universe.get_universe_constellations_constellation_id(
-                constellation_id=c).result()["systems"]
+            systems = providers.esi_openapi.client.Universe.GetUniverseConstellationsConstellationId(
+                constellation_id=c
+            ).result(
+                use_etag=False
+            ).systems
             for s in systems:
                 if s not in hit_ids["s"]:
                     hit_ids["s"].append(s)
 
-        sov_structures = providers.esi.client.Sovereignty.get_sovereignty_structures().result()
+        sov_structures = providers.esi_openapi.client.Sovereignty.GetSovereigntyStructures(
+        ).result(use_etag=False)
 
         hits = []
         names = []
         alliances = []
 
         for s in sov_structures:
-            start = s.get('vulnerable_start_time', False)
+            start = s.vulnerable_start_time
             if start:
-                if s.get('solar_system_id') in hit_ids["s"] or s.get('alliance_id') in hit_ids["a"]:
-                    alliances.append(s.get('alliance_id'))
-                    names.append(s.get('solar_system_id'))
-                    names.append(s.get('structure_type_id'))
+                if s.solar_system_id in hit_ids["s"] or s.alliance_id in hit_ids["a"]:
+                    alliances.append(s.alliance_id)
+                    names.append(s.solar_system_id)
+                    names.append(s.structure_type_id)
                     hits.append(s)
 
         if len(names) == 0:
@@ -359,48 +387,54 @@ class Sov(commands.Cog):
 
         names_alli = {}
         for a in set(alliances):
-            res = providers.esi.client.Alliance.get_alliances_alliance_id(
-                alliance_id=a).result()
-            names_alli[a] = res.get("ticker")
+            res = providers.esi_openapi.client.Alliance.GetAlliancesAllianceId(
+                alliance_id=a
+            ).result(
+                use_etag=False
+            )
+            names_alli[a] = res.ticker
 
-        names = providers.esi.client.Universe.post_universe_names(
-            ids=list(set(names))).result()
+        names = providers.esi_openapi.client.Universe.PostUniverseNames(
+            body=list(set(names))
+        ).result(
+            use_etag=False
+        )
 
         nms = {}
         for n in names:
-            nms[n.get("id")] = n.get("name")
+            nms[n.id] = n.name
 
         for hit in hits:
-            hit['system_name'] = nms[hit.get('solar_system_id')]
-            if hit.get("structure_type_id") == 32226:
-                hit['structure'] = "TCU"
+            hit.system_name = nms[hit.solar_system_id]
+            if hit.structure_type_id == 32226:
+                hit.structure = "TCU"
             elif hit.get("structure_type_id") == 32458:
-                hit['structure'] = "IHUB"
+                hit.structure = "IHUB"
             else:
-                hit['structure'] = "¯\\_(ツ)_/¯"
+                hit.structure = "¯\\_(ツ)_/¯"
 
-            hit['alliance_name'] = names_alli[hit.get('alliance_id')]
+            hit.alliance_name = names_alli[hit.alliance_id]
 
         output = []
         base_str = "**{}** {} (ADM {})[**{}**] Vulnerable{}"
         dt_now = pendulum.now(tz="UTC")
-        for h in sorted(hits, key=lambda k: k['vulnerable_start_time']):
+        for h in sorted(hits, key=lambda k: k.vulnerable_start_time):
             time = ""
             time = " for **{}**".format(pendulum.now(tz="UTC").diff_for_humans(
-                h['vulnerable_end_time'], absolute=True
+                h.vulnerable_end_time, absolute=True
             ))
 
-            if h['vulnerable_start_time']:
-                if h['vulnerable_start_time'] > dt_now:
+            if h.vulnerable_start_time:
+                if h.vulnerable_start_time > dt_now:
                     time = " in **{}**".format(pendulum.now(tz="UTC").diff_for_humans(
-                        h['vulnerable_start_time'], absolute=True
+                        h.vulnerable_start_time, absolute=True
                     ))
             output.append(
                 base_str.format(
-                    h['system_name'],
-                    h['structure'],
-                    h['vulnerability_occupancy_level'],
-                    h['alliance_name'],
+                    h.system_name,
+                    h.structure,
+                    h.vulnerability_occupancy_level,
+                    h.alliance_name,
                     time
                 )
             )
