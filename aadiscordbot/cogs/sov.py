@@ -11,10 +11,10 @@ from discord.ext import commands
 from django.conf import settings
 from django.utils import timezone
 
-from allianceauth.services.modules.discord.models import DiscordUser
 from esi.models import Token
 
 from aadiscordbot import app_settings, providers
+from aadiscordbot.utils import auth
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +34,7 @@ class Sov(commands.Cog):
     )
 
     def get_search_token(self, uid):
-        user = DiscordUser.objects.get(uid=uid).user
+        user = auth.get_auth_user(user=uid)
         tokens = Token.objects.filter(user=user).require_scopes(
             ['esi-search.search_structures.v1'])
         return tokens.first()
@@ -70,7 +70,10 @@ class Sov(commands.Cog):
         include_systems = settings.DISCORD_BOT_ADM_SYSTEMS
         include_constel = settings.DISCORD_BOT_ADM_CONSTELLATIONS
 
-        sov_structures = providers.esi_openapi.client.Sovereignty.GetSovereigntyStructures().result()
+        sov_structures = providers.esi_openapi.client.Sovereignty.GetSovereigntyStructures(
+        ).result(
+            use_etag=False
+        )
 
         names = {}
         for s in sov_structures:
@@ -108,7 +111,9 @@ class Sov(commands.Cog):
             )
             region = providers.esi_openapi.client.Universe.GetUniverseRegionsRegionId(
                 region_id=const.region_id
-            ).result()
+            ).result(
+                use_etag=False
+            )
             v["region_id"] = const.region_id
             v["region_name"] = region.name
             v["constellation_name"] = const.name
@@ -198,10 +203,10 @@ class Sov(commands.Cog):
         )
 
         hit_ids = {
-            "a": name_ids.get("alliance") or [],
-            "c": name_ids.get("constellation") or [],
-            "s": name_ids.get("solar_system") or [],
-            "r": name_ids.get("region") or [],
+            "a": name_ids.alliance or [],
+            "c": name_ids.constellation or [],
+            "s": name_ids.solar_system or [],
+            "r": name_ids.region or [],
         }
 
         for r in hit_ids['r']:
@@ -336,7 +341,9 @@ class Sov(commands.Cog):
             search=name_search,
             character_id=token.character_id,
             token=token
-        ).result()
+        ).result(
+            use_etag=False
+        )
 
         hit_ids = {
             "a": name_ids.alliance or [],
@@ -408,7 +415,7 @@ class Sov(commands.Cog):
             hit.system_name = nms[hit.solar_system_id]
             if hit.structure_type_id == 32226:
                 hit.structure = "TCU"
-            elif hit.get("structure_type_id") == 32458:
+            elif hit.structure_type_id == 32458:
                 hit.structure = "IHUB"
             else:
                 hit.structure = "¯\\_(ツ)_/¯"
