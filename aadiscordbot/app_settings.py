@@ -27,11 +27,9 @@ def timerboard_active():
     return apps.is_installed("allianceauth.timerboard")
 
 
-def get_admins():
+def get_admins() -> list[int]:
     from .models import AuthBotConfiguration
-    conf = AuthBotConfiguration.objects.get(
-        pk=1
-    )
+    conf = AuthBotConfiguration.get_solo()
     admins = list(
         conf.admin_users.all(
         ).values_list(
@@ -45,7 +43,7 @@ def get_admins():
 
 async def aget_admins():
     from .models import AuthBotConfiguration
-    conf = await AuthBotConfiguration.objects.aget(
+    conf = await AuthBotConfiguration.objects.aget(  # TODO: get_solo() async?
         pk=1
     )
     admins = [
@@ -100,6 +98,7 @@ DISCORD_BOT_COGS = getattr(settings, 'DISCORD_BOT_COGS',
                                "aadiscordbot.cogs.welcomegoodbye",
                                "aadiscordbot.cogs.models",
                                "aadiscordbot.cogs.quote",
+                               "aadiscordbot.cogs.honeypot"
                            ]
                            )
 

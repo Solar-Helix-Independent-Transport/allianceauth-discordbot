@@ -10,3 +10,6 @@ class AADiscordBotConfig(AppConfig):
 
     # def ready(self):
     #    import aadiscordbot.signals
+
+    def ready(self) -> None:
+        import aadiscordbot.checks  # noqa: F401
