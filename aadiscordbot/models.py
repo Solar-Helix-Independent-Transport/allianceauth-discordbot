@@ -3,7 +3,6 @@ import json
 from solo.models import SingletonModel
 
 from django.contrib.auth.models import Group
-from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -87,11 +86,13 @@ class ReactionRoleBinding(models.Model):
         return f'{self.message.name}: {b} ({self.group})'
 
 
-class AuthBotConfiguration(models.Model):
+class AuthBotConfiguration(SingletonModel):
 
     admin_users = models.ManyToManyField(DiscordUser, blank=True)
 
     admin_user_ids = models.TextField(default=None, null=True, blank=True)
+
+    honeypot_channels = models.ManyToManyField(Channels, verbose_name=_(""))
 
     def get_non_model_admin_ids(self):
         try:
@@ -105,13 +106,8 @@ class AuthBotConfiguration(models.Model):
     def __str__(self):
         return "AuthBot Configuration"
 
-    def save(self, *args, **kwargs):
-        if not self.pk and AuthBotConfiguration.objects.exists():
-            # Force a single object
-            raise ValidationError(
-                'Only one Settings Model can there be at a time! No Sith Lords there are here!')
-        self.pk = self.id = 1  # If this happens to be deleted and recreated, force it to be 1
-        return super().save(*args, **kwargs)
+    class Meta:  # pyright: ignore[reportIncompatibleVariableOverride]
+        verbose_name = "AuthBot Configuration"
 
 
 class WelcomeMessage(models.Model):
