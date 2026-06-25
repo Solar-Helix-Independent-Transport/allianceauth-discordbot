@@ -42,7 +42,7 @@ class Honeypot(commands.Cog):
             try:
                 # Ban the user and delete 5 minutes worth of messages, _on this server_
                 # TODO: Consider writing a cross server cleanup task, but this is inbuilt to discord and works.
-                await message.author.ban(delete_message_seconds=300, reason="Honeypot")
+                await message.author.ban(delete_message_seconds=300, reason="aadiscordbot.cogs.honeypot")
             except Exception as e:
                 logger.error(e)
                 pass
