@@ -92,7 +92,8 @@ class AuthBotConfiguration(SingletonModel):
 
     admin_user_ids = models.TextField(default=None, null=True, blank=True)
 
-    honeypot_channels = models.ManyToManyField(Channels, verbose_name=_(""))
+    honeypot_channels = models.ManyToManyField(
+        Channels, verbose_name=_("Honeypot Channels"), blank=True)
 
     def get_non_model_admin_ids(self):
         try:
