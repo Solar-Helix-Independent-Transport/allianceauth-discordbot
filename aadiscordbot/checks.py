@@ -3,7 +3,7 @@ Django system checks for AA Discordbot
 """
 
 from django.conf import settings
-from django.core.checks import CheckMessage, Error, register
+from django.core.checks import CheckMessage, Warning, register
 
 """
 A = idk first one i guess
@@ -23,15 +23,15 @@ def django_settings(app_configs, **kwargs) -> list[CheckMessage]:
     :rtype:
     """
 
-    errors: list[CheckMessage] = []
+    checks: list[CheckMessage] = []
 
     if hasattr(settings, "DISCORD_BOT_ADMIN_USER"):
-        errors.append(
-            Error(
+        checks.append(
+            Warning(
                 msg="'DISCORD_BOT_ADMIN_USER' is deprecated and not actively used",
                 hint="Please migrate Users and user_ids to AuthbotConfigration SingletonModel",
                 id="discordbot.checks.A001",
             )
         )
 
-    return errors
+    return checks
