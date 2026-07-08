@@ -131,7 +131,7 @@ def is_admin(id):
 
 def sender_is_admin():
     """
-    Permission Decorator: is the User configured as AuthBotConfiguration.get_solo.admin_users
+    Permission Decorator: is the User configured as AuthBotConfiguration.get_solo().admin_users
     """
     def predicate(ctx):
         if hasattr(ctx, "user"):
