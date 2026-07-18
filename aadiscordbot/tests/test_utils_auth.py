@@ -262,7 +262,7 @@ class TestUtilsAuth(AuthbotTestCase):
 
     def test_bot_admin_pass(self):
         user = self.create_discord_user()
-        AuthBotConfiguration.objects.get(id=1).admin_users.add(user)
+        AuthBotConfiguration.get_solo().admin_users.add(user)
         usr = MagicMock()
         usr.id = user.uid
 

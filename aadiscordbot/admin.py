@@ -37,7 +37,7 @@ class ChannelsAdmin(admin.ModelAdmin):
 
 @admin.register(AuthBotConfiguration)
 class AuthBotConfigurationAdmin(SingletonModelAdmin):
-    filter_horizontal = ['admin_users']
+    filter_horizontal = ['admin_users', "honeypot_channels"]
 
 
 @admin.register(ReactionRoleMessage)
