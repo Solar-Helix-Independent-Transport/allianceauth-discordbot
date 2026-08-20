@@ -95,6 +95,18 @@ class AuthBotConfiguration(SingletonModel):
     honeypot_channels = models.ManyToManyField(
         Channels, verbose_name=_("Honeypot Channels"), blank=True)
 
+    honeypot_reports_channel = models.ForeignKey(
+        to=Channels,
+        related_name="honeypot_reports_channel",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        verbose_name=_("Honeypot Reports Channel"),
+        help_text=_(
+            "The channel where reports of users banned by the honeypot feature will be sent."
+        ),
+    )
+
     def get_non_model_admin_ids(self):
         try:
             ids = self.admin_user_ids.split(",")
