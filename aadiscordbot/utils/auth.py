@@ -11,7 +11,6 @@
 
 import logging
 import warnings
-from typing import Union
 
 from discord import Guild, User
 
@@ -185,7 +184,7 @@ def is_user_authenticated(user: User, guild: Guild):
         return False
 
 
-def get_auth_user(user: Union[User, int], guild: Union[Guild, int] = None) -> User:
+def get_auth_user(user: User | int, guild: Guild | int | None = None) -> User:
     """
         Get auth user from any Discord Service
         raises NotAuthenticated if user is not found.
@@ -221,7 +220,7 @@ def get_auth_user(user: Union[User, int], guild: Union[Guild, int] = None) -> Us
         raise NotAuthenticated
 
 
-def get_discord_user_id(user: Union[AuthUser, int]) -> int:
+def get_discord_user_id(user: AuthUser | int) -> int:
     """
         Get discord_id from any Discord Service
         raises NotAuthenticated if user is not found.

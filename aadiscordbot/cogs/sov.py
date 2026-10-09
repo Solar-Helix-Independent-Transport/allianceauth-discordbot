@@ -235,8 +235,7 @@ class Sov(commands.Cog):
         hits = []
         names = []
         alliances = []
-        dt_comp = datetime.datetime.utcnow().replace(tzinfo=timezone.utc) + \
-            datetime.timedelta(hours=1)
+        dt_comp = timezone.now() + datetime.timedelta(hours=1)
 
         for s in sov_structures:
             start = s.vulnerable_start_time

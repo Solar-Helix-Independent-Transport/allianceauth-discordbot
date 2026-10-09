@@ -2,7 +2,6 @@ import logging
 import time
 import traceback
 from datetime import datetime
-from socket import timeout
 
 import aiohttp
 import discord
@@ -350,7 +349,7 @@ class AuthBot(commands.Bot):
             try:
                 with self.message_consumer:
                     self.message_connection.drain_events(timeout=0.01)
-            except timeout:
+            except TimeoutError:
                 # This is when there are no messages in the queue.
                 # logging.exception(e)
                 message_avail = False
