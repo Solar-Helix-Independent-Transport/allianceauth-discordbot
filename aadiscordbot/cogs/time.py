@@ -3,7 +3,7 @@
 """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 
 from discord.colour import Color
 from discord.embeds import Embed
@@ -30,7 +30,7 @@ class Time(commands.Cog):
 
         embed.add_field(
             name="EVE Time",
-            value=datetime.utcnow().strftime(fmt_utc),
+            value=datetime.now(timezone.utc).strftime(fmt_utc),
             inline=False,
         )
 

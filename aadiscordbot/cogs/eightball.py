@@ -1,5 +1,5 @@
 import logging
-from random import randrange
+from random import choice
 
 from discord.ext import commands
 
@@ -35,7 +35,7 @@ class EightBall(commands.Cog):
             "Outlook not so good",
             "Very doubtful",
         ]
-        return replies[randrange(0, len(replies)-1)]
+        return choice(replies)
 
     @commands.command(pass_context=True, aliases=['8ball'])
     async def meb(self, message):

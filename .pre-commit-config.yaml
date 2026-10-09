@@ -6,23 +6,23 @@
 repos:
   # Code Upgrades
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.17.0
+    rev: 75992aaa40730136014f34227e0135f63fc951b4  # frozen: v3.21.2
     hooks:
       - id: pyupgrade
-        args: [--py38-plus]
+        args: [--py310-plus]
   - repo: https://github.com/adamchainz/django-upgrade
-    rev: 1.20.0
+    rev: 5a815b88d9286ba45b8c1a4b56e695ff5645c65e  # frozen: 1.33.0
     hooks:
       - id: django-upgrade
-        args: [--target-version=4.0]
+        args: [--target-version=5.2]
   # Code Logic
   - repo: https://github.com/pycqa/isort
-    rev: 5.13.2
+    rev: 9f905615631c545f5aea2516508109350d1d2f7d  # frozen: 9.0.2
     hooks:
       - id: isort
         name: isort (python)
   - repo: https://github.com/pre-commit/pygrep-hooks
-    rev: v1.10.0
+    rev: 3a6eb0fadf60b3cccfd80bad9dbb6fae7e47b316  # frozen: v1.10.0
     hooks:
       - id: python-check-mock-methods
       - id: python-no-log-warn
@@ -30,7 +30,7 @@ repos:
       - id: text-unicode-replacement-char
   # Formatting
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c  # frozen: v6.0.0
     hooks:
       # Identify invalid files
       - id: check-ast
@@ -48,8 +48,6 @@ repos:
       #      - id: check-docstring-first
       - id: debug-statements
       #      - id: requirements-txt-fixer
-      - id: fix-encoding-pragma
-        args: [--remove]
       - id: fix-byte-order-marker
       # General quality checks
       - id: mixed-line-ending
@@ -75,7 +73,7 @@ repos:
             swagger\.json
           )
   - repo: https://github.com/editorconfig-checker/editorconfig-checker.python
-    rev: 3.0.3
+    rev: e8b4e28241a9ae8296ba6e4a491b5da4eda73283  # frozen: 3.11.1
     hooks:
       - id: editorconfig-checker
         exclude: |
@@ -87,21 +85,21 @@ repos:
             swagger\.json
           )
   - repo: https://github.com/hhatto/autopep8
-    rev: "v2.3.1"
+    rev: "4046ad49e25b7fa1db275bf66b1b7d60600ac391"  # frozen: v2.3.2
     hooks:
       - id: autopep8
   - repo: https://github.com/pycqa/flake8
-    rev: 7.1.1
+    rev: cfbbfdeb2391c14a37e101e92a77f54f329e1726  # frozen: 7.4.1
     hooks:
       - id: flake8
         additional_dependencies: [Flake8-pyproject]
   - repo: https://github.com/asottile/yesqa
-    rev: v1.5.0
+    rev: f2ae90cf9e1661ade79d0881186ce4fd7ba6ee79  # frozen: v1.5.0
     hooks:
       - id: yesqa
   # Infrastructure
   - repo: https://github.com/tox-dev/pyproject-fmt
-    rev: 2.2.1
+    rev: a72ae8edd6eeddb9d942168912362945651212f8  # frozen: v2.30.1
     hooks:
       - id: pyproject-fmt
         name: pyproject.toml formatter
@@ -109,10 +107,10 @@ repos:
         args:
           - --indent=4
         additional_dependencies:
-          - tox==4.18.0 # https://github.com/tox-dev/tox/releases/latest
+          - tox==4.64.10 # https://github.com/tox-dev/tox/releases/latest
 
   - repo: https://github.com/abravalheri/validate-pyproject
-    rev: v0.19
+    rev: '17e12779811926f000bdfa1795f9e3735dd71ac3'  # frozen: 0.26
     hooks:
       - id: validate-pyproject
         name: Validate pyproject.toml

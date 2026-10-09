@@ -1,15 +1,15 @@
+import logging
+
 from solo.admin import SingletonModelAdmin
 
 from django.contrib import admin
-
-from allianceauth.services.hooks import get_extension_logger
 
 from .models import (
     AuthBotConfiguration, Channels, GoodbyeMessage, ReactionRoleBinding,
     ReactionRoleMessage, Servers, TicketGroups, WelcomeMessage,
 )
 
-logger = get_extension_logger(__name__)
+logger = logging.getLogger(__name__)
 
 
 @admin.register(Servers)

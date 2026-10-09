@@ -18,7 +18,7 @@ class EasterEggs(commands.Cog):
         self.bot = bot
 
     @commands.slash_command(name='happybirthday')
-    async def happybirthday(self, ctx,  user: User):
+    async def happybirthday(self, ctx, user: User):
         """
         Takes one Discord User as an argument, Wishes this user a happy birthday
         If no user is passed, responds to the context user
