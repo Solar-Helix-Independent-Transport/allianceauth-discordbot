@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('discord', '0003_big_overhaul'),
+        ('discord', '0004_v5squash'),
         ('aadiscordbot', '0002_reactionrolebinding_reactionrolemessage'),
     ]
 

@@ -13,6 +13,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='ticketgroups',
             name='ticket_channels',
-            field=models.TextField(blank=True, default=None, help_text='JSON dictionary {server_id:channel_id}', null=True),
+            field=models.TextField(
+                blank=True, default=None, help_text='JSON dictionary {server_id:channel_id}', null=True),
         ),
     ]
