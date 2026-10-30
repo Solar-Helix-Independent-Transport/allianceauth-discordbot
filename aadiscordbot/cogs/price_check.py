@@ -9,9 +9,7 @@ from discord.colour import Color
 from discord.embeds import Embed
 from discord.ext import commands
 
-from ..app_settings import (
-    PRICE_CHECK_HOSTNAME
-)
+from ..app_settings import PRICE_CHECK_HOSTNAME
 
 logger = logging.getLogger(__name__)
 

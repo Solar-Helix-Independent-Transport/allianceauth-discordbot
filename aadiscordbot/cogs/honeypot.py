@@ -4,7 +4,7 @@
 import io
 import logging
 
-from discord import Bot, Message, User, File
+from discord import Bot, File, Message, User
 from discord.ext import commands
 
 from aadiscordbot.app_settings import get_admins

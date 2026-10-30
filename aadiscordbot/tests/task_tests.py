@@ -19,5 +19,5 @@ run_task()
     run_task_function.delay(
         "aadiscordbot.tests.task_tests.send_configuration_to_log",
         ["TESTING a custom function!"],
-        {"commands":True}
+        {"commands": True}
     )

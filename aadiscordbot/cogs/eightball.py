@@ -35,7 +35,7 @@ class EightBall(commands.Cog):
             "Outlook not so good",
             "Very doubtful",
         ]
-        return replies[randrange(0, len(replies)-1)]
+        return replies[randrange(0, len(replies) - 1)]
 
     @commands.command(pass_context=True, aliases=['8ball'])
     async def meb(self, message):

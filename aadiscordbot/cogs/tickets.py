@@ -54,7 +54,8 @@ class TicketDropdown(discord.ui.Select):
         ).get_channel_for_server(interaction.guild_id)
         if sup_channel:
             ch = interaction.guild.get_channel(sup_channel)
-            grp = discord.utils.get(interaction.guild.roles, name=self.values[0])
+            grp = discord.utils.get(
+                interaction.guild.roles, name=self.values[0])
             if grp is None:
                 return await interaction.response.edit_message(
                     content=(
