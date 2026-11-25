@@ -19,12 +19,19 @@ logger = logging.getLogger(__name__)
 def get_groups():
     groups = models.TicketGroups.get_solo().groups.all().order_by('name')
     out = []
+
     for g in groups:
         out.append(
             discord.SelectOption(
-                label=f"{g.name}"
+                label=(
+                    f"{g.name} - {g.authgroup.description}"
+                    if g.authgroup.description
+                    else g.name
+                ),
+                value=g.name,
             )
         )
+
     return out
 
 
